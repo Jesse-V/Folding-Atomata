@@ -1,4 +1,4 @@
-jv_fahviewer
+Folding Atomata - Alternative protein viewer for Folding@home
 ============
 
-My version of the Folding@home 3D protein viewer
+View the biological machines that run the body!
