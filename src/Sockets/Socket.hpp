@@ -12,7 +12,7 @@
 
 const int MAX_HOSTNAME = 200;
 const int MAX_CONNECTIONS = 5;
-const int MAX_RECV = 8192;
+const int MAX_RECV = 16384; //2 ^ 14
 
 class Socket
 {
