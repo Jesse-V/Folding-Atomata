@@ -29,7 +29,6 @@ bool Socket::create()
     if (!isValid())
         return false;
 
-    // TIME_WAIT - argh
     int on = 1;
     return setsockopt(sock_, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on)) != -1;
 }
@@ -57,7 +56,7 @@ bool Socket::listen() const
     if (!isValid())
         return false;
 
-    int listen_return = ::listen(sock_, MAXCONNECTIONS);
+    int listen_return = ::listen(sock_, MAX_CONNECTIONS);
     return listen_return != -1;
 }
 
@@ -83,16 +82,16 @@ bool Socket::send(const std::string& msg) const
 
 int Socket::recv(std::string& s) const
 {
-    char buf[MAXRECV + 1];
-    memset ( buf, 0, MAXRECV + 1 );
+    char buf[MAX_RECV + 1];
+    memset(buf, 0, MAX_RECV + 1);
 
     s = "";
 
-    int status = ::recv(sock_, buf, MAXRECV, 0);
+    int status = ::recv(sock_, buf, MAX_RECV, 0);
 
     if (status == -1)
     {
-        std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
+        std::cout << "Recv error, status -1," << errno << std::endl;
         return 0;
     }
     else if (status == 0)

@@ -1,10 +1,10 @@
 
 #include "main.hpp"
-#include <thread>
-#include <iostream>
-
 #include "Sockets/ClientSocket.hpp"
 #include "Sockets/SocketException.hpp"
+#include <thread>
+#include <iostream>
+#include <unordered_map>
 
 /*
     Useful socket links:
@@ -20,20 +20,33 @@ int main(int argc, char **argv)
     {
         ClientSocket socket("localhost", 36330);
 
-        std::string reply;
+        std::string response;
+        socket >> response;
 
-        socket >> reply;
-        std::cout << reply << std::endl;
-        socket << "updates add 0 1 $heartbeat\n";
+        //socket << "updates add 0 1 $heartbeat\n";
+        socket << "trajectory 0\n";
 
-        while (true) //keep reading
+        std::hash<std::string> hasher;
+
+        std::string pyon;
+        int trailerCount = 0;
+
+        while (true)
         {
-            socket >> reply;
-            std::cout << reply << std::endl;
+            std::string buffer;
+            socket >> buffer;
+            pyon += buffer;
 
-            std::chrono::milliseconds duration(500); //query every 500ms
-            std::this_thread::sleep_for(duration); //C++11 way to sleep!
+            if (buffer.find("---") != std::string::npos)
+                trailerCount++;
+
+            if (buffer.find("---\n>") != std::string::npos)
+                break;
         }
+
+        std::cout << pyon.length() << ", "
+                  << hasher(pyon) << ", "
+                  << trailerCount << std::endl;
 
     }
     catch (SocketException& e)
