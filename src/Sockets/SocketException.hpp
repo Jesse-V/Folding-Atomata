@@ -7,15 +7,17 @@
 class SocketException
 {
     public:
-        SocketException(std::string s) : m_s(s) {}
+        SocketException(const std::string& description) :
+            description_(description)
+        {}
 
         std::string description()
         {
-            return m_s;
+            return description_;
         }
 
     private:
-        std::string m_s;
+        std::string description_;
 };
 
 #endif

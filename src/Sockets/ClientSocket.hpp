@@ -2,7 +2,7 @@
 #ifndef CLIENT_SOCKET_HPP
 #define CLIENT_SOCKET_HPP
 
-#include "Socket.h"
+#include "Socket.hpp"
 
 class ClientSocket : private Socket
 {

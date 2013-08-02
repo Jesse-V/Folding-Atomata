@@ -3,16 +3,15 @@
 #include <thread>
 #include <iostream>
 
-
-#include "Sockets/ClientSocket.h"
-#include "Sockets/SocketException.h"
+#include "Sockets/ClientSocket.hpp"
+#include "Sockets/SocketException.hpp"
 
 /*
     Useful socket links:
     http://www.codeproject.com/Questions/368114/telnet-within-a-C-Cplusplus-program
     http://www.cpp-home.com/forum/viewtopic.php?t=8936
     http://codebase.eu/tutorial/linux-socket-programming-c/
-    http://linuxgazette.net/74/tougher.html
+    http://stackoverflow.com/questions/2952733/using-sys-socket-h-functions-on-windows
 */
 
 int main(int argc, char **argv)

@@ -37,9 +37,8 @@ class Socket
         bool isValid() const;
 
     private:
-        int m_sock;
-        sockaddr_in m_addr;
+        int sock_;
+        sockaddr_in address_;
 };
-
 
 #endif
