@@ -18,7 +18,10 @@ class TrajectoryParser
         BondPtr parseBond(const std::string& bondStr);
         glm::vec3 parsePosition(const std::string& positionStr);
 
-        std::string isolate(const std::string& str, const std::string& header, const std::string& footer);
+        std::string getBetween(const std::string& str, 
+                               const std::string& header,
+                               const std::string& footer, int start = 0
+        );
         std::vector<std::string> explode(const std::string& str, char delim);
         std::string trim(const std::string& str, const std::string& whitespaces);
 
