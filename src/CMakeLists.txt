@@ -13,12 +13,17 @@ include_directories(.)
 
 add_executable(ivoxely
     main.cpp
+    Trajectory/Trajectory.cpp
+    Trajectory/Topology.cpp
+    Trajectory/Snapshot.cpp
+    Trajectory/Bond.cpp
+    Trajectory/Atom.cpp
     Sockets/ClientSocket.cpp
     Sockets/Socket.cpp
 )
 
 IF(WIN32)
-    target_link_libraries(ivoxely glut glew32 GL png)
+    target_link_libraries(ivoxely glut glew32 GL)
 ELSE()
-    target_link_libraries(ivoxely glut GLEW GL png)
+    target_link_libraries(ivoxely glut GLEW GL)
 ENDIF()
