@@ -9,7 +9,7 @@
 class Snapshot
 {
     public:
-        Snapshot();
+        void addPosition(const glm::vec3& position);
         glm::vec3 getPosition(int atomIndex);
 
     private:

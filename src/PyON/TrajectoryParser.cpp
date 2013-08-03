@@ -8,11 +8,20 @@
 
 TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
 {
+    std::cout << "Parsing Trajectory data... ";
+
     auto top = parseTopology(getBetween(trajStr, "PyON 1 topology\n{\n", "\n}\n---"));
-    auto trajectory = std::make_shared<Trajectory>(top);
+    TrajectoryPtr trajectory = std::make_shared<Trajectory>(top);
 
-    //add snapshots here
+    int sstart = 0;
+    while (sstart != std::string::npos)
+    {
+        auto snapshotStr = getBetween(trajStr, "PyON 1 positions\n[", "]\n---", sstart);
+        trajectory->addSnapshot(parseSnapshot(snapshotStr));
+        sstart = trajStr.find("PyON 1 positions", sstart + 1);
+    }
 
+    std::cout << "done" << std::endl;
     return trajectory;
 }
 
@@ -41,6 +50,47 @@ TopologyPtr TrajectoryParser::parseTopology(const std::string& topStr)
 
 
 
+/* Given:
+  [
+    -15.150061,
+    26.855776,
+    10.119355
+  ],
+  [
+    -15.447186,
+    26.083978,
+    10.699146
+  ],
+  [
+    -14.151439,
+    26.92564,
+    10.253361
+  ]
+*/
+SnapshotPtr TrajectoryParser::parseSnapshot(const std::string& snapshotStr)
+{
+    SnapshotPtr snapshot = std::make_shared<Snapshot>();
+
+    int index = 0;
+    while (index != std::string::npos)
+    {
+        auto positionStr = getBetween(snapshotStr, "[", "]", index);
+        auto tokens = explodeAndTrim(positionStr, ',', " \n");
+
+        float x, y, z;
+        std::istringstream(tokens[0]) >> x;
+        std::istringstream(tokens[1]) >> y;
+        std::istringstream(tokens[2]) >> z;
+
+        snapshot->addPosition(glm::vec3(x, y, z));
+        index = snapshotStr.find("[", index + 1);
+    }
+
+    return snapshot;
+}
+
+
+
 std::vector<AtomPtr> TrajectoryParser::parseAtoms(const std::string& topStr)
 {
     std::vector<AtomPtr> atoms;
@@ -61,13 +111,7 @@ std::vector<AtomPtr> TrajectoryParser::parseAtoms(const std::string& topStr)
 AtomPtr TrajectoryParser::parseAtom(const std::string& atomStr)
 {
     auto isolated = getBetween(atomStr, "[", "]"); //removes brackets
-    auto tokens = explode(isolated, ','); //explodes along commas
-    std::transform(tokens.begin(), tokens.end(), tokens.begin(), 
-        [&](const std::string& token)
-        {
-            return trim(token, " \""); //remove spaces and quotes
-        }
-    );
+    auto tokens = explodeAndTrim(isolated, ',', " \"");
 
     int atomicNumber;
     float charge, radius, mass;
@@ -103,13 +147,7 @@ std::vector<BondPtr> TrajectoryParser::parseBonds(const std::string& topStr)
 BondPtr TrajectoryParser::parseBond(const std::string& bondStr)
 {
     auto isolated = getBetween(bondStr, "[", "]");
-    auto tokens = explode(isolated, ','); //explodes along commas
-    std::transform(tokens.begin(), tokens.end(), tokens.begin(), 
-        [&](const std::string& token)
-        {
-            return trim(token, " "); //remove spaces
-        }
-    );
+    auto tokens = explodeAndTrim(isolated, ',', " ");
 
     int atomIndexA, atomIndexB;
     std::istringstream(tokens[0]) >> atomIndexA;
@@ -120,6 +158,10 @@ BondPtr TrajectoryParser::parseBond(const std::string& bondStr)
 
 
 
+/*
+    Returns the contents of the string between the header and the footer,
+    excluding both
+*/
 std::string TrajectoryParser::getBetween(const std::string& str,
                 const std::string& header, const std::string& footer, int start
 )
@@ -131,6 +173,34 @@ std::string TrajectoryParser::getBetween(const std::string& str,
 
 
 
+/******************** STRING PROCESSING HELPERS **************************
+
+
+
+/*
+    Explodes the string around the given delimiter, then trims away
+    any of the given whitespace characters from sides of the tokens.
+*/
+std::vector<std::string> TrajectoryParser::explodeAndTrim(const std::string& str, 
+                                    char delim, const std::string& whitespaces
+)
+{
+    auto tokens = explode(str, delim);
+    std::transform(tokens.begin(), tokens.end(), tokens.begin(), 
+        [&](const std::string& token)
+        {
+            return trim(token, whitespaces);
+        }
+    );
+
+    return tokens;
+}
+
+
+
+/*
+    Explodes the string around the given delimiter. (Reproduction of PHP's explode)
+*/
 std::vector<std::string> TrajectoryParser::explode(const std::string& str, char delim)
 {
     std::vector<std::string> tokens;
@@ -144,6 +214,9 @@ std::vector<std::string> TrajectoryParser::explode(const std::string& str, char 
 
 
 
+/*
+    Trims any of the given whitespace characters off of both sides of the given string.
+*/
 std::string TrajectoryParser::trim(const std::string& str, const std::string& whitespaces)
 {
     std::size_t start = str.find_first_not_of(whitespaces);
