@@ -1,4 +1,19 @@
 
+#ifndef TRAJECTORY_HPP
+#define TRAJECTORY_HPP
+
+#include "Topology.hpp"
+#include "Snapshot.hpp"
+
+class Trajectory
+{
+    private:
+        std::shared_ptr<Topology> topology_;
+        std::vector<SnapshotPtr> snapshots_;
+};
+
+#endif
+
 /*
     Trajectory
         has topology
