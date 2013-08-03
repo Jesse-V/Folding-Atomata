@@ -7,6 +7,17 @@
 
 class Atom
 {
+    public:
+        Atom(const std::string& symbol, int atomicNumber, float charge, 
+            float radius, float mass
+        );
+
+        std::string getSymbol();
+        int getAtomicNumber();
+        float getCharge();
+        float getRadius();
+        float getMass();
+        
     private:
         std::string symbol_;
         int atomicNumber_;

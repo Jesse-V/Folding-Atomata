@@ -1,0 +1,68 @@
+jesse@jesse-N61Vn ~ $ telnet localhost 36330
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+
+Welcome to the Folding@home Client command server.
+> trajectory 0
+PyON 1 topology
+{
+  "atoms": [
+    ["N", -0.96, 1.7063, 14.007, 7],
+    ["O3G", -0.9, 1.52, 15.9994, 8],
+    ["MG", 2, 1, 24.305, 12],
+    ["MG", 2, 1, 24.305, 12]
+  ],
+  "bonds": [
+    [4273, 4276],
+    [4273, 4275],
+    [2181, 2182]
+  ]
+}
+---
+PyON 1 positions
+[
+  [
+    -17.636893,
+    -12.583855,
+    13.800556
+  ],
+  [
+    -18.2068,
+    -11.806878,
+    13.533136
+  ],
+  [
+    -17.764366,
+    -13.016323,
+    14.693147
+  ]
+]
+---
+PyON 1 positions
+[
+  [
+    -18.023658,
+    -11.85759,
+    14.380542
+  ],
+  [
+    -18.053658,
+    -12.77759,
+    14.780541
+  ],
+  [
+    -18.473658,
+    -11.20759,
+    14.980541
+  ],
+  [
+    2.320828,
+    -14.064976,
+    -2.702303
+  ]
+]
+---
+> quit
+Connection closed by foreign host.
+jesse@jesse-N61Vn ~ $ 

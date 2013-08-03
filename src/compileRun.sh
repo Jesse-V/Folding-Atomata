@@ -1,5 +1,5 @@
 #!/bin/sh
 cmake .
 if (make) then
-    ./ivoxely
+    ./atomata
 fi

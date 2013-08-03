@@ -9,6 +9,13 @@
 
 class Topology
 {
+    public:
+        Topology(const std::vector<AtomPtr>& atoms,
+                 const std::vector<BondPtr>& bonds
+        );
+        std::vector<AtomPtr> getAtoms();
+        std::vector<BondPtr> getBonds();
+        
     private:
         std::vector<AtomPtr> atoms_;
         std::vector<BondPtr> bonds_;

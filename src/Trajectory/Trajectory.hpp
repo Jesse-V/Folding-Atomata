@@ -7,10 +7,16 @@
 
 class Trajectory
 {
+    public:
+        Trajectory(const std::shared_ptr<Topology> topology);
+        void addSnapshot(const SnapshotPtr& newSnapshot);
+    
     private:
         std::shared_ptr<Topology> topology_;
         std::vector<SnapshotPtr> snapshots_;
 };
+
+typedef std::shared_ptr<Trajectory> TrajectoryPtr;
 
 #endif
 

@@ -2,6 +2,7 @@
 #include "main.hpp"
 #include "Sockets/ClientSocket.hpp"
 #include "Sockets/SocketException.hpp"
+#include "PyON/TrajectoryParser.hpp"
 #include <thread>
 #include <iostream>
 #include <unordered_map>
@@ -73,6 +74,9 @@ int main(int argc, char **argv)
             std::cout << pyon.length() << ", "
                       << hasher(pyon) << ", "
                       << trailerCount << std::endl;
+
+            TrajectoryParser parser;
+            parser.parse(pyon);
 
             std::chrono::milliseconds duration(5000);
             std::this_thread::sleep_for(duration);
