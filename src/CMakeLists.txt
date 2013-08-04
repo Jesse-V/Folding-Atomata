@@ -13,12 +13,13 @@ include_directories(.)
 
 add_executable(atomata
     main.cpp
+    Viewer/SlotViewer.cpp
+    PyON/TrajectoryParser.cpp
     Trajectory/Trajectory.cpp
     Trajectory/Topology.cpp
     Trajectory/Snapshot.cpp
     Trajectory/Bond.cpp
     Trajectory/Atom.cpp
-    PyON/TrajectoryParser.cpp
     Sockets/ClientSocket.cpp
     Sockets/Socket.cpp
 )

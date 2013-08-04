@@ -8,7 +8,7 @@
 
 TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
 {
-    std::cout << "Parsing Trajectory data... ";
+    std::cout << "Parsing... ";
 
     auto top = parseTopology(getBetween(trajStr, "PyON 1 topology\n{\n", "\n}\n---"));
     TrajectoryPtr trajectory = std::make_shared<Trajectory>(top);

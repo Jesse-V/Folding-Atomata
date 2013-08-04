@@ -17,22 +17,17 @@
 
 
 
-bool containsPyonFooter(const std::string& string)
-{
-    return string.find("---") != std::string::npos;
-}
 
-
-
-bool containsEndOfMessage(const std::string& string)
-{
-    return containsPyonFooter(string) && string.find("---\nPyON") == std::string::npos;
-}
 
 
 
 int main(int argc, char **argv)
 {
+    //slot-info, in between "\"id\": \"" and "\",\n"
+    //1) check for heartbeat, throw error if no connection
+    //2) get topology. This data should be accessible as soon it's available.
+    //3) get checkpoints. Can view more and more of them as they come in.
+    
     try
     {
         ClientSocket socket("localhost", 36330);
@@ -40,7 +35,6 @@ int main(int argc, char **argv)
         std::string response;
         socket >> response;
 
-        //socket << "updates add 0 1 $heartbeat\n";
         socket << "updates add 0 5 $(trajectory 0)\n";
 
         std::hash<std::string> hasher;
@@ -49,8 +43,6 @@ int main(int argc, char **argv)
         {
             std::cout << "Reading... " << std::endl;
             std::string pyon;
-            int trailerCount = 0;
-            bool printed = false;
 
             while (true)
             {
@@ -58,22 +50,12 @@ int main(int argc, char **argv)
                 socket >> buffer;
                 pyon += buffer;
 
-                if (!printed)
-                {
-                    std::cout << "read from socket" << std::endl;
-                    printed = true;
-                }
-
-                if (containsPyonFooter(buffer))
-                    trailerCount++;
-
                 if (containsEndOfMessage(buffer))
                     break;
             }
 
             std::cout << pyon.length() << ", "
-                      << hasher(pyon) << ", "
-                      << trailerCount << std::endl;
+                      << hasher(pyon) << std::endl;
 
             TrajectoryParser parser;
             parser.parse(pyon);
