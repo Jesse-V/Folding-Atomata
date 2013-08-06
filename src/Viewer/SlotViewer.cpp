@@ -10,7 +10,9 @@ SlotViewer::SlotViewer(const Connection& connection, int slotID) :
     connection_(connection), slotID_(slotID)
 {
     std::cout << "Establishing new connection with FAHClient... ";
-    auto socket = *connection.createClientSocket();
+    
+    ClientSocket socket(connection.getHost(), connection.getPort());
+    //auto socket = *connection.createClientSocket();
 
     std::string response;
     socket >> response;
@@ -20,7 +22,7 @@ SlotViewer::SlotViewer(const Connection& connection, int slotID) :
 
     std::cout << "done. Got good response back." << std::endl;
     std::cout << "Asking for trajectory... ";
-    
+
     std::stringstream stream("");
     stream << "updates add 0 5 $(trajectory " << slotID << ")" << std::endl;
     socket << stream.str();
@@ -34,6 +36,7 @@ SlotViewer::SlotViewer(const Connection& connection, int slotID) :
             connection.getHost() << ":" << connection.getPort() << ":" <<
             slotID << " ... " << std::endl;
     });
+    snapshotAdder.detach(); //run thread detached from main execution
 }
 
 
