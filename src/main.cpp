@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     
     try
     {
-        SlotViewer viewer(*Connection("localhost", 36330).createClientSocket(), 0);
+        SlotViewer viewer(Connection("localhost", 36330), 0);
 
         /*std::string response;
         socket >> response;
@@ -52,6 +52,6 @@ int main(int argc, char **argv)
     }
     catch (SocketException& e)
     {
-        std::cout << "Exception was caught:" << e.description() << "\n";
+        std::cout << "Exception was caught: " << e.description() << "\n";
     }
 }

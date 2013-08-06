@@ -8,21 +8,21 @@ Connection::Connection(const std::string& host, int port) :
 
 
 
-std::shared_ptr<ClientSocket> Connection::createClientSocket()
+std::shared_ptr<ClientSocket> Connection::createClientSocket() const
 {
     return std::make_shared<ClientSocket>("localhost", 36330);
 }
 
 
 
-std::string Connection::getHost()
+std::string Connection::getHost() const
 {
     return host_;
 }
 
 
 
-int Connection::getPort()
+int Connection::getPort() const
 {
     return port_;
 }

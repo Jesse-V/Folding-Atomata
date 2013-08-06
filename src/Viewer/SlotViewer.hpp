@@ -2,6 +2,7 @@
 #ifndef SLOT_VIEWER_HPP
 #define SLOT_VIEWER_HPP
 
+#include "../Sockets/Connection.hpp"
 #include "../Sockets/ClientSocket.hpp"
 #include "../PyON/TrajectoryParser.hpp"
 
@@ -16,7 +17,7 @@ If Tracers are enabled, it shows them.
 class SlotViewer
 {
     public:
-        SlotViewer(const ClientSocket& socket, int slotID);
+        SlotViewer(const Connection& connection, int slotID);
         TrajectoryPtr getTrajectory();
         void update();
         void render();
@@ -29,7 +30,7 @@ class SlotViewer
         bool containsEndOfMessage(const std::string& str);
 
     private:
-        ClientSocket socket_;
+        Connection connection_;
         TrajectoryPtr trajectory_;
         int slotID_;
 };

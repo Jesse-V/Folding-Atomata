@@ -10,9 +10,9 @@ class Connection
 {
     public:
         Connection(const std::string& host, int port);
-        std::shared_ptr<ClientSocket> createClientSocket();
-        std::string getHost();
-        int getPort();
+        std::shared_ptr<ClientSocket> createClientSocket() const;
+        std::string getHost() const;
+        int getPort() const;
 
     private:
         std::string host_;
