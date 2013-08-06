@@ -1,23 +1,14 @@
 
 #include "SlotViewer.hpp"
 #include <thread>
+#include <sstream>
 #include <iostream>
 
 
-SlotViewer::SlotViewer(const ClientSocket& socket) :
-    socket_(socket)
+SlotViewer::SlotViewer(const ClientSocket& socket, int slotID) :
+    socket_(socket), slotID_(slotID)
 {
-
-}
-
-
-
-static std::vector<SlotViewer> SlotViewer::viewAllSlots(const std::string& host, int port)
-{
-    ClientSocket socket(host, port);
-
-    std::string response;
-    socket >> response;
+    trajectory_ = loadTrajectory(socket, slotID);
 }
 
 
@@ -29,12 +20,18 @@ TrajectoryPtr SlotViewer::getTrajectory()
 
 
 
-TrajectoryPtr SlotViewer::loadTrajectory(const ClientSocket& socket)
+TrajectoryPtr SlotViewer::loadTrajectory(const ClientSocket& socket, int slotID)
 {
-    socket << "updates add 0 5 $(trajectory 0)\n";
-    std::cout << "Reading... ";
-    std::string pyon;
+    std::cout << "Asking for trajectory... ";
 
+    std::stringstream stream("");
+    stream << "updates add 0 5 $(trajectory " << slotID << ")" << std::endl;
+    socket << stream.str();
+
+    std::cout << " done." << std::endl;
+    std::cout << "Reading trajectory response... ";
+
+    std::string pyon;
     while (true)
     {
         std::string buffer;
@@ -45,7 +42,7 @@ TrajectoryPtr SlotViewer::loadTrajectory(const ClientSocket& socket)
             break;
     }
 
-    std::cout << "... done reading (" << pyon.length() << ")" << std::endl;
+    std::cout << " done (" << pyon.length() << ")" << std::endl;
 
     TrajectoryParser parser;
     return parser.parse(pyon);

@@ -21,7 +21,7 @@ class TrajectoryParser
         //string processing helpers:
         std::string getBetween(const std::string& str, 
                                const std::string& header,
-                               const std::string& footer, int start = 0
+                               const std::string& footer, std::size_t start = 0
         );
         std::vector<std::string> explodeAndTrim(const std::string& str, 
                                     char delim, const std::string& whitespaces

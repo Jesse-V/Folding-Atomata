@@ -18,7 +18,8 @@ class Socket
 {
     public:
         Socket();
-        virtual ~Socket();
+        ~Socket();
+        Socket(const Socket& other) {}
 
         // Server initialization
         bool create();
@@ -31,12 +32,10 @@ class Socket
 
         // Data Transimission
         bool send(const std::string& msg) const;
-        int recv(std::string&) const;
+        long recv(std::string&) const;
 
         void setNonBlocking(bool blocking);
         bool isValid() const;
-
-        
 
     private:
         int sock_;

@@ -74,27 +74,27 @@ bool Socket::accept(Socket& new_socket) const
 
 bool Socket::send(const std::string& msg) const
 {
-    int status = ::send(sock_, msg.c_str(), msg.size(), MSG_NOSIGNAL);
-    return status != -1;
+    long status = ::send(sock_, msg.c_str(), msg.size(), MSG_NOSIGNAL);
+    return status != -1L;
 }
 
 
 
-int Socket::recv(std::string& s) const
+long Socket::recv(std::string& s) const
 {
     char buf[MAX_RECV + 1];
     memset(buf, 0, MAX_RECV + 1);
 
     s = "";
 
-    int status = ::recv(sock_, buf, MAX_RECV, 0);
+    long status = ::recv(sock_, buf, MAX_RECV, 0);
 
-    if (status == -1)
+    if (status == -1L)
     {
         std::cout << "Recv error, status -1," << errno << std::endl;
         return 0;
     }
-    else if (status == 0)
+    else if (status == 0L)
     {
         return 0;
     }

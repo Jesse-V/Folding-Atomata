@@ -8,12 +8,12 @@
 
 TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
 {
-    std::cout << "Parsing... ";
+    std::cout << "Parsing trajectory PyON... ";
 
     auto top = parseTopology(getBetween(trajStr, "PyON 1 topology\n{\n", "\n}\n---"));
     TrajectoryPtr trajectory = std::make_shared<Trajectory>(top);
 
-    int sstart = 0;
+    std::size_t sstart = 0;
     while (sstart != std::string::npos)
     {
         auto snapshotStr = getBetween(trajStr, "PyON 1 positions\n[", "]\n---", sstart);
@@ -71,7 +71,7 @@ SnapshotPtr TrajectoryParser::parseSnapshot(const std::string& snapshotStr)
 {
     SnapshotPtr snapshot = std::make_shared<Snapshot>();
 
-    int index = 0;
+    std::size_t index = 0;
     while (index != std::string::npos)
     {
         auto positionStr = getBetween(snapshotStr, "[", "]", index);
@@ -163,17 +163,17 @@ BondPtr TrajectoryParser::parseBond(const std::string& bondStr)
     excluding both
 */
 std::string TrajectoryParser::getBetween(const std::string& str,
-                const std::string& header, const std::string& footer, int start
+                const std::string& header, const std::string& footer, std::size_t start
 )
 {
-    int head = str.find(header, start);
-    int foot = str.find(footer, head);
+    std::size_t head = str.find(header, start);
+    std::size_t foot = str.find(footer, head);
     return str.substr(head + header.length(), foot - head - header.length());
 }
 
 
 
-/******************** STRING PROCESSING HELPERS **************************
+/******************** STRING PROCESSING HELPERS ***************************/
 
 
 

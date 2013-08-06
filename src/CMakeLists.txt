@@ -20,6 +20,7 @@ add_executable(atomata
     Trajectory/Snapshot.cpp
     Trajectory/Bond.cpp
     Trajectory/Atom.cpp
+    Sockets/Connection.cpp
     Sockets/ClientSocket.cpp
     Sockets/Socket.cpp
 )
