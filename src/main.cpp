@@ -47,8 +47,7 @@ int main(int argc, char **argv)
         std::hash<std::string> hasher;
         hasher(response);
 
-        std::chrono::milliseconds duration(5000);
-        std::this_thread::sleep_for(duration);*/
+        */
     }
     catch (SocketException& e)
     {

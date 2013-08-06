@@ -19,15 +19,15 @@ class SlotViewer
     public:
         SlotViewer(const Connection& connection, int slotID);
         TrajectoryPtr getTrajectory();
+        void addSnapshot(const SnapshotPtr& newSnapshot);
         void update();
         void render();
 
+        static std::string readResponse(const ClientSocket& socket);
+
     private:
         TrajectoryPtr loadTrajectory(const ClientSocket& socket, int slot);
-        void addSnapshot();
-
-        bool containsPyonFooter(const std::string& str);
-        bool containsEndOfMessage(const std::string& str);
+        void addIncomingSnapshots();
 
     private:
         Connection connection_;

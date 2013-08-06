@@ -21,7 +21,7 @@ TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
         sstart = trajStr.find("PyON 1 positions", sstart + 1);
     }
 
-    std::cout << "done" << std::endl;
+    std::cout << "done." << std::endl;
     return trajectory;
 }
 
