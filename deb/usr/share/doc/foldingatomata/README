@@ -1,0 +1,12 @@
+Third-party Folding@home 3D Viewer
+
+Folding Atomata, like FAHViewer, allows you to visualize protein folding 
+simulations and monitor the status of the simulation work units as they 
+run on your computer. This program is a drop-in replacement for FAHViewer,
+but shows additional details and views of the proteins that aren't
+visible with FAHViewer.
+
+For more information or to report a bug, see:
+
+  https://github.com/Jesse-V/Folding-Atomata
+

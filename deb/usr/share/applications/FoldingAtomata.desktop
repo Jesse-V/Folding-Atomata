@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Folding Atomata
+Exec=/usr/bin/FoldingAtomata
+TryExec=FoldingAtomata
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Education;Science;Biology;;
+Comment=Third-party Folding@home 3D Viewer
+Icon=FoldingAtomata-logo.png
+Name[en_US]=FoldingAtomata.desktop
