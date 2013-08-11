@@ -3,6 +3,7 @@
 #include "Viewer/SlotViewer.hpp"
 #include "Sockets/Connection.hpp"
 #include "Sockets/SocketException.hpp"
+#include <thread>
 
 /*
 #include "Sockets/ClientSocket.hpp"
@@ -25,6 +26,11 @@ Useful socket links:
     http://www.cpp-home.com/forum/viewtopic.php?t=8936
     http://codebase.eu/tutorial/linux-socket-programming-c/
     http://stackoverflow.com/questions/2952733/using-sys-socket-h-functions-on-windows
+
+    http://stackoverflow.com/questions/670891/is-there-a-way-for-multiple-processes-to-share-a-listening-socket
+    https://forums.oracle.com/thread/2416799?tstart=210
+    http://msdn.microsoft.com/en-us/library/5w7b7x5f.aspx
+    http://www.cplusplus.com/forum/general/12836/
 */
 
 
@@ -38,6 +44,13 @@ int main(int argc, char **argv)
     try
     {
         SlotViewer viewer(Connection("localhost", 36330), 0);
+
+        while (true)
+        {
+            std::chrono::milliseconds duration(2000);
+            std::this_thread::sleep_for(duration);
+            std::cout << "Main looping..." << std::endl;
+        }
 
         /*std::string response;
         socket >> response;

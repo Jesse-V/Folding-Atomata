@@ -18,6 +18,7 @@ class SlotViewer
 {
     public:
         SlotViewer(const Connection& connection, int slotID);
+        ~SlotViewer();
         TrajectoryPtr getTrajectory();
         void addSnapshot(const SnapshotPtr& newSnapshot);
         void update();
@@ -30,7 +31,7 @@ class SlotViewer
         void addIncomingSnapshots();
 
     private:
-        Connection connection_;
+        std::shared_ptr<ClientSocket> socket_;
         TrajectoryPtr trajectory_;
         int slotID_;
 };

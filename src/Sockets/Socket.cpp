@@ -9,13 +9,16 @@
 Socket::Socket() :
     sock_(-1)
 {
-    memset (&address_, 0, sizeof(address_));
+    memset(&address_, 0, sizeof(address_));
 }
 
 
 
 Socket::~Socket()
 {
+    std::cout << "Socket destructing..." << std::endl;
+    std::cout.flush();
+
     if (isValid())
         ::close(sock_);
 }
