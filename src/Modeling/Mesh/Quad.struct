@@ -1,0 +1,20 @@
+
+#ifndef QUAD_STRUCT
+#define QUAD_STRUCT
+
+#include <GL/glut.h>
+#include "glm/glm.hpp"
+
+/**
+    
+**/
+struct Quad
+{
+    Quad(GLuint aa = 0, GLuint bb = 0, GLuint cc = 0, GLuint dd = 0)
+        : a(aa), b(bb), c(cc), d(dd)
+    {}
+
+    GLuint a, b, c, d;
+};
+
+#endif

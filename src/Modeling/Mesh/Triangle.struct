@@ -1,0 +1,24 @@
+
+#ifndef TRIANGLE_STRUCT
+#define TRIANGLE_STRUCT
+
+#include <GL/glut.h>
+#include "glm/glm.hpp"
+
+/**
+    A Triangle is defined by three points: a, b, and c.
+    Here is a Triangle does not represent these points as locations
+    in 3D or 4D space, but rather as references to these points.
+    For example, a Triangle could contain {17, 12, 39}, which would be
+    indices corresponding to the 17th, 12th, and 39th point, respectively.
+**/
+struct Triangle
+{
+    Triangle(GLuint aa = 0, GLuint bb = 0, GLuint cc = 0)
+        : a(aa), b(bb), c(cc)
+    {}
+
+    GLuint a, b, c;
+};
+
+#endif
