@@ -1,5 +1,6 @@
 #!/bin/sh
 cmake .
-if (make -j 4) then
+$cpus = $(grep siblings /proc/cpuinfo | head -1 | cut -d : -f 2)
+if (make -j $cpus) then
     ./FoldingAtomata
 fi
