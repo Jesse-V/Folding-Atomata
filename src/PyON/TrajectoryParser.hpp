@@ -7,16 +7,17 @@
 class TrajectoryParser
 {
     public:
-        TrajectoryPtr parse(const std::string& trajectoryStr);
-        SnapshotPtr parseSnapshot(const std::string& snapshotStr);
+        static TrajectoryPtr parse(const std::string& trajectoryStr);
+        static SnapshotPtr parseSnapshot(const std::string& snapshotStr);
 
     private:
-        TopologyPtr parseTopology(const std::string& topologyStr);
-        std::vector<AtomPtr> parseAtoms(const std::string& topologyStr);
-        AtomPtr parseAtom(const std::string& atomStr);
-        std::vector<BondPtr> parseBonds(const std::string& topologyStr);
-        BondPtr parseBond(const std::string& bondStr);
-        glm::vec3 parsePosition(const std::string& positionStr);
+        TrajectoryParser() {} //prevents instantiation
+        static TopologyPtr parseTopology(const std::string& topologyStr);
+        static std::vector<AtomPtr> parseAtoms(const std::string& topologyStr);
+        static AtomPtr parseAtom(const std::string& atomStr);
+        static std::vector<BondPtr> parseBonds(const std::string& topologyStr);
+        static BondPtr parseBond(const std::string& bondStr);
+        static glm::vec3 parsePosition(const std::string& positionStr);
 
         
 };

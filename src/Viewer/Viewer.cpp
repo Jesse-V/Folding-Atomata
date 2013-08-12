@@ -1,7 +1,11 @@
 
 #include "Viewer.hpp"
+#include "SlotViewer.hpp"
+#include "../Sockets/Connection.hpp"
+#include "../PyON/StringManip.hpp"
 #include <memory>
 #include <thread>
+#include <sstream>
 #include <iostream>
 
 /*
@@ -61,7 +65,7 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    
+    getAllTrajectories();
 }
 
 
@@ -70,30 +74,49 @@ void Viewer::getAllTrajectories()
 {
     auto socket = Connection("localhost", 36330).createClientSocket();
 
-    std::stringstream idStream("");
-    idStream << connection.getHost() << ":" << connection.getPort() << ":" << slotID;
+    //std::stringstream idStream("");
+    //idStream << connection.getHost() << ":" << connection.getPort() << ":" << slotID;
 
-    std::cout << "Opening connection with local FAHClient... ";
+    std::cout << "Connecting to local FAHClient... ";
     std::cout.flush();
 
-    std::string response = readResponse(*socket_);
+    std::string response = SlotViewer::readResponse(*socket);
 
     if (response.find("Welcome") == std::string::npos)
         throw std::runtime_error("Invalid response from FAHClient");
 
     std::cout << "done. Got good response back." << std::endl;
-    std::cout << "Connection ID is " << idStream.str() << std::endl;
+    //std::cout << "Connection ID is " << idStream.str() << std::endl;
 
-    std::cout << "Asking for number of slots... ";
-    *socket_ << "num-slots\n";
+    std::cout << "Determining number of slots... ";
+    *socket << "num-slots\n";
 
-    std::stringstream stream("");
-    stream << "updates add 0 5 $(trajectory " << slotID << ")" << std::endl;
-    *socket_ << stream.str();
+    std::string nSlotsStr = SlotViewer::readResponse(*socket);
+    std::stringstream stream(StringManip::between(nSlotsStr, "PyON 1 num-slots", "---"));
 
-    std::cout << "done." << std::endl;
+    int nSlots;
+    stream >> nSlots;
+    std::cout << nSlots << std::endl;
 
-    trajectory_ = loadTrajectory(*socket_, slotID);
+    std::vector<TrajectoryPtr> trajectories;
+    for (int slotIndex = 0; slotIndex < nSlots; slotIndex++)
+    {
+        std::cout << "Downloading trajectory for slot " << slotIndex << "... ";
+
+        std::stringstream trajectoryRequest("");
+        trajectoryRequest << "trajectory " << slotIndex << std::endl;
+        *socket << trajectoryRequest.str();
+
+        std::string trajectoryStr = SlotViewer::readResponse(*socket);
+        std::cout << "done." << std::endl;
+
+        if (trajectoryStr.find("\"atoms\": []\"") == std::string::npos)
+            trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
+    }
+
+    std::cout << "Filtered out FAHCore 17 slots, now have " << 
+                           trajectories.size() << " trajectories." << std::endl;
+
 }
 
 
@@ -108,7 +131,7 @@ void Viewer::addLight()
         2.0f                //power
     );
 
-    scene_->addLight(light2);
+    scene_->addLight(light1);
 
     checkGlError();
 }

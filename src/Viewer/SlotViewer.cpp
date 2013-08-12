@@ -90,9 +90,8 @@ TrajectoryPtr SlotViewer::loadTrajectory(const ClientSocket& socket, int slotID)
     std::cout << "Reading trajectory response... ";
     std::string pyon = readResponse(socket);
     std::cout << " done (" << pyon.length() << ")" << std::endl;
-
-    TrajectoryParser parser;
-    return parser.parse(pyon);
+    
+    return TrajectoryParser::parse(pyon);
 }
 
 
