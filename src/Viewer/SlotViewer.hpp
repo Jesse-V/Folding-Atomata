@@ -2,9 +2,7 @@
 #ifndef SLOT_VIEWER_HPP
 #define SLOT_VIEWER_HPP
 
-#include "../Sockets/Connection.hpp"
-#include "../Sockets/ClientSocket.hpp"
-#include "../PyON/TrajectoryParser.hpp"
+#include "../Trajectory/Trajectory.hpp"
 
 /*
 SlotViewer handles the viewing of the protein from a particular slot.
@@ -17,24 +15,13 @@ If Tracers are enabled, it shows them.
 class SlotViewer
 {
     public:
-        SlotViewer(const Connection& connection, int slotID);
+        SlotViewer(const TrajectoryPtr& trajectory);
         ~SlotViewer();
-        TrajectoryPtr getTrajectory();
-        void addSnapshot(const SnapshotPtr& newSnapshot);
         void update();
         void render();
 
-        static std::string readResponse(const ClientSocket& socket);
-
     private:
-        void launchThread();
-        TrajectoryPtr loadTrajectory(const ClientSocket& socket, int slot);
-        void addIncomingSnapshots();
-
-    private:
-        std::shared_ptr<ClientSocket> socket_;
         TrajectoryPtr trajectory_;
-        int slotID_;
 };
 
 #endif

@@ -1,6 +1,6 @@
 
 #include "FAHClientIO.hpp"
-#include "SlotViewer.hpp"
+#include "../PyON/TrajectoryParser.hpp"
 #include "../PyON/StringManip.hpp"
 #include <sstream>
 #include <stdexcept>
@@ -18,7 +18,7 @@ FAHClientIO::FAHClientIO(const std::shared_ptr<ClientSocket> socket) :
 void FAHClientIO::connectToFAHClient()
 {
     std::cout << "Connecting to local FAHClient... ";
-    std::string response = SlotViewer::readResponse(*socket_);
+    std::string response = readResponse();
 
     if (response.find("Welcome") == std::string::npos)
         throw std::runtime_error("Invalid response from FAHClient");
@@ -34,7 +34,7 @@ int FAHClientIO::getSlotCount()
     *socket_ << "num-slots\n";
 
     std::string begin = "PyON 1 num-slots", end = "---";
-    std::string nSlotsStr = SlotViewer::readResponse(*socket_);
+    std::string nSlotsStr = readResponse();
     std::stringstream stream(StringManip::between(nSlotsStr, begin, end));
 
     int nSlots;
@@ -57,15 +57,37 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
         trajectoryRequest << "trajectory " << slotIndex << std::endl;
         *socket_ << trajectoryRequest.str();
 
-        std::string trajectoryStr = SlotViewer::readResponse(*socket_);
+        std::string trajectoryStr = readResponse();
         std::cout << "done." << std::endl;
 
         if (trajectoryStr.find("\"atoms\": []\"") == std::string::npos)
             trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
     }
 
-    std::cout << "Filtered out FAHCore 17 slots, now have " << 
+    std::cout << "Filtered out FAHCore 17 slots, left with " << 
                            trajectories.size() << " trajectories." << std::endl;
 
     return trajectories;
+}
+
+
+
+std::string FAHClientIO::readResponse()
+{
+    std::string pyon;
+
+    while (true)
+    {
+        std::string buffer;
+        *socket_ >> buffer;
+        pyon += buffer;
+
+        if (buffer.find("\n> ")      != std::string::npos ||
+           (buffer.find("---")       != std::string::npos && 
+            buffer.find("---\nPyON") == std::string::npos)
+        )
+            break; //reached end of message
+    }
+
+    return pyon;
 }

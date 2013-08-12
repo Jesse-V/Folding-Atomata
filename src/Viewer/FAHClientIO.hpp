@@ -13,6 +13,7 @@ class FAHClientIO
         FAHClientIO(const std::shared_ptr<ClientSocket> socket);
         int getSlotCount();
         std::vector<TrajectoryPtr> getTrajectories();
+        std::string readResponse();
 
     private:
         void connectToFAHClient();

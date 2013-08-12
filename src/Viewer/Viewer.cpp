@@ -1,8 +1,8 @@
 
 #include "Viewer.hpp"
+#include "SlotViewer.hpp"
 #include "FAHClientIO.hpp"
 #include "../Sockets/Connection.hpp"
-#include "../Trajectory/Trajectory.hpp"
 #include <thread>
 #include <iostream>
 
@@ -61,10 +61,15 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    auto socket = Connection("localhost", 36330).createClientSocket();
-    FAHClientIO io(socket);
+    FAHClientIO io(Connection("localhost", 36330).createClientSocket());
 
     std::vector<TrajectoryPtr> trajectories = io.getTrajectories();
+
+    if (trajectories.size() == 0)
+        throw std::runtime_error("Not enough slots to work with.");
+
+    SlotViewer slotViewer(trajectories[0]);
+
 }
 
 
