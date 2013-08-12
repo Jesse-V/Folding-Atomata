@@ -1,5 +1,5 @@
 #!/bin/sh
 cmake .
-if (make) then
+if (make -j 4) then
     ./FoldingAtomata
 fi
