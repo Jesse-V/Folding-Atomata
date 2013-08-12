@@ -5,6 +5,29 @@
 #include <iostream>
 
 
+//slot-info, in between "\"id\": \"" and "\",\n"
+    //1) check for heartbeat, throw error if no connection
+    //2) get topology. This data should be accessible as soon it's available.
+    //3) get checkpoints. Can view more and more of them as they come in.
+    /*
+    try
+    {
+        SlotViewer viewer(Connection("localhost", 36330), 0);
+
+        while (true)
+        {
+            std::chrono::milliseconds duration(2000);
+            std::this_thread::sleep_for(duration);
+            std::cout << "Main looping..." << std::endl;
+        }
+
+    }
+    catch (SocketException& e)
+    {
+        std::cout << "Exception was caught: " << e.description() << "\n";
+    }
+*/
+
 Viewer::Viewer(int screenWidth, int screenHeight):
     scene_(std::make_shared<Scene>(getCamera(screenWidth, screenHeight))),
     player_(std::make_shared<Player>(scene_)),
