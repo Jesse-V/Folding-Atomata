@@ -66,6 +66,7 @@ add_executable(FoldingAtomata
     Viewer/Viewer.cpp
     Viewer/SlotViewer.cpp
     Viewer/Player.cpp
+    Viewer/FAHClientIO.cpp
 
     World/Scene.cpp
     World/Camera.cpp

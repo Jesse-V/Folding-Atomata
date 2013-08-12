@@ -33,7 +33,6 @@ class Viewer
         Viewer(int screenWidth, int screenHeight);
         void reportFPS();
         void addModels();
-        void getAllTrajectories();
         void addLight();
         std::shared_ptr<Camera> getCamera(int screenWidth, int screenHeight);
         static void sleep(int milliseconds);

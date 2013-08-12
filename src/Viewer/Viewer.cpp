@@ -1,11 +1,9 @@
 
 #include "Viewer.hpp"
-#include "SlotViewer.hpp"
+#include "FAHClientIO.hpp"
 #include "../Sockets/Connection.hpp"
-#include "../PyON/StringManip.hpp"
-#include <memory>
+#include "../Trajectory/Trajectory.hpp"
 #include <thread>
-#include <sstream>
 #include <iostream>
 
 /*
@@ -27,8 +25,6 @@ Viewer::Viewer(int screenWidth, int screenHeight):
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-
-
 
     addLight();
     addModels();
@@ -65,58 +61,10 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    getAllTrajectories();
-}
-
-
-
-void Viewer::getAllTrajectories()
-{
     auto socket = Connection("localhost", 36330).createClientSocket();
+    FAHClientIO io(socket);
 
-    //std::stringstream idStream("");
-    //idStream << connection.getHost() << ":" << connection.getPort() << ":" << slotID;
-
-    std::cout << "Connecting to local FAHClient... ";
-    std::cout.flush();
-
-    std::string response = SlotViewer::readResponse(*socket);
-
-    if (response.find("Welcome") == std::string::npos)
-        throw std::runtime_error("Invalid response from FAHClient");
-
-    std::cout << "done. Got good response back." << std::endl;
-    //std::cout << "Connection ID is " << idStream.str() << std::endl;
-
-    std::cout << "Determining number of slots... ";
-    *socket << "num-slots\n";
-
-    std::string nSlotsStr = SlotViewer::readResponse(*socket);
-    std::stringstream stream(StringManip::between(nSlotsStr, "PyON 1 num-slots", "---"));
-
-    int nSlots;
-    stream >> nSlots;
-    std::cout << nSlots << std::endl;
-
-    std::vector<TrajectoryPtr> trajectories;
-    for (int slotIndex = 0; slotIndex < nSlots; slotIndex++)
-    {
-        std::cout << "Downloading trajectory for slot " << slotIndex << "... ";
-
-        std::stringstream trajectoryRequest("");
-        trajectoryRequest << "trajectory " << slotIndex << std::endl;
-        *socket << trajectoryRequest.str();
-
-        std::string trajectoryStr = SlotViewer::readResponse(*socket);
-        std::cout << "done." << std::endl;
-
-        if (trajectoryStr.find("\"atoms\": []\"") == std::string::npos)
-            trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
-    }
-
-    std::cout << "Filtered out FAHCore 17 slots, now have " << 
-                           trajectories.size() << " trajectories." << std::endl;
-
+    std::vector<TrajectoryPtr> trajectories = io.getTrajectories();
 }
 
 
@@ -127,7 +75,7 @@ void Viewer::addLight()
 
     auto light1 = std::make_shared<Light>(
         glm::vec3(0),       //position
-        glm::vec3(0, 0, 1), //green
+        glm::vec3(0, 0, 1), //blue
         2.0f                //power
     );
 
