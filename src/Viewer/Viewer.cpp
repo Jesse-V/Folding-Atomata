@@ -4,29 +4,16 @@
 #include <thread>
 #include <iostream>
 
+/*
+    1) return a vector of all trajectories for all slots
+    2) display only slot 0
+    3) display only snapshot 0
+        draw atoms
+        draw bonds
+    4) then draw multiple snapshots (0, 1, 2, 3, ..., 0, 1, 2, 3, ...)
 
-//slot-info, in between "\"id\": \"" and "\",\n"
-    //1) check for heartbeat, throw error if no connection
-    //2) get topology. This data should be accessible as soon it's available.
-    //3) get checkpoints. Can view more and more of them as they come in.
-    /*
-    try
-    {
-        SlotViewer viewer(Connection("localhost", 36330), 0);
-
-        while (true)
-        {
-            std::chrono::milliseconds duration(2000);
-            std::this_thread::sleep_for(duration);
-            std::cout << "Main looping..." << std::endl;
-        }
-
-    }
-    catch (SocketException& e)
-    {
-        std::cout << "Exception was caught: " << e.description() << "\n";
-    }
 */
+
 
 Viewer::Viewer(int screenWidth, int screenHeight):
     scene_(std::make_shared<Scene>(getCamera(screenWidth, screenHeight))),
@@ -36,6 +23,8 @@ Viewer::Viewer(int screenWidth, int screenHeight):
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+
 
     addLight();
     addModels();
@@ -77,9 +66,34 @@ void Viewer::addModels()
 
 
 
-void Viewer::addCubes()
+void Viewer::getAllTrajectories()
 {
-    
+    auto socket = Connection("localhost", 36330).createClientSocket();
+
+    std::stringstream idStream("");
+    idStream << connection.getHost() << ":" << connection.getPort() << ":" << slotID;
+
+    std::cout << "Opening connection with local FAHClient... ";
+    std::cout.flush();
+
+    std::string response = readResponse(*socket_);
+
+    if (response.find("Welcome") == std::string::npos)
+        throw std::runtime_error("Invalid response from FAHClient");
+
+    std::cout << "done. Got good response back." << std::endl;
+    std::cout << "Connection ID is " << idStream.str() << std::endl;
+
+    std::cout << "Asking for number of slots... ";
+    *socket_ << "num-slots\n";
+
+    std::stringstream stream("");
+    stream << "updates add 0 5 $(trajectory " << slotID << ")" << std::endl;
+    *socket_ << stream.str();
+
+    std::cout << "done." << std::endl;
+
+    trajectory_ = loadTrajectory(*socket_, slotID);
 }
 
 
@@ -88,18 +102,10 @@ void Viewer::addLight()
 {
     scene_->setAmbientLight(glm::vec3(1));
 
-    /*auto light1 = std::make_shared<Light>(
+    auto light1 = std::make_shared<Light>(
         glm::vec3(0),       //position
         glm::vec3(0, 0, 1), //green
         2.0f                //power
-    );
-
-    scene_->addLight(light1);*/
-
-    auto light2 = std::make_shared<Light>(
-        scene_->getCamera()->getPosition(), //position
-        glm::vec3(1),                       //white
-        5.0f                                //power
     );
 
     scene_->addLight(light2);
@@ -272,4 +278,78 @@ std::vector<glm::vec2> getOffsetVectors(int numberOfSlots)
 }
 
 static std::vector<SlotViewer> viewAllSlots(const std::string& host, int port);
+*/
+
+
+/*
+    http://stackoverflow.com/questions/5988686/creating-a-3d-sphere-in-opengl-using-visual-c
+
+    protected:
+    std::vector<GLfloat> vertices;
+    std::vector<GLfloat> normals;
+    std::vector<GLfloat> texcoords;
+    std::vector<GLushort> indices;
+
+public:
+    SolidSphere(float radius, unsigned int rings, unsigned int sectors)
+    {
+        float const R = 1./(float)(rings-1);
+        float const S = 1./(float)(sectors-1);
+        int r, s;
+
+        vertices.resize(rings * sectors * 3);
+        normals.resize(rings * sectors * 3);
+        texcoords.resize(rings * sectors * 2);
+        std::vector<GLfloat>::iterator v = vertices.begin();
+        std::vector<GLfloat>::iterator n = normals.begin();
+        std::vector<GLfloat>::iterator t = texcoords.begin();
+        for(r = 0; r < rings; r++) for(s = 0; s < sectors; s++) {
+                float const y = sin( -M_PI_2 + M_PI * r * R );
+                float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
+                float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+
+                *t++ = s*S;
+                *t++ = r*R;
+
+                *v++ = x * radius;
+                *v++ = y * radius;
+                *v++ = z * radius;
+
+                *n++ = x;
+                *n++ = y;
+                *n++ = z;
+        }
+
+        indices.resize(rings * sectors * 4);
+        std::vector<GLushort>::iterator i = indices.begin();
+        for(r = 0; r < rings-1; r++) for(s = 0; s < sectors-1; s++) {
+                *i++ = r * sectors + s;
+                *i++ = r * sectors + (s+1);
+                *i++ = (r+1) * sectors + (s+1);
+                *i++ = (r+1) * sectors + s;
+        }
+    }
+    */
+
+//slot-info, in between "\"id\": \"" and "\",\n"
+    //1) check for heartbeat, throw error if no connection
+    //2) get topology. This data should be accessible as soon it's available.
+    //3) get checkpoints. Can view more and more of them as they come in.
+    /*
+    try
+    {
+        SlotViewer viewer(Connection("localhost", 36330), 0);
+
+        while (true)
+        {
+            std::chrono::milliseconds duration(2000);
+            std::this_thread::sleep_for(duration);
+            std::cout << "Main looping..." << std::endl;
+        }
+
+    }
+    catch (SocketException& e)
+    {
+        std::cout << "Exception was caught: " << e.description() << "\n";
+    }
 */

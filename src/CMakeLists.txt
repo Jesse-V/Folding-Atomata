@@ -72,6 +72,7 @@ add_executable(FoldingAtomata
     World/Light.cpp
 
     PyON/TrajectoryParser.cpp
+    PyON/StringManip.cpp
 
     Modeling/Model.cpp
     Modeling/Mesh/Mesh.cpp

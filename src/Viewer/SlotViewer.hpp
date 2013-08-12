@@ -27,6 +27,7 @@ class SlotViewer
         static std::string readResponse(const ClientSocket& socket);
 
     private:
+        void launchThread();
         TrajectoryPtr loadTrajectory(const ClientSocket& socket, int slot);
         void addIncomingSnapshots();
 

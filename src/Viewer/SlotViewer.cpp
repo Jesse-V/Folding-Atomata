@@ -33,7 +33,23 @@ SlotViewer::SlotViewer(const Connection& connection, int slotID) :
 
     trajectory_ = loadTrajectory(*socket_, slotID);
 
-    std::thread snapshotAdder([&]() {
+    //launchThread(); //wait on this until it's time to address issue #16
+}
+
+
+
+SlotViewer::~SlotViewer()
+{
+     std::cout << "SlotViewer destructing..." << std::endl;
+     std::cout.flush();
+}
+
+
+
+void SlotViewer::launchThread()
+{
+    /* save this for https://github.com/Jesse-V/Folding-Atomata/issues/16
+    std::thread snapshotAdder([]() {
         try
         {
             std::cout << "New thread for " << idStream.str() << 
@@ -57,14 +73,7 @@ SlotViewer::SlotViewer(const Connection& connection, int slotID) :
     }
     });
     snapshotAdder.detach(); //run thread detached from main execution
-}
-
-
-
-SlotViewer::~SlotViewer()
-{
-     std::cout << "SlotViewer destructing..." << std::endl;
-     std::cout.flush();
+    */
 }
 
 
