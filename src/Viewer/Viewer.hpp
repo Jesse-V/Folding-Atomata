@@ -1,16 +1,16 @@
 
-#ifndef Viewer
-#define Viewer
+#ifndef VIEWER
+#define VIEWER
 
 #include "Player.hpp"
 #include "World/Scene.hpp"
 #include <memory>
 
 /**
-    Viewer is a high-level class for handling larger Viewer-play tasks.
+    Viewer is a high-level class for handling larger game-play tasks.
     It contracts the construction of the current Scene, and passes mouse and
     keyboard inputs to the Player. It also accepts update and render methods
-    for a basic Viewerplay loop. It can use the update function to ask any
+    for a basic gameplay loop. It can use the update function to ask any
     animations or actions to step forward a certain amount of milliseconds
     (typically the last time the update function was called) and then renders
     the current Scene onto the screen.

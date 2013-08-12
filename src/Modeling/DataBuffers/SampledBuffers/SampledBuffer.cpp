@@ -1,7 +1,5 @@
 
 #include "SampledBuffer.hpp"
-#include <png++/image.hpp>
-#include <png++/rgb_pixel.hpp>
 #include <stdexcept>
 #include <iostream>
 
@@ -13,9 +11,7 @@ SampledBuffer::SampledBuffer(
 {
     std::cout << "Loading image from " << imagePath << " ...";
     
-    if (strHasEnding(imagePath, ".png"))
-        loadPNG(imagePath);
-    else if (strHasEnding(imagePath, ".bmp"))
+    if (strHasEnding(imagePath, ".bmp"))
         loadBMP(imagePath);
     else
         throw std::runtime_error("Unrecognized file extension for " + imagePath);
@@ -111,35 +107,6 @@ void SampledBuffer::loadBMP(const std::string& imagePath)
 
     //Everything is in memory now, the file can be closed
     fclose(file);
-
-    isValid_ = true;
-}
-
-
-
-void SampledBuffer::loadPNG(const std::string& imagePath)
-{
-    png::image<png::rgb_pixel> image(imagePath);
-
-    auto pixbuf = image.get_pixbuf();
-
-    imgWidth_  = (int)image.get_width();
-    imgHeight_ = (int)image.get_height();
-
-    int imageSize = imgWidth_ * imgHeight_ * 3;
-
-    data_ = new unsigned char[imageSize];
-
-    for (int i = 0; i < imageSize; i += 3)
-    {
-        int x = (i / 3) % imgWidth_;
-        int y = (i / 3) / imgWidth_;
-        auto pix = pixbuf.get_pixel((std::size_t)x, (std::size_t)y);
-
-        data_[i + 0] = pix.blue;
-        data_[i + 1] = pix.green;
-        data_[i + 2] = pix.red;
-    }
 
     isValid_ = true;
 }

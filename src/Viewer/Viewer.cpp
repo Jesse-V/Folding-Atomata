@@ -1,6 +1,5 @@
 
 #include "Viewer.hpp"
-#include "Voxels/Landscape.hpp"
 #include <memory>
 #include <thread>
 #include <iostream>
@@ -50,15 +49,14 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    addCubes();
+    
 }
 
 
 
 void Viewer::addCubes()
 {
-    auto landscape = std::make_shared<Landscape>();
-    landscape->generateChunk(scene_);
+    
 }
 
 
@@ -201,6 +199,7 @@ Viewer& Viewer::getInstance()
 
     return *singleton_;
 }
+
 
 
 

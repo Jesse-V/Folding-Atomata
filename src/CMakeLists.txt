@@ -59,15 +59,42 @@ endif()
 
 include_directories(.)
 
+#organized by importance
 add_executable(FoldingAtomata
     main.cpp
+
+    Viewer/Viewer.cpp
     Viewer/SlotViewer.cpp
+    Viewer/Player.cpp
+
+    World/Scene.cpp
+    World/Camera.cpp
+    World/Light.cpp
+
     PyON/TrajectoryParser.cpp
+
+    Modeling/Model.cpp
+    Modeling/Mesh/Mesh.cpp
+    Modeling/Mesh/PlyParser.cpp
+
+    Modeling/DataBuffers/VertexBuffer.cpp
+    Modeling/DataBuffers/IndexBuffer.cpp
+    Modeling/DataBuffers/NormalBuffer.cpp
+    Modeling/DataBuffers/SampledBuffers/SampledBuffer.cpp
+    Modeling/DataBuffers/SampledBuffers/TextureBuffer.cpp
+    Modeling/DataBuffers/SampledBuffers/CoordinateMapReader.cpp
+
+    Modeling/Shading/ShaderManager.cpp
+    Modeling/Shading/ShaderSnippet.cpp
+    Modeling/Shading/Program.cpp
+    Modeling/Shading/Shader.cpp
+
     Trajectory/Trajectory.cpp
     Trajectory/Topology.cpp
     Trajectory/Snapshot.cpp
     Trajectory/Bond.cpp
     Trajectory/Atom.cpp
+
     Sockets/Connection.cpp
     Sockets/ClientSocket.cpp
     Sockets/Socket.cpp
