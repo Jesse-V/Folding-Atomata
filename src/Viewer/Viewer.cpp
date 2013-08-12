@@ -68,7 +68,7 @@ void Viewer::addModels()
     if (trajectories.size() == 0)
         throw std::runtime_error("Not enough slots to work with.");
 
-    SlotViewer slotViewer(trajectories[0]);
+    SlotViewer slotViewer(trajectories[0], scene_);
 
 }
 

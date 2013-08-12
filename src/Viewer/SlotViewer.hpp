@@ -3,6 +3,8 @@
 #define SLOT_VIEWER_HPP
 
 #include "../Trajectory/Trajectory.hpp"
+#include "../Modeling/Mesh/Mesh.hpp"
+#include "../World/Scene.hpp"
 
 /*
 SlotViewer handles the viewing of the protein from a particular slot.
@@ -15,13 +17,20 @@ If Tracers are enabled, it shows them.
 class SlotViewer
 {
     public:
-        SlotViewer(const TrajectoryPtr& trajectory);
+        SlotViewer(const TrajectoryPtr& trajectory, 
+                   const std::shared_ptr<Scene>& scene
+        );
         ~SlotViewer();
         void update();
-        void render();
+
+    private:
+        std::shared_ptr<Mesh> generateAtomMesh();
+        void addAtomsToScene();
+        void addBondsToScene();
 
     private:
         TrajectoryPtr trajectory_;
+        std::shared_ptr<Scene> scene_;
 };
 
 #endif

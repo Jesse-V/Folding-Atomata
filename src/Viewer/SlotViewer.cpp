@@ -3,9 +3,38 @@
 #include <iostream>
 
 
-SlotViewer::SlotViewer(const TrajectoryPtr& trajectory) :
-    trajectory_(trajectory)
-{}
+SlotViewer::SlotViewer(const TrajectoryPtr& trajectory, 
+                       const std::shared_ptr<Scene>& scene) :
+    trajectory_(trajectory), scene_(scene)
+{
+    addAtomsToScene();
+    addBondsToScene();
+}
+
+
+
+std::shared_ptr<Mesh> SlotViewer::generateAtomMesh()
+{
+    static std::shared_ptr<Mesh> mesh = nullptr;
+
+    //generate mesh here
+
+    return mesh;
+}
+
+
+
+void SlotViewer::addAtomsToScene()
+{
+    
+}
+
+
+
+void SlotViewer::addBondsToScene()
+{
+    
+}
 
 
 
@@ -22,12 +51,6 @@ void SlotViewer::update()
 
 }
 
-
-
-void SlotViewer::render()
-{
-
-}
 
 
 
