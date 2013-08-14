@@ -60,7 +60,7 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
         std::string trajectoryStr = readResponse();
         std::cout << "done." << std::endl;
 
-        if (trajectoryStr.find("\"atoms\": []\"") == std::string::npos)
+        if (trajectoryStr.find("\"atoms\": []") == std::string::npos)
             trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
     }
 
