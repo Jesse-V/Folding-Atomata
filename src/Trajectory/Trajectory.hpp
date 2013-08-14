@@ -9,7 +9,11 @@ class Trajectory
 {
     public:
         Trajectory(const std::shared_ptr<Topology> topology);
+        std::shared_ptr<Topology> getTopology();
+
         void addSnapshot(const SnapshotPtr& newSnapshot);
+        SnapshotPtr getSnapshot(int index);
+        int countSnapshots();
     
     private:
         std::shared_ptr<Topology> topology_;

@@ -14,6 +14,8 @@ through all checkpoints, and then jumps to the first checkpoint and repeats.
 If Tracers are enabled, it shows them.
 */
 
+typedef std::unordered_map<char, ProgramPtr> ProgramCache;
+
 class SlotViewer
 {
     public:
@@ -31,6 +33,7 @@ class SlotViewer
     private:
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;
+        ProgramCache programCache_;
 };
 
 #endif

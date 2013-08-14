@@ -9,6 +9,47 @@ Atom::Atom(const std::string& symbol, int atomicNumber, float charge,
 
 
 
+glm::vec3 Atom::getColor()
+{
+    // http://en.wikipedia.org/wiki/CPK_coloring
+
+    /* FAHViewer uses:
+        hydrogen == light gray
+        carbon == dark gray
+        nitrogen == blue
+    */
+        
+    switch (getElement())
+    {
+        case 'H' : //hydrogen
+            return glm::vec3(238, 238, 238);
+
+        case 'C' : //carbon
+            return glm::vec3(34, 34, 34);
+
+        case 'N' : //nitrogen
+            return glm::vec3(34, 51, 255);
+
+        case 'O' : //oxygen
+            return glm::vec3(255, 34, 0);
+
+        case 'S' : //sulfur
+            return glm::vec3(221, 221, 0);
+
+        default : //all other elements
+            return glm::vec3(221, 119, 255);
+    }
+}
+
+
+
+char Atom::getElement()
+{
+    return getSymbol().at(0);
+}
+
+
+
 std::string Atom::getSymbol()
 {
     return symbol_;
