@@ -64,7 +64,7 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
             trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
     }
 
-    std::cout << "Filtered out FAHCore 17 slots, left with " << 
+    std::cout << "Filtered out FahCore 17 slots, left with " << 
                            trajectories.size() << " trajectories." << std::endl;
 
     return trajectories;

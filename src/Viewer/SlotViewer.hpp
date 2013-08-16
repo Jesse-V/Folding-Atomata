@@ -13,9 +13,6 @@ into position once the first checkpoint becomes available. From there, it iterat
 through all checkpoints, and then jumps to the first checkpoint and repeats.
 If Tracers are enabled, it shows them.
 */
-
-typedef std::unordered_map<char, ProgramPtr> ProgramCache;
-
 class SlotViewer
 {
     public:
@@ -27,13 +24,19 @@ class SlotViewer
 
     private:
         std::shared_ptr<Mesh> generateAtomMesh();
+        std::shared_ptr<Mesh> generateBondMesh();
+
         void addAtomsToScene();
         void addBondsToScene();
+
+        void addAtom(const AtomPtr& atom, const ModelPtr& model);
+        void addBond(const BondPtr& bond, const ModelPtr& model);
 
     private:
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;
-        ProgramCache programCache_;
+        std::vector<ModelPtr> atomModels_;
+        std::vector<ModelPtr> bondModels_;
 };
 
 #endif
