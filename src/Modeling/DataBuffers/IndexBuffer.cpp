@@ -38,6 +38,7 @@ void IndexBuffer::store()
 
 void IndexBuffer::draw(GLenum mode)
 {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer_);
     glDrawElements(mode, (int)indices_.size(), GL_UNSIGNED_INT, 0);
 }
 

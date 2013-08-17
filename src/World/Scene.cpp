@@ -66,8 +66,7 @@ void Scene::sync()
     for (auto keyIterator = map_.begin(); keyIterator != map_.end(); 
         keyIterator = map_.equal_range(keyIterator->first).second)
     {
-        auto program = keyIterator->first;
-        GLuint handle = program->getHandle();
+        GLuint handle = keyIterator->first->getHandle();
 
         glUseProgram(handle);
         camera_->sync(handle);

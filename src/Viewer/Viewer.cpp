@@ -26,7 +26,7 @@ Viewer::Viewer(int screenWidth, int screenHeight):
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    addLight();
+    //addLight();
     addModels();
     
     player_->grabPointer();
@@ -81,7 +81,7 @@ void Viewer::addLight()
     auto light1 = std::make_shared<Light>(
         glm::vec3(0),       //position
         glm::vec3(0, 0, 1), //blue
-        2.0f                //power
+        0.3f                //power
     );
 
     scene_->addLight(light1);
@@ -116,7 +116,8 @@ void Viewer::update(int deltaTime)
 
 void Viewer::render()
 {
-    glClearColor(.39f, 0.58f, 0.93f, 0.0f); //nice blue background
+    //glClearColor(.39f, 0.58f, 0.93f, 0.0f); //nice blue background
+    //glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     timeSpentRendering_ += scene_->render();

@@ -13,8 +13,11 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     if (trajectory_->countSnapshots() == 0)
         throw std::runtime_error("No snapshots to work with!");
 
+    std::cout << std::endl;
     addAtomsToScene();
+    std::cout << std::endl;
     addBondsToScene();
+    std::cout << std::endl;
 }
 
 
@@ -29,26 +32,26 @@ std::shared_ptr<Mesh> SlotViewer::generateAtomMesh()
     std::cout << "Generating atom mesh... ";
 
     std::vector<glm::vec3> vertices = {
-            glm::vec3(-1, -1, -1),
-            glm::vec3(-1, -1,  1),
-            glm::vec3(-1,  1, -1),
-            glm::vec3(-1,  1,  1),
-            glm::vec3( 1, -1, -1),
-            glm::vec3( 1, -1,  1),
-            glm::vec3( 1,  1, -1),
-            glm::vec3( 1,  1,  1)
-        };
+        glm::vec3(-1, -1, -1),
+        glm::vec3(-1, -1,  1),
+        glm::vec3(-1,  1, -1),
+        glm::vec3(-1,  1,  1),
+        glm::vec3( 1, -1, -1),
+        glm::vec3( 1, -1,  1),
+        glm::vec3( 1,  1, -1),
+        glm::vec3( 1,  1,  1)
+    };
 
     std::vector<GLuint> indices = {
-            4, 5, 1, 0, //front
-            2, 3, 7, 6, //back
-            6, 4, 0, 2, //top
-            3, 1, 5, 7, //bottom
-            0, 1, 3, 2, //left
-            6, 7, 5, 4  //right
-        };
+        4, 5, 1, 0, //front
+        2, 3, 7, 6, //back
+        6, 4, 0, 2, //top
+        3, 1, 5, 7, //bottom
+        0, 1, 3, 2, //left
+        6, 7, 5, 4  //right
+    };
 
-    const float SCALE = 0.1f;
+    const float SCALE = 0.1f; //todo: don't scale the atoms
     std::transform(vertices.begin(), vertices.end(), vertices.begin(), 
         [&](const glm::vec3& vertex)
         {
@@ -75,24 +78,25 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
 
     std::cout << "Generating bond mesh... ";
 
+    // http://in.answers.yahoo.com/question/index?qid=20060907224537AA8MBBH
     float sqrt3over2 = 0.86602540378f;
     float sqrt3over4 = sqrt3over2 / 2;
     std::vector<glm::vec3> vertices = {
-            glm::vec3(0,            0, 0),
-            glm::vec3(1,            0, 0),
-            glm::vec3(0.5, sqrt3over2, 0),
-            glm::vec3(0,            0, 8),
-            glm::vec3(1,            0, 8),
-            glm::vec3(0.5, sqrt3over2, 8),
-        };
+        glm::vec3(0,            0, 0),
+        glm::vec3(1,            0, 0),
+        glm::vec3(0.5, sqrt3over2, 0),
+        glm::vec3(0,            0, 8),
+        glm::vec3(1,            0, 8),
+        glm::vec3(0.5, sqrt3over2, 8),
+    };
 
     std::vector<GLuint> indices = {
-            2, 5, 4, 1,
-            3, 5, 2, 0,
-            1, 4, 3, 0,
-            0, 2, 1, 0,
-            3, 4, 5, 3
-        };
+        2, 5, 4, 1,
+        3, 5, 2, 0,
+        1, 4, 3, 0/*,
+        0, 2, 1, 0, //this and next line are the end caps
+        3, 4, 5, 3*/
+    };
 
     const float SCALE = 0.05f;
     const glm::vec3 OFFSET = glm::vec3(0.25, sqrt3over4, 0);
@@ -117,15 +121,14 @@ void SlotViewer::addAtomsToScene()
 {
     auto atoms = trajectory_->getTopology()->getAtoms();
     atomModels_.reserve(atoms.size());
-    std::cout << std::endl << "Trajectory consists of " << atoms.size() 
+    std::cout << "Trajectory consists of " << atoms.size() 
         << " atoms." << std::endl;
 
     std::cout << "Adding Atoms to Scene..." << std::endl;
     auto snapshotZero = trajectory_->getSnapshot(0);
-    auto mesh = generateAtomMesh();
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
-        auto model = std::make_shared<Model>(mesh);
+        auto model = std::make_shared<Model>(generateAtomMesh());
         //add color here
         auto position = snapshotZero->getPosition(j);
         model->setModelMatrix(glm::translate(glm::mat4(), position));
@@ -133,8 +136,10 @@ void SlotViewer::addAtomsToScene()
         addAtom(atoms[j], model);
         atomModels_.push_back(model);
     }
+    auto model = std::make_shared<Model>(generateAtomMesh());
+    addAtom(atoms[0], model);
 
-    std::cout << "... done adding atoms for that trajectory.\n" << std::endl;
+    std::cout << "... done adding atoms for that trajectory." << std::endl;
 }
 
 
@@ -143,16 +148,15 @@ void SlotViewer::addBondsToScene()
 {
     auto bonds = trajectory_->getTopology()->getBonds();
     bondModels_.reserve(bonds.size());
-    std::cout << std::endl << "Trajectory consists of " << bonds.size() 
+    std::cout << "Trajectory consists of " << bonds.size() 
         << " bonds." << std::endl;
 
     std::cout << "Adding Bonds to Scene..." << std::endl;
     auto snapshotZero = trajectory_->getSnapshot(0);
-    auto mesh = generateBondMesh();
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
-        auto model = std::make_shared<Model>(mesh);
-        auto position = snapshotZero->getPosition(j);
+        auto model = std::make_shared<Model>(generateBondMesh());
+        auto position = snapshotZero->getPosition(bonds[j]->getAtomA());
         //set rotation
         model->setModelMatrix(glm::translate(glm::mat4(), position));
 
@@ -160,7 +164,7 @@ void SlotViewer::addBondsToScene()
         bondModels_.push_back(model);
     }
 
-    std::cout << "... done adding bonds for that trajectory.\n" << std::endl;
+    std::cout << "... done adding bonds for that trajectory." << std::endl;
 
     /*
     glm::vec3 z(0, 0, 1);

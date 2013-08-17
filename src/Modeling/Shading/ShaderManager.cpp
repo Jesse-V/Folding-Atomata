@@ -65,7 +65,8 @@ std::string ShaderManager::assembleFragmentShaderStr(
             if (colors.lightBlend == vec3(-1))
                 colors.lightBlend = vec3(0);
 
-            vec3 color = colors.textureColor * (ambientLight + colors.lightBlend);
+            vec3 lighting = ambientLight + colors.lightBlend;
+            vec3 color = colors.textureColor * lighting;
 
             fragColor = vec4(color, 1);
         )."
