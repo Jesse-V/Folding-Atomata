@@ -26,7 +26,7 @@ Viewer::Viewer(int screenWidth, int screenHeight):
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    //addLight();
+    addLight();
     addModels();
     
     player_->grabPointer();
@@ -81,7 +81,7 @@ void Viewer::addLight()
     auto light1 = std::make_shared<Light>(
         glm::vec3(0),       //position
         glm::vec3(0, 0, 1), //blue
-        0.3f                //power
+        5.0f                //power
     );
 
     scene_->addLight(light1);

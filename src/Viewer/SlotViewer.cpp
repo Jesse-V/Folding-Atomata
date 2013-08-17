@@ -3,6 +3,7 @@
 #include "../Modeling/Shading/ShaderManager.hpp"
 #include <memory>
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 
@@ -136,8 +137,6 @@ void SlotViewer::addAtomsToScene()
         addAtom(atoms[j], model);
         atomModels_.push_back(model);
     }
-    auto model = std::make_shared<Model>(generateAtomMesh());
-    addAtom(atoms[0], model);
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
 }
@@ -156,9 +155,19 @@ void SlotViewer::addBondsToScene()
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
         auto model = std::make_shared<Model>(generateBondMesh());
-        auto position = snapshotZero->getPosition(bonds[j]->getAtomA());
+        auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
+        auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
+
+        auto positioned = glm::translate(glm::mat4(), positionA);
+
         //set rotation
-        model->setModelMatrix(glm::translate(glm::mat4(), position));
+        glm::vec3 z(0, 0, 1);
+        glm::vec3 p = positionA - positionB;
+        glm::vec3 t = glm::cross(z, p);
+        float radians = acos((z.x*p.x + z.y*p.y + z.z*p.z) / p.length());
+        double angle = 180 / 3.1415926 * radians;
+
+        model->setModelMatrix(glm::rotate(positioned, (float)angle, t));
 
         addBond(bonds[j], model);
         bondModels_.push_back(model);
