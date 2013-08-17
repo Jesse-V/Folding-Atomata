@@ -32,6 +32,10 @@ class SlotViewer
         void addAtom(const AtomPtr& atom, const ModelPtr& model);
         void addBond(const BondPtr& bond, const ModelPtr& model);
 
+        glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
+        float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
+        float getMagnitude(const glm::vec3& vector);
+
     private:
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;

@@ -52,14 +52,6 @@ std::shared_ptr<Mesh> SlotViewer::generateAtomMesh()
         6, 7, 5, 4  //right
     };
 
-    const float SCALE = 0.1f; //todo: don't scale the atoms
-    std::transform(vertices.begin(), vertices.end(), vertices.begin(), 
-        [&](const glm::vec3& vertex)
-        {
-            return vertex * SCALE;
-        }
-    );
-
     auto vBuffer = std::make_shared<VertexBuffer>(vertices);
     auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_QUADS);
     mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
@@ -86,25 +78,24 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
         glm::vec3(0,            0, 0),
         glm::vec3(1,            0, 0),
         glm::vec3(0.5, sqrt3over2, 0),
-        glm::vec3(0,            0, 8),
-        glm::vec3(1,            0, 8),
-        glm::vec3(0.5, sqrt3over2, 8),
+        glm::vec3(0,            0, 1),
+        glm::vec3(1,            0, 1),
+        glm::vec3(0.5, sqrt3over2, 1),
     };
 
     std::vector<GLuint> indices = {
         2, 5, 4, 1,
         3, 5, 2, 0,
-        1, 4, 3, 0/*,
+        1, 4, 3, 0,
         0, 2, 1, 0, //this and next line are the end caps
-        3, 4, 5, 3*/
+        3, 4, 5, 3
     };
 
-    const float SCALE = 0.05f;
     const glm::vec3 OFFSET = glm::vec3(0.25, sqrt3over4, 0);
     std::transform(vertices.begin(), vertices.end(), vertices.begin(), 
         [&](const glm::vec3& vertex)
         {
-            return (vertex - OFFSET) * SCALE;
+            return vertex - OFFSET;
         }
     );
 
@@ -132,7 +123,9 @@ void SlotViewer::addAtomsToScene()
         auto model = std::make_shared<Model>(generateAtomMesh());
         //add color here
         auto position = snapshotZero->getPosition(j);
-        model->setModelMatrix(glm::translate(glm::mat4(), position));
+        auto matrix = glm::translate(glm::mat4(), position);
+        matrix      = glm::scale(matrix, glm::vec3(0.1f));
+        model->setModelMatrix(matrix);
 
         addAtom(atoms[j], model);
         atomModels_.push_back(model);
@@ -157,48 +150,17 @@ void SlotViewer::addBondsToScene()
         auto model = std::make_shared<Model>(generateBondMesh());
         auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
         auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
+        float distance = getMagnitude(positionA - positionB);
 
-        auto positioned = glm::translate(glm::mat4(), positionA);
-
-        //set rotation
-        glm::vec3 z(0, 0, 1);
-        glm::vec3 p = positionA - positionB;
-        glm::vec3 t = glm::cross(z, p);
-        float radians = acos((z.x*p.x + z.y*p.y + z.z*p.z) / p.length());
-        double angle = 180 / 3.1415926 * radians;
-
-        model->setModelMatrix(glm::rotate(positioned, (float)angle, t));
+        auto matrix = alignBetween(positionA, positionB);
+        matrix = glm::scale(matrix, glm::vec3(0.01f, 0.01f, 2));
+        model->setModelMatrix(matrix);
 
         addBond(bonds[j], model);
         bondModels_.push_back(model);
     }
 
     std::cout << "... done adding bonds for that trajectory." << std::endl;
-
-    /*
-    glm::vec3 z(0, 0, 1);
-    glm::vec3 p = a - b;
-    glm::vec3 t = glm::cross(z, p);
-    double angle = 180 / 3.1415926 * acos((glm::dot(z, p) / ))*/
-    /*
-    //http://www.thjsmith.com/40/cylinder-between-two-points-opengl-c
-    Vector3D a, b; (the two points you want to draw between)
-
-// This is the default direction for the cylinders to face in OpenGL
-Vector3D z = Vector3D(0,0,1);         
-// Get diff between two points you want cylinder along
-Vector3D p = (a - b);                               
-// Get CROSS product (the axis of rotation)
-Vector3D t = CROSS_PRODUCT (z , p); 
-
-// Get angle. LENGTH is magnitude of the vector
-double angle = 180 / PI * acos ((DOT_PRODUCT(z, p) / p.LENGTH());
-
-glTranslated(b.x,b.y,b.z);
-glRotated(angle,t.x,t.y,t.z);
-
-gluQuadricOrientation(YourQuadric,GLU_OUTSIDE);
-gluCylinder(YourQuadric, RADIUS, RADIUS, p.LENGTH(), SEGS1, SEGS2);*/
 }
 
 
@@ -266,6 +228,35 @@ SlotViewer::~SlotViewer()
 void SlotViewer::update()
 {
 
+}
+
+
+
+glm::mat4 SlotViewer::alignBetween(const glm::vec3& ptA, const glm::vec3& ptB)
+{ //adapted from http://www.thjsmith.com/40/cylinder-between-two-points-opengl-c
+    
+    glm::vec3 z(0, 0, 1);
+    glm::vec3 p = ptB - ptA;
+
+    float radians = acos(getDotProduct(z, p) / getMagnitude(p));
+    double angle = 180 / 3.1415926 * radians;
+
+    auto translated = glm::translate(glm::mat4(), ptA);
+    return glm::rotate(translated, (float)angle, glm::cross(z, p));
+}
+
+
+
+float SlotViewer::getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB)
+{
+    return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
+}
+
+
+
+float SlotViewer::getMagnitude(const glm::vec3& vector)
+{
+    return sqrt(getDotProduct(vector, vector));
 }
 
 
