@@ -1,7 +1,6 @@
 
 #include "ColorBuffer.hpp"
 #include <algorithm>
-#include <iostream>
 
 
 ColorBuffer::ColorBuffer(const glm::vec3& color, std::size_t count)
@@ -30,7 +29,6 @@ void ColorBuffer::initialize(GLuint programHandle)
 {
     glGenBuffers(1, &colorBuffer_);
     colorAttrib_ = glGetAttribLocation(programHandle, "vertexColor");
-    std::cout << colorBuffer_ << ", " << colorAttrib_ << std::endl;
 }
 
 

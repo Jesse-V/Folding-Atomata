@@ -16,9 +16,6 @@ Socket::Socket() :
 
 Socket::~Socket()
 {
-    std::cout << "Socket destructing..." << std::endl;
-    std::cout.flush();
-
     if (isValid())
         ::close(sock_);
 }

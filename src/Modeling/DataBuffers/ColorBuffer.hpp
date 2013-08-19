@@ -4,6 +4,7 @@
 
 #include "OptionalDataBuffer.hpp"
 #include <glm/glm.hpp>
+#include <memory>
 
 class ColorBuffer : public OptionalDataBuffer
 {
@@ -25,5 +26,7 @@ class ColorBuffer : public OptionalDataBuffer
         GLuint colorBuffer_;
         GLint colorAttrib_;
 };
+
+typedef std::shared_ptr<ColorBuffer> ColorPtr;
 
 #endif

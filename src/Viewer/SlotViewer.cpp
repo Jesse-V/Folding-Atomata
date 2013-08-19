@@ -16,9 +16,9 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
         throw std::runtime_error("No snapshots to work with!");
 
     std::cout << std::endl;
-    addAtomsToScene();
+    addAllAtoms();
     std::cout << std::endl;
-    //addBondsToScene();
+    //addAllBonds();
     std::cout << std::endl;
 }
 
@@ -73,8 +73,8 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
     std::cout << "Generating bond mesh... ";
 
     // http://in.answers.yahoo.com/question/index?qid=20060907224537AA8MBBH
-    float sqrt3over2 = 0.86602540378f;
-    float sqrt3over4 = sqrt3over2 / 2;
+    const float sqrt3over2 = 0.86602540378f;
+    const float sqrt3over4 = sqrt3over2 / 2;
     std::vector<glm::vec3> vertices = {
         glm::vec3(0,            0, 0),
         glm::vec3(1,            0, 0),
@@ -88,8 +88,8 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
         2, 5, 4, 1,
         3, 5, 2, 0,
         1, 4, 3, 0,
-        0, 2, 1, 0, //this and next line are the end caps
-        3, 4, 5, 3
+        0, 2, 1, 0/*, //this and next line are the end caps
+        3, 4, 5, 3*/
     };
 
     const glm::vec3 OFFSET = glm::vec3(0.25, sqrt3over4, 0);
@@ -109,23 +109,25 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
 }
 
 
-#include "../Modeling/DataBuffers/NormalBuffer.hpp"
-void SlotViewer::addAtomsToScene()
+
+void SlotViewer::addAllAtoms()
 {
     auto atoms = trajectory_->getTopology()->getAtoms();
     atomModels_.reserve(atoms.size());
+
     std::cout << "Trajectory consists of " << atoms.size() 
         << " atoms." << std::endl;
-
     std::cout << "Adding Atoms to Scene..." << std::endl;
+
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
         auto position = snapshotZero->getPosition((int)j);
         auto matrix = glm::translate(glm::mat4(), position);
-        matrix      = glm::scale(matrix, glm::vec3(0.1f));
-        auto model = addAtom(atoms[j], matrix);
-        atomModels_.push_back(model);
+        matrix      = glm::scale(matrix, glm::vec3(ATOM_SCALE));
+        
+        auto atomModel = addAtom(atoms[j], matrix);
+        atomModels_.push_back(atomModel);
     }
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
@@ -133,14 +135,15 @@ void SlotViewer::addAtomsToScene()
 
 
 
-void SlotViewer::addBondsToScene()
+void SlotViewer::addAllBonds()
 {
     auto bonds = trajectory_->getTopology()->getBonds();
     bondModels_.reserve(bonds.size());
+
     std::cout << "Trajectory consists of " << bonds.size() 
         << " bonds." << std::endl;
-
     std::cout << "Adding Bonds to Scene..." << std::endl;
+
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
@@ -150,7 +153,7 @@ void SlotViewer::addBondsToScene()
         float distance = getMagnitude(positionA - positionB);
 
         auto matrix = alignBetween(positionA, positionB);
-        matrix = glm::scale(matrix, glm::vec3(0.01f, 0.01f, 2));
+        matrix = glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), 2));
         model->setModelMatrix(matrix);
 
         addBond(bonds[j], model);
@@ -164,21 +167,16 @@ void SlotViewer::addBondsToScene()
 
 ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
 {
-    static std::unordered_map<char, std::pair<ProgramPtr, std::shared_ptr<ColorBuffer>>> programCache;
+    static std::unordered_map<char, AtomModelInfo> cache;
 
-    auto value = programCache.find(atom->getElement());
-    if (value == programCache.end())
+    auto value = cache.find(atom->getElement());
+    if (value == cache.end())
     { //not in cache
         std::cout << "Program for element " << atom->getElement()
             << " is not cached. Generating..." << std::endl;
 
-        auto color = atom->getColor();
-        auto cBuffer = std::make_shared<ColorBuffer>(color, 8);
-        std::cout << color.x << ", " << color.y << ", " << color.z << std::endl;
-        BufferList list = { cBuffer };
-        auto model = std::make_shared<Model>(generateAtomMesh(), list);
-        model->setModelMatrix(matrix);
-
+        auto cBuffer = std::make_shared<ColorBuffer>(atom->getColor(), 8);
+        auto model = generateAtomModel(cBuffer, matrix);
         auto program = ShaderManager::createProgram(model,
             scene_->getVertexShaderGLSL(),
             scene_->getFragmentShaderGLSL(), scene_->getLights()
@@ -188,16 +186,15 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
             atom->getElement() << " type." << std::endl;
 
         scene_->addModel(model, program, true); //add to Scene and save
-        programCache[atom->getElement()] = std::make_pair(program, cBuffer); //add to cache
+        cache[atom->getElement()] = std::make_pair(program, cBuffer);
+
         std::cout << "Saved Model and cached Program." << std::endl;
         return model;
     }
     else
     { //already in cache
-        BufferList list = { value->second.second };
-        auto model = std::make_shared<Model>(generateAtomMesh(), list);
-        model->setModelMatrix(matrix);
-        scene_->addModel(model, value->second.first, false); //just add, !save
+        auto model = generateAtomModel(value->second.second, matrix);
+        scene_->addModel(model, value->second.first, false); //don't save
         return model;
     }
 }
@@ -227,15 +224,18 @@ void SlotViewer::addBond(const BondPtr& bond, const ModelPtr& model)
 
 
 
-SlotViewer::~SlotViewer()
+ModelPtr SlotViewer::generateAtomModel(const ColorPtr& cBuffer,
+                                       const glm::mat4& matrix)
 {
-    std::cout << "SlotViewer destructing..." << std::endl;
-    std::cout.flush();
+    BufferList list = { cBuffer };
+    auto model = std::make_shared<Model>(generateAtomMesh(), list);
+    model->setModelMatrix(matrix);
+    return model;
 }
 
 
 
-void SlotViewer::update()
+void SlotViewer::update(int deltaTime)
 {
 
 }
