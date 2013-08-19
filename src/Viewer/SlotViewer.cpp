@@ -121,15 +121,11 @@ void SlotViewer::addAtomsToScene()
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
-        //if (atoms[j]->getElement() == 'H')
-        {
-            auto position = snapshotZero->getPosition((int)j);
-            auto matrix = glm::translate(glm::mat4(), position);
-            matrix      = glm::scale(matrix, glm::vec3(0.1f));
-            auto model = addAtom(atoms[j], matrix);
-            atomModels_.push_back(model);
-        }
-        
+        auto position = snapshotZero->getPosition((int)j);
+        auto matrix = glm::translate(glm::mat4(), position);
+        matrix      = glm::scale(matrix, glm::vec3(0.1f));
+        auto model = addAtom(atoms[j], matrix);
+        atomModels_.push_back(model);
     }
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
@@ -168,7 +164,7 @@ void SlotViewer::addBondsToScene()
 
 ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
 {
-    static std::unordered_map<char, std::pair<ProgramPtr, BufferList>> programCache;
+    static std::unordered_map<char, std::pair<ProgramPtr, std::shared_ptr<ColorBuffer>>> programCache;
 
     auto value = programCache.find(atom->getElement());
     if (value == programCache.end())
@@ -177,8 +173,9 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
             << " is not cached. Generating..." << std::endl;
 
         auto color = atom->getColor();
+        auto cBuffer = std::make_shared<ColorBuffer>(color, 8);
         std::cout << color.x << ", " << color.y << ", " << color.z << std::endl;
-        BufferList list = { std::make_shared<ColorBuffer>(color, 8) };
+        BufferList list = { cBuffer };
         auto model = std::make_shared<Model>(generateAtomMesh(), list);
         model->setModelMatrix(matrix);
 
@@ -191,13 +188,14 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
             atom->getElement() << " type." << std::endl;
 
         scene_->addModel(model, program, true); //add to Scene and save
-        programCache[atom->getElement()] = std::make_pair(program, list); //add to cache
+        programCache[atom->getElement()] = std::make_pair(program, cBuffer); //add to cache
         std::cout << "Saved Model and cached Program." << std::endl;
         return model;
     }
     else
     { //already in cache
-        auto model = std::make_shared<Model>(generateAtomMesh(), value->second.second);
+        BufferList list = { value->second.second };
+        auto model = std::make_shared<Model>(generateAtomMesh(), list);
         model->setModelMatrix(matrix);
         scene_->addModel(model, value->second.first, false); //just add, !save
         return model;
