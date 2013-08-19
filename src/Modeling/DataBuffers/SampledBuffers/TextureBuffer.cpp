@@ -74,7 +74,7 @@ SnippetPtr TextureBuffer::getFragmentShaderGLSL()
         ).",
         R".(
             //TextureBuffer main method code
-            colors.textureColor = texture(textureSampler, UVcoordinate).rgb;
+            colors.material = texture(textureSampler, UVcoordinate).rgb;
         )."
     );
 }

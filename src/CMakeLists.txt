@@ -82,6 +82,7 @@ add_executable(FoldingAtomata
     Modeling/DataBuffers/VertexBuffer.cpp
     Modeling/DataBuffers/IndexBuffer.cpp
     Modeling/DataBuffers/NormalBuffer.cpp
+    Modeling/DataBuffers/ColorBuffer.cpp
     Modeling/DataBuffers/SampledBuffers/SampledBuffer.cpp
     Modeling/DataBuffers/SampledBuffers/TextureBuffer.cpp
     Modeling/DataBuffers/SampledBuffers/CoordinateMapReader.cpp

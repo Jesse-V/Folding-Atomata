@@ -1,6 +1,5 @@
 
 #include "NormalBuffer.hpp"
-#include <algorithm>
 #include <iostream>
 
 
@@ -30,19 +29,9 @@ void NormalBuffer::initialize(GLuint programHandle)
 // Store the normals in a GPU buffer
 void NormalBuffer::store()
 {
-    std::vector<GLfloat> rawNormals;
-    rawNormals.reserve(normals_.size() * 3);
-    for_each (normals_.begin(), normals_.end(),
-        [&](const glm::vec3& norm)
-        {
-            rawNormals.push_back(norm.x);
-            rawNormals.push_back(norm.y);
-            rawNormals.push_back(norm.z);
-        });
-
     glBindBuffer(GL_ARRAY_BUFFER, normalBuffer_);
-    glBufferData(GL_ARRAY_BUFFER, rawNormals.size() * sizeof(GLfloat),
-        rawNormals.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, normals_.size() * sizeof(glm::vec3),
+        normals_.data(), GL_STATIC_DRAW);
 }
 
 

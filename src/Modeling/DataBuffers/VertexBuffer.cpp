@@ -1,6 +1,5 @@
 
 #include "VertexBuffer.hpp"
-#include <algorithm>
 
 
 VertexBuffer::VertexBuffer(const std::vector<glm::vec3>& vertices):
@@ -20,18 +19,9 @@ void VertexBuffer::initialize(GLuint programHandle)
 // Store the vertices in a GPU buffer
 void VertexBuffer::store()
 {
-    std::vector<GLfloat> rawPoints;
-    for_each (vertices_.begin(), vertices_.end(),
-        [&](const glm::vec3& vert)
-        {
-            rawPoints.push_back(vert.x);
-            rawPoints.push_back(vert.y);
-            rawPoints.push_back(vert.z);
-        });
-
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
-    glBufferData(GL_ARRAY_BUFFER, rawPoints.size() * sizeof(GLfloat),
-        rawPoints.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(glm::vec3),
+        vertices_.data(), GL_STATIC_DRAW);
 }
 
 

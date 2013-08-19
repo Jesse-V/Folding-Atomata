@@ -24,12 +24,12 @@ void Trajectory::addSnapshot(const SnapshotPtr& newSnapshot)
 
 SnapshotPtr Trajectory::getSnapshot(int index)
 {
-    return snapshots_[index];
+    return snapshots_[(std::size_t)index];
 }
 
 
 
 int Trajectory::countSnapshots()
 {
-    return snapshots_.size();
+    return (int)snapshots_.size();
 }

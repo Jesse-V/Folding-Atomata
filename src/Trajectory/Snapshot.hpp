@@ -10,7 +10,7 @@ class Snapshot
 {
     public:
         void addPosition(const glm::vec3& position);
-        glm::vec3 getPosition(std::size_t atomIndex);
+        glm::vec3 getPosition(int atomIndex);
 
     private:
         std::vector<glm::vec3> positions_;

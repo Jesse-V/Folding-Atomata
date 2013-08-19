@@ -179,7 +179,7 @@ SnippetPtr Scene::getFragmentShaderGLSL()
 
             struct Colors
             {
-                vec3 textureColor, lightBlend;
+                vec3 material, lightBlend;
             };
         ).",
         R".(
@@ -188,7 +188,7 @@ SnippetPtr Scene::getFragmentShaderGLSL()
         R".(
             //Scene main method code
             Colors colors;
-            colors.textureColor = vec3(-1); //init to invalid if not needed
+            colors.material = vec3(-1); //init to invalid if not needed
             colors.lightBlend = vec3(-1);
         )."
     );

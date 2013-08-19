@@ -1,6 +1,7 @@
 
 #include "SlotViewer.hpp"
 #include "../Modeling/Shading/ShaderManager.hpp"
+#include "../Modeling/DataBuffers/ColorBuffer.hpp"
 #include <memory>
 #include <algorithm>
 #include <cmath>
@@ -17,7 +18,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     std::cout << std::endl;
     addAtomsToScene();
     std::cout << std::endl;
-    addBondsToScene();
+    //addBondsToScene();
     std::cout << std::endl;
 }
 
@@ -108,7 +109,7 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
 }
 
 
-
+#include "../Modeling/DataBuffers/NormalBuffer.hpp"
 void SlotViewer::addAtomsToScene()
 {
     auto atoms = trajectory_->getTopology()->getAtoms();
@@ -120,15 +121,15 @@ void SlotViewer::addAtomsToScene()
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
-        auto model = std::make_shared<Model>(generateAtomMesh());
-        //add color here
-        auto position = snapshotZero->getPosition(j);
-        auto matrix = glm::translate(glm::mat4(), position);
-        matrix      = glm::scale(matrix, glm::vec3(0.1f));
-        model->setModelMatrix(matrix);
-
-        addAtom(atoms[j], model);
-        atomModels_.push_back(model);
+        //if (atoms[j]->getElement() == 'H')
+        {
+            auto position = snapshotZero->getPosition((int)j);
+            auto matrix = glm::translate(glm::mat4(), position);
+            matrix      = glm::scale(matrix, glm::vec3(0.1f));
+            auto model = addAtom(atoms[j], matrix);
+            atomModels_.push_back(model);
+        }
+        
     }
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
@@ -165,15 +166,22 @@ void SlotViewer::addBondsToScene()
 
 
 
-void SlotViewer::addAtom(const AtomPtr& atom, const ModelPtr& model)
+ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
 {
-    static std::unordered_map<char, ProgramPtr> programCache;
+    static std::unordered_map<char, std::pair<ProgramPtr, BufferList>> programCache;
 
     auto value = programCache.find(atom->getElement());
     if (value == programCache.end())
     { //not in cache
         std::cout << "Program for element " << atom->getElement()
             << " is not cached. Generating..." << std::endl;
+
+        auto color = atom->getColor();
+        std::cout << color.x << ", " << color.y << ", " << color.z << std::endl;
+        BufferList list = { std::make_shared<ColorBuffer>(color, 8) };
+        auto model = std::make_shared<Model>(generateAtomMesh(), list);
+        model->setModelMatrix(matrix);
+
         auto program = ShaderManager::createProgram(model,
             scene_->getVertexShaderGLSL(),
             scene_->getFragmentShaderGLSL(), scene_->getLights()
@@ -183,12 +191,16 @@ void SlotViewer::addAtom(const AtomPtr& atom, const ModelPtr& model)
             atom->getElement() << " type." << std::endl;
 
         scene_->addModel(model, program, true); //add to Scene and save
-        programCache[atom->getElement()] = program; //add to cache
+        programCache[atom->getElement()] = std::make_pair(program, list); //add to cache
         std::cout << "Saved Model and cached Program." << std::endl;
+        return model;
     }
     else
     { //already in cache
-        scene_->addModel(model, value->second, false); //just add, !save
+        auto model = std::make_shared<Model>(generateAtomMesh(), value->second.second);
+        model->setModelMatrix(matrix);
+        scene_->addModel(model, value->second.first, false); //just add, !save
+        return model;
     }
 }
 
@@ -238,7 +250,7 @@ glm::mat4 SlotViewer::alignBetween(const glm::vec3& ptA, const glm::vec3& ptB)
     glm::vec3 z(0, 0, 1);
     glm::vec3 p = ptB - ptA;
 
-    float radians = acos(getDotProduct(z, p) / getMagnitude(p));
+    float radians = (float)acos(getDotProduct(z, p) / getMagnitude(p));
     double angle = 180 / 3.1415926 * radians;
 
     auto translated = glm::translate(glm::mat4(), ptA);
@@ -256,7 +268,7 @@ float SlotViewer::getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB)
 
 float SlotViewer::getMagnitude(const glm::vec3& vector)
 {
-    return sqrt(getDotProduct(vector, vector));
+    return (float)sqrt(getDotProduct(vector, vector));
 }
 
 

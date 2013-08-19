@@ -29,7 +29,7 @@ class SlotViewer
         void addAtomsToScene();
         void addBondsToScene();
 
-        void addAtom(const AtomPtr& atom, const ModelPtr& model);
+        ModelPtr addAtom(const AtomPtr& atom, const glm::mat4& matrix);
         void addBond(const BondPtr& bond, const ModelPtr& model);
 
         glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);

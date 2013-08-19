@@ -9,7 +9,7 @@ void Snapshot::addPosition(const glm::vec3& position)
 
 
 
-glm::vec3 Snapshot::getPosition(std::size_t atomIndex)
+glm::vec3 Snapshot::getPosition(int atomIndex)
 {
-    return positions_[atomIndex];
+    return positions_[(std::size_t)atomIndex];
 }

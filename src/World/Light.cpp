@@ -76,6 +76,7 @@ void Light::setEmitting(bool emitting)
 
 void Light::sync(GLuint handle, std::size_t lightID)
 {
+    //should look into http://stackoverflow.com/questions/8099979/glsl-c-arrays-of-uniforms
     auto lightRef = "lights[" + std::to_string(lightID) + "]";
 
     GLint posLoc = glGetUniformLocation(handle, (lightRef + ".position").c_str());
