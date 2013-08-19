@@ -64,8 +64,8 @@ SnippetPtr ColorBuffer::getVertexShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //ColorBuffer fields
-            in vec3 vertexColor;
-            out vec3 vertexColorBlend;
+            attribute vec3 vertexColor;
+            varying vec3 vertexColorBlend;
         ).",
         R".(
             //ColorBuffer methods
@@ -84,7 +84,7 @@ SnippetPtr ColorBuffer::getFragmentShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //ColorBuffer fields
-            in vec3 vertexColorBlend;
+            varying vec3 vertexColorBlend;
         ).",
         R".(
             //ColorBuffer methods

@@ -46,8 +46,8 @@ SnippetPtr TextureBuffer::getVertexShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //TextureBuffer fields
-            in vec2 textureCoordinate;
-            out vec2 UVcoordinate;
+            attribute vec2 textureCoordinate;
+            varying vec2 UVcoordinate;
         ).",
         R".(
             //TextureBuffer methods
@@ -67,14 +67,14 @@ SnippetPtr TextureBuffer::getFragmentShaderGLSL()
         R".(
             //TextureBuffer fields
             uniform sampler2D textureSampler;
-            in vec2 UVcoordinate;
+            varying vec2 UVcoordinate;
         ).",
         R".(
             //TextureBuffer methods
         ).",
         R".(
             //TextureBuffer main method code
-            colors.material = texture(textureSampler, UVcoordinate).rgb;
+            colors.material = texture2D(textureSampler, UVcoordinate).rgb;
         )."
     );
 }

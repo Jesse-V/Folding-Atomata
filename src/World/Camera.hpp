@@ -32,9 +32,6 @@ class Camera
         void lookAt(const glm::vec3& point,
                     const glm::vec3& up = glm::vec3(0, 0, 1)
         );
-        void orient(const glm::vec3& position, const glm::vec3& viewingVector,
-                    float roll = 0
-        );
 
         //translation irregardless of orientation
         void translateX(float magnitude);

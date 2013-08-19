@@ -39,7 +39,6 @@ void Scene::addModel(const ModelPtr& model, const ProgramPtr& program, bool save
 
 void Scene::addLight(const std::shared_ptr<Light>& light)
 {
-    assertModelsContainNormalBuffers();
     lights_.push_back(light);
 
     std::cout << "Successfully added a Light to the Scene." << std::endl;
@@ -145,7 +144,7 @@ SnippetPtr Scene::getVertexShaderGLSL()
             // ********* VERTEX SHADER ********* \\
 
             //Scene fields
-            in vec3 vertex; //position of the vertex
+            attribute vec3 vertex; //position of the vertex
             uniform mat4 viewMatrix, projMatrix; //Camera view and projection matrices
             uniform mat4 modelMatrix; //matrix transforming model mesh into world space
         ).",
@@ -192,35 +191,4 @@ SnippetPtr Scene::getFragmentShaderGLSL()
             colors.lightBlend = vec3(-1);
         )."
     );
-}
-
-
-void Scene::assertModelsContainNormalBuffers()
-{/*
-    std::vector<glm::vec3> emptyVec;
-    auto normBuffer = std::make_shared<NormalBuffer>(emptyVec);
-    for_each (models_.begin(), models_.end(),
-        [&](std::shared_ptr<Model>& model)
-        {
-            auto optionalBuffers = model->getOptionalDataBuffers();
-            bool containsNormalBuffer = false;
-            for_each (optionalBuffers.begin(), optionalBuffers.end(),
-                [&](std::shared_ptr<OptionalDataBuffer>& buffer)
-                {
-                    if (typeid(*buffer) == typeid(*normBuffer))
-                        containsNormalBuffer = true;
-                }
-            );
-
-            if (!containsNormalBuffer)
-            {
-                std::stringstream stream;
-                stream << "Light added to Scene, yet ";
-                stream << typeid(*model).name();
-                stream << " does not contain a NormalBuffer!";
-
-                throw std::runtime_error(stream.str());
-            }
-        }
-    );*/
 }

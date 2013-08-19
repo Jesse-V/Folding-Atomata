@@ -46,7 +46,6 @@ class Scene
 
     private:
         void syncLighting(GLuint handle);
-        void assertModelsContainNormalBuffers();
 
     private:
         ProgramModelMultimap map_; //1-to-many map between Programs and Models

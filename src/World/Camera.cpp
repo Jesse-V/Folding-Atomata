@@ -72,23 +72,6 @@ void Camera::lookAt(const glm::vec3& gazePoint, const glm::vec3& upVector)
 
 
 
-void Camera::orient(const glm::vec3& position, const glm::vec3& viewingVector,
-                    float roll
-)
-{
-    throw std::runtime_error("Camera::orient unsupported: upVector issues");
-    /*
-    position_ = position;
-    lookingAt_ = position + viewingVector;
-
-    auto orientation = calculateLookDirection();
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(), roll, orientation);
-    upVector_ = (rotationMatrix * glm::vec4(upVector_, 1)).xyz();
-    */
-}
-
-
-
 void Camera::translateX(float magnitude)
 {
     translate(glm::vec3(magnitude, 0, 0));

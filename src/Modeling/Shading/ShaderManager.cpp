@@ -54,7 +54,6 @@ std::string ShaderManager::assembleFragmentShaderStr(
     auto fragmentSnippets = assembleFragmentSnippets(sceneFragmentShader,
                                                      buffers, lights);
     return buildShader(
-        "out vec4 fragColor; \n" + 
         assembleFields(fragmentSnippets),
         assembleMethods(fragmentSnippets),
         assembleMainBodyCode(fragmentSnippets) + R".(
@@ -68,7 +67,7 @@ std::string ShaderManager::assembleFragmentShaderStr(
             vec3 lighting = ambientLight + colors.lightBlend;
             vec3 color = colors.material * lighting;
 
-            fragColor = vec4(color, 1);
+            gl_FragColor = vec4(color, 1);
         )."
     );
 }
@@ -177,7 +176,7 @@ std::string ShaderManager::buildShader(const std::string& fields,
 {
     //return fields + methods + mainBodyCode;
     return R".(
-            #version 130
+            #version 120
         )."
         + fields
         + "\n"

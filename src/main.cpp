@@ -195,10 +195,10 @@ void assertSystemRequirements()
     float version;
     stream >> version;
 
-    const float MIN_GLSL = 1.30f;
+    const float MIN_GLSL = 1.20f;
 
     if (version < MIN_GLSL)
-        throw std::runtime_error("Your driver/GPU does not support OpenGL 3.0");
+        throw std::runtime_error("Your driver/GPU does not support OpenGL 2.1");
     else
         std::cout << "GLSL v" << MIN_GLSL << " required, have " << version <<
             ", so passed system requirements." << std::endl;
