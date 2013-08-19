@@ -18,7 +18,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     std::cout << std::endl;
     addAllAtoms();
     std::cout << std::endl;
-    //addAllBonds();
+    addAllBonds();
     std::cout << std::endl;
 }
 
@@ -81,7 +81,7 @@ std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
         glm::vec3(0.5, sqrt3over2, 0),
         glm::vec3(0,            0, 1),
         glm::vec3(1,            0, 1),
-        glm::vec3(0.5, sqrt3over2, 1),
+        glm::vec3(0.5, sqrt3over2, 1)
     };
 
     std::vector<GLuint> indices = {
@@ -144,10 +144,12 @@ void SlotViewer::addAllBonds()
         << " bonds." << std::endl;
     std::cout << "Adding Bonds to Scene..." << std::endl;
 
+    const glm::vec3 BOND_COLOR = glm::vec3(0.8, 0.12, 0.5);
     auto snapshotZero = trajectory_->getSnapshot(0);
+    BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
-        auto model = std::make_shared<Model>(generateBondMesh());
+        auto model = std::make_shared<Model>(generateBondMesh(), list);
         auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
         auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
         float distance = getMagnitude(positionA - positionB);
