@@ -6,7 +6,7 @@
 ColorBuffer::ColorBuffer(const glm::vec3& color, std::size_t count)
 {
     colors_.reserve(count);
-    for (int j = 0; j < count; j++)
+    for (std::size_t j = 0; j < count; j++)
         colors_.push_back(color);
 }
 
