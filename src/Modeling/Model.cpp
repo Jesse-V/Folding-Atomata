@@ -1,5 +1,6 @@
 
 #include "Model.hpp"
+#include "Modeling/Shading/Program.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <algorithm>
@@ -32,11 +33,11 @@ Model::Model(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs) :
 
 
 
-void Model::saveAs(const ProgramPtr& program)
+void Model::saveAs(GLuint programHandle)
 {
-    std::cout << "Storing Model under Program " << program->getHandle() << ": { ";
+    std::cout << "Storing Model under Program " << programHandle << ": { ";
 
-    mesh_->initialize(program->getHandle());
+    mesh_->initialize(programHandle);
     mesh_->store();
 
     std::cout << typeid(*mesh_).name() << " ";
@@ -44,7 +45,7 @@ void Model::saveAs(const ProgramPtr& program)
     for_each (optionalDBs_.begin(), optionalDBs_.end(),
         [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
         {
-            buffer->initialize(program->getHandle());
+            buffer->initialize(programHandle);
             buffer->store();
 
             std::cout << typeid(*buffer).name() << " ";
@@ -79,18 +80,16 @@ BufferList Model::getOptionalDataBuffers()
 
 
 
-// Render the object
-void Model::render(GLint modelMatrixID)
+void Model::render(GLuint programHandle)
 {
-    if (modelMatrixID < 0)
-        throw std::runtime_error("Invalid handle passed to Model!");
-
-    //if (!isStoredOnGPU_)
-    //    throw std::runtime_error("Model has not been initialized!");
+    if (matrixUniform_ == 0)
+        matrixUniform_ = glGetUniformLocation(programHandle, "modelMatrix");
 
     if (isVisible_)
     {
-        glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(modelMatrix_));
+        glUniformMatrix4fv(matrixUniform_, 1, GL_FALSE, 
+            glm::value_ptr(modelMatrix_)
+        ); //necessary when multiple Models share a Program
 
         enableDataBuffers();
         mesh_->draw();

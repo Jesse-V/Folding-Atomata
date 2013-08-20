@@ -30,7 +30,7 @@ void Scene::addModel(const ModelPtr& model)
 void Scene::addModel(const ModelPtr& model, const ProgramPtr& program, bool save)
 {
     if (save)
-        model->saveAs(program);
+        model->saveAs(program->getHandle());
         
     map_.insert(ProgramModelMultimap::value_type(program, model));
 }
@@ -88,7 +88,7 @@ float Scene::render()
             auto programHandle = pair.first->getHandle();
             auto model = pair.second;
 
-            model->render(glGetUniformLocation(programHandle, "modelMatrix"));
+            model->render(programHandle);
         }
     );
 

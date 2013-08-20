@@ -4,7 +4,6 @@
 
 #include "Modeling/Mesh/Mesh.hpp"
 #include "Modeling/DataBuffers/OptionalDataBuffer.hpp"
-#include "Modeling/Shading/Program.hpp"
 #include <vector>
 #include <memory>
 
@@ -29,11 +28,11 @@ class Model
         Model(const std::shared_ptr<Mesh>& mesh);
         Model(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs);
 
-        virtual void saveAs(const ProgramPtr& program);
+        virtual void saveAs(GLuint programHandle);
         void setVisible(bool visible);
         void setModelMatrix(const glm::mat4& matrix); // model -> world coords
         void setRenderMode(GLenum newMode);
-        void render(GLint modelMatrixID);
+        void render(GLuint programHandle);
 
         BufferList getOptionalDataBuffers();
 
@@ -45,6 +44,7 @@ class Model
         std::shared_ptr<Mesh> mesh_;
         BufferList optionalDBs_;
         glm::mat4 modelMatrix_;
+        GLint matrixUniform_;
         bool isVisible_;
 };
 
