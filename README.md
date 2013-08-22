@@ -15,7 +15,7 @@ Freeglut is used to create and manage the window and read user input. GLEW wrang
 
 Currently the only way to install Atomata is to compile it. Luckily, this is pretty easy, especially in Linux. The first trick is to ensure that the necessary components are installed beforehand. Thankfully, installing these libraries is very straightforward with the following command:
 
-**sudo apt-get install libglew-dev freeglut3-dev libglm-dev cmake build-essential**
+**sudo apt-get install libglew-dev freeglut3-dev cmake build-essential**
 
 Then it should be ready to compile. This project supports two compilers: Clang and GCC. I prefer the former because it compiles faster, has better diagnostic messages, and [for other reasons](http://clang.llvm.org/comparison.html). I have shell scripts set up in the _src_ directory that make it easy to compile and run the project. To run them or to compile manually, navigate into the _src_ directory, and run either **./ClangCompileRun** to use Clang, or run **./compileRun** for GCC. This compiles and launches the produced executable.
 

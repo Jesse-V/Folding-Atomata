@@ -178,7 +178,7 @@ bool Camera::constrainedPitch(float theta)
         (orientation.z > 0 && upVector_.z < 0) ==> if looking up but tilted back
     */
 
-    if (upVector_.z < 0 && fabs(calculateLookDirection().z) > 0.00001f) // != 0
+    if (upVector_.z < 0 && (float)fabs(calculateLookDirection().z) > 0.00001f) // != 0
     {
         upVector_ = oldUpVector;
         lookingAt_ = oldLookingAt;

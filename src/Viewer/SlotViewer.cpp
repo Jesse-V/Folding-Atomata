@@ -251,7 +251,7 @@ glm::mat4 SlotViewer::alignBetween(const glm::vec3& ptA, const glm::vec3& ptB)
     glm::vec3 p = ptB - ptA;
 
     float radians = (float)acos(getDotProduct(z, p) / getMagnitude(p));
-    double angle = 180 / 3.1415926 * radians;
+    float angle = 180 / 3.1415926f * radians;
 
     auto translated = glm::translate(glm::mat4(), ptA);
     return glm::rotate(translated, (float)angle, glm::cross(z, p));

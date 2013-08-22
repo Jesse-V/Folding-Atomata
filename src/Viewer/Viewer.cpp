@@ -195,7 +195,7 @@ Viewer& Viewer::getInstance()
     {
         std::cerr << std::endl;
         std::cerr << "Caught " << typeid(e).name() <<
-            " during Viewer initiation: " << e.what();
+            " during Viewer initiation: " << e.what() << std::endl;
         glutDestroyWindow(glutGetWindow());
     }
 
