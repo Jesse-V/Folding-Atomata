@@ -103,11 +103,10 @@ add_executable(FoldingAtomata
     Sockets/Socket.cpp
 )
 
-#set(CMAKE_INSTALL_PREFIX /usr/bin)
-
 #for a "make install" installation
 set(DEB_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/../deb)
 install(TARGETS FoldingAtomata DESTINATION /usr/bin)
 install(FILES ${DEB_FOLDER}/usr/share/applications/FoldingAtomata.desktop DESTINATION /usr/share/applications)
+install(FILES ${DEB_FOLDER}/usr/share/pixmaps/FoldingAtomata-logo.png DESTINATION /usr/share/pixmaps)
 
 target_link_libraries(FoldingAtomata glut GLEW GL ${GLEW_LIBRARIES})

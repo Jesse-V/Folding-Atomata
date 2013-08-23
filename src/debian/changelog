@@ -1,0 +1,5 @@
+foldingatomata (0.05-0ppa1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Thu, 22 Aug 2013 17:46:36 -0800
