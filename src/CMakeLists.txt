@@ -104,7 +104,7 @@ add_executable(FoldingAtomata
 )
 
 #for a "make install" installation
-set(DEB_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/../deb)
+set(DEB_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/debian/extra includes")
 install(TARGETS FoldingAtomata DESTINATION /usr/bin)
 install(FILES ${DEB_FOLDER}/usr/share/applications/FoldingAtomata.desktop DESTINATION /usr/share/applications)
 install(FILES ${DEB_FOLDER}/usr/share/pixmaps/FoldingAtomata-logo.png DESTINATION /usr/share/pixmaps)

@@ -1,15 +1,21 @@
 Source: foldingatomata
-Section: unknown
-Priority: extra
+Section: science
+Priority: optional
 Maintainer: Jesse Victors <jvictors@jessevictors.com>
-Build-Depends: debhelper (>= 8.0.0), cmake
+Build-Depends: debhelper (>= 8.0.0), cmake, libglew-dev, freeglut3-dev, build-essential
 Standards-Version: 3.9.3
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/foldingatomata.git
+Homepage: https://github.com/Jesse-V/Folding-Atomata
+Bugs: https://github.com/Jesse-V/Folding-Atomata/issues
+Vcs-Git: git@github.com:Jesse-V/Folding-Atomata.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/foldingatomata.git;a=summary
 
 Package: foldingatomata
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+#, libglew1.8, freeglut3
+Description: Third-party Folding@home 3D Simulation Viewer.z
+ Folding@home is a distributed computing project that uses
+ volunteered computer resources for disease research.
+ This package contains Folding Atomata, a 3D simulation viewer.
+ It connects to the local FAHClient instance to visualize the
+ running simulations.
