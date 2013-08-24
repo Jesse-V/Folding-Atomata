@@ -1,4 +1,4 @@
-foldingatomata (0.4.3) quantal; urgency=low
+folding-atomata (0.3.9.2) quantal; urgency=medium
 
   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
 

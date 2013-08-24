@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(FoldingAtomata)
+project(folding-atomata)
 
 #find OpenGL
 find_package(OpenGL REQUIRED)
@@ -103,10 +103,12 @@ add_executable(FoldingAtomata
     Sockets/Socket.cpp
 )
 
-#for a "make install" installation
-set(DEB_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/debian/extra includes")
-install(TARGETS FoldingAtomata DESTINATION /usr/bin)
-install(FILES ${DEB_FOLDER}/usr/share/applications/FoldingAtomata.desktop DESTINATION /usr/share/applications)
-install(FILES ${DEB_FOLDER}/usr/share/pixmaps/FoldingAtomata-logo.png DESTINATION /usr/share/pixmaps)
-
 target_link_libraries(FoldingAtomata glut GLEW GL ${GLEW_LIBRARIES})
+
+#for a "make install" installation
+set(DEB_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/debian/extra_includes")
+set(MENU_DESKTOP_FILE "${DEB_FOLDER}/Folding Atomata.desktop")
+install(TARGETS FoldingAtomata DESTINATION /usr/bin)
+install(FILES ${MENU_DESKTOP_FILE} DESTINATION /usr/share/applications)
+install(FILES ${DEB_FOLDER}/FoldingAtomata-logo.png DESTINATION /usr/share/pixmaps)
+install(FILES ${DEB_FOLDER}/FoldingAtomata.1.gz DESTINATION /usr/share/man/man1})
