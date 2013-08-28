@@ -19,10 +19,6 @@ Str StringManip::between(const Str& str, const Str& header,
 
 
 
-/******************** STRING PROCESSING HELPERS ***************************/
-
-
-
 /*
     Explodes the string around the given delimiter, then trims away
     any of the given whitespace characters from sides of the tokens.
@@ -70,8 +66,7 @@ Str StringManip::trim(const Str& str, const Str& whitespaces)
     std::size_t start = str.find_first_not_of(whitespaces);
     std::size_t end = str.find_last_not_of(whitespaces);
 
-    if (start != std::string::npos && end != std::string::npos)
-        return str.substr(start, end);
-    else
-        return "";
+    if (start != std::string::npos)
+        return str.substr(start, end - start + 1);
+    return "";
 }

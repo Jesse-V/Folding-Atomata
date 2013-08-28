@@ -123,6 +123,7 @@ void SlotViewer::addAllAtoms()
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
         auto position = snapshotZero->getPosition((int)j);
+        //std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
         auto matrix = glm::translate(glm::mat4(), position);
         matrix      = glm::scale(matrix, glm::vec3(ATOM_SCALE));
         
@@ -155,7 +156,7 @@ void SlotViewer::addAllBonds()
         float distance = getMagnitude(positionA - positionB);
 
         auto matrix = alignBetween(positionA, positionB);
-        matrix = glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), 2));
+        matrix = glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
         model->setModelMatrix(matrix);
 
         addBond(bonds[j], model);

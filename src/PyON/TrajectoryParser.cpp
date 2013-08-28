@@ -23,6 +23,7 @@ TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
     }
 
     std::cout << "done." << std::endl;
+    
     return trajectory;
 }
 
@@ -72,7 +73,7 @@ SnapshotPtr TrajectoryParser::parseSnapshot(const std::string& snapshotStr)
 {
     SnapshotPtr snapshot = std::make_shared<Snapshot>();
 
-    std::size_t index = 0;
+    std::size_t index = snapshotStr.find("[");
     while (index != std::string::npos)
     {
         auto positionStr = StringManip::between(snapshotStr, "[", "]", index);

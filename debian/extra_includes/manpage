@@ -1,17 +1,22 @@
-.\" Manpage for nuseradd.
-.\" Contact vivek@nixcraft.net.in to correct errors or typos.
-.TH man 8 "06 May 2010" "1.0" "nuseradd man page"
+.\" Manpage for Folding Atomata
+.\" Visit github.com/Jesse-V/Folding-Atomata to report bugs, errors, or typos.
+.TH man 8 "23 August 2013" "1.0" "FoldingAtomata man page"
 .SH NAME
-nuseradd \- create a new LDAP user
+FoldingAtomata \- third-party 3D simulation viewer for Folding@home
 .SH SYNOPSIS
-nuseradd [USERNAME]
+FoldingAtomata - launches the 3D viewer application
 .SH DESCRIPTION
-nuseradd is high level shell program for adding users to LDAP server.  On Debian, administrators should usually use nuseradd.debian(8) instead.
+Folding@home is a distributed computing project that uses
+ volunteered computer resources for disease research.
+ This package contains Folding Atomata, a 3D simulation viewer.
+ It connects to the local FAHClient instance to visualize the
+ running simulations.
 .SH OPTIONS
-The nuseradd does not take any options. However, you can supply username.
+No options at the moment.
 .SH SEE ALSO
-useradd(8), passwd(5), nuseradd.debian(8)
+
 .SH BUGS
-No known bugs.
+Please visit https://github.com/Jesse-V/Folding-Atomata/issues for the list
+of known bugs. Github users are welcome to report bugs there.
 .SH AUTHOR
-Vivek Gite (vivek@nixcraft.net.in)
+Jesse Victors (jvictors@jessevictors.com)
