@@ -15,7 +15,7 @@
 class Player
 {
     public:
-        const float TRANSLATION_SPEED = 0.08f;
+        const float TRANSLATION_SPEED = 0.30f;
         const float PITCH_COEFFICIENT = 0.1f;
         const float YAW_COEFFICIENT = 0.05f;
         const float ROLL_SPEED = 1.8f;

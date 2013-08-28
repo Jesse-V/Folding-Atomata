@@ -128,7 +128,7 @@ void Player::onMouseMotion(int x, int y)
 
     if (x != CENTER_X || y != CENTER_Y)
     {
-        scene_->getCamera()->constrainedPitch((lastY - y) * PITCH_COEFFICIENT);
+        scene_->getCamera()->pitch((lastY - y) * PITCH_COEFFICIENT);
         scene_->getCamera()->yaw((lastX - x) * YAW_COEFFICIENT);
         recenterCursor();
     }

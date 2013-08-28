@@ -3,6 +3,7 @@
 #include "SlotViewer.hpp"
 #include "FAHClientIO.hpp"
 #include "../Sockets/Connection.hpp"
+#include "../Sockets/SocketException.hpp"
 #include <thread>
 #include <iostream>
 
@@ -61,15 +62,21 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    FAHClientIO io(Connection("localhost", 36330).createClientSocket());
+    try
+    {
+        FAHClientIO io(Connection("localhost", 36330).createClientSocket());
 
-    std::vector<TrajectoryPtr> trajectories = io.getTrajectories();
+        std::vector<TrajectoryPtr> trajectories = io.getTrajectories();
 
-    if (trajectories.size() == 0)
-        throw std::runtime_error("Not enough slots to work with.");
+        if (trajectories.size() == 0)
+            throw std::runtime_error("Not enough slots to work with.");
 
-    SlotViewer slotViewer(trajectories[0], scene_);
-
+        SlotViewer slotViewer(trajectories[0], scene_);
+    }
+    catch (SocketException&)
+    {
+        throw std::runtime_error("Error connecting to FAHClient!");
+    }
 }
 
 
@@ -77,14 +84,14 @@ void Viewer::addModels()
 void Viewer::addLight()
 {
     scene_->setAmbientLight(glm::vec3(1));
-
+/*
     auto light1 = std::make_shared<Light>(
         glm::vec3(0),       //position
         glm::vec3(0, 0, 1), //blue
-        5.0f                //power
+        10.0f                //power
     );
 
-    scene_->addLight(light1);
+    scene_->addLight(light1);*/
 
     checkGlError();
 }
@@ -118,7 +125,7 @@ void Viewer::render()
 {
     //glClearColor(.39f, 0.58f, 0.93f, 0.0f); //nice blue background
     //glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     timeSpentRendering_ += scene_->render();
     frameCount_++;

@@ -33,29 +33,45 @@ std::shared_ptr<Mesh> SlotViewer::generateAtomMesh()
 
     std::cout << "Generating atom mesh... ";
 
-    std::vector<glm::vec3> vertices = {
-        glm::vec3(-1, -1, -1),
-        glm::vec3(-1, -1,  1),
-        glm::vec3(-1,  1, -1),
-        glm::vec3(-1,  1,  1),
-        glm::vec3( 1, -1, -1),
-        glm::vec3( 1, -1,  1),
-        glm::vec3( 1,  1, -1),
-        glm::vec3( 1,  1,  1)
-    };
+    //adapted from sandy_bence's 2005 post over at:
+    //http://www.gamedev.net/topic/350823-rendering-a-sphere-using-triangle-strips/
 
-    std::vector<GLuint> indices = {
-        4, 5, 1, 0, //front
-        2, 3, 7, 6, //back
-        6, 4, 0, 2, //top
-        3, 1, 5, 7, //bottom
-        0, 1, 3, 2, //left
-        6, 7, 5, 4  //right
-    };
+    std::vector<glm::vec3> vertices;
+    for (unsigned int stack = 0; stack <= ATOM_STACKS; stack++)
+    {
+        for (unsigned int slice = 0; slice < ATOM_SLICES; slice++)
+        {
+            float theta = stack * PI / ATOM_STACKS;
+            float phi   = slice * 2 * PI / ATOM_SLICES;
+
+            float sinTheta = std::sin(theta);
+            float cosTheta = std::cos(theta);
+
+            float sinPhi = std::sin(phi);
+            float cosPhi = std::cos(phi);
+
+            vertices.push_back(glm::vec3(
+                cosPhi * sinTheta,
+                sinPhi * sinTheta,
+                cosTheta
+            ));
+        }
+    }
+
+    std::vector<GLuint> indices;
+    for (unsigned int stack = 0; stack < ATOM_STACKS; stack++)
+    {
+        for (unsigned int slice = 0; slice <= ATOM_SLICES; slice++)
+        {
+            auto sliceMod = slice % ATOM_SLICES;
+            indices.push_back((stack       * ATOM_SLICES) + sliceMod);
+            indices.push_back(((stack + 1) * ATOM_SLICES) + sliceMod);
+        }
+    }
 
     auto vBuffer = std::make_shared<VertexBuffer>(vertices);
-    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_QUADS);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
+    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
 
     std::cout << "done. Cached the result." << std::endl;
     return mesh;
@@ -123,7 +139,6 @@ void SlotViewer::addAllAtoms()
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
         auto position = snapshotZero->getPosition((int)j);
-        //std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
         auto matrix = glm::translate(glm::mat4(), position);
         matrix      = glm::scale(matrix, glm::vec3(ATOM_SCALE));
         
@@ -145,7 +160,6 @@ void SlotViewer::addAllBonds()
         << " bonds." << std::endl;
     std::cout << "Adding Bonds to Scene..." << std::endl;
 
-    const glm::vec3 BOND_COLOR = glm::vec3(0.8, 0.12, 0.5);
     auto snapshotZero = trajectory_->getSnapshot(0);
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
     for (std::size_t j = 0; j < bonds.size(); j++)
@@ -171,6 +185,7 @@ void SlotViewer::addAllBonds()
 ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
 {
     static std::unordered_map<char, AtomModelInfo> cache;
+    static auto N_VERTICES = (ATOM_STACKS + 1) * ATOM_SLICES;
 
     auto value = cache.find(atom->getElement());
     if (value == cache.end())
@@ -178,7 +193,7 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
         std::cout << "Program for element " << atom->getElement()
             << " is not cached. Generating..." << std::endl;
 
-        auto cBuffer = std::make_shared<ColorBuffer>(atom->getColor(), 8);
+        auto cBuffer = std::make_shared<ColorBuffer>(atom->getColor(), N_VERTICES);
         auto model = generateAtomModel(cBuffer, matrix);
         auto program = ShaderManager::createProgram(model,
             scene_->getVertexShaderGLSL(),

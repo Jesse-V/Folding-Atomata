@@ -26,8 +26,12 @@ class SlotViewer
         void update(int deltaTime);
 
     public:
-        const float ATOM_SCALE = 0.1f;
-        const float BOND_SCALE = 0.01f;
+        const float ATOM_SCALE = 0.2f;
+        const float BOND_SCALE = 0.05f;
+        const unsigned int ATOM_STACKS = 8;
+        const unsigned int ATOM_SLICES = 16;
+        const glm::vec3 BOND_COLOR = glm::vec3(0.8, 0.12, 0.5);
+        const float PI = 3.141592653589f;
 
     private:
         std::shared_ptr<Mesh> generateAtomMesh();
