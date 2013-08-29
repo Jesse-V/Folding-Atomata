@@ -77,15 +77,12 @@ add_executable(FoldingAtomata
 
     Modeling/Model.cpp
     Modeling/Mesh/Mesh.cpp
-    Modeling/Mesh/PlyParser.cpp
 
     Modeling/DataBuffers/VertexBuffer.cpp
     Modeling/DataBuffers/IndexBuffer.cpp
-    Modeling/DataBuffers/NormalBuffer.cpp
     Modeling/DataBuffers/ColorBuffer.cpp
     Modeling/DataBuffers/SampledBuffers/SampledBuffer.cpp
     Modeling/DataBuffers/SampledBuffers/TextureBuffer.cpp
-    Modeling/DataBuffers/SampledBuffers/CoordinateMapReader.cpp
 
     Modeling/Shading/ShaderManager.cpp
     Modeling/Shading/ShaderSnippet.cpp
