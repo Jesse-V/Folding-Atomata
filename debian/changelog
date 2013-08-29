@@ -1,5 +1,18 @@
-folding-atomata (0.3.9.2) quantal; urgency=medium
+folding-atomata (0.4.8.0) quantal; urgency=medium
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial pre-release build:
+    - Implemented ability to connect to local FAHClient
+    - Rendering of snapshot 0 of trajectory 0
+    - Atoms are color-coded spheres, bonds are drawn between them
+    - Ability to roll, pitch, yaw, and move the camera anywhere
 
- -- Jesse Victors <jvictors@jessevictors.com>  Thu, 22 Aug 2013 17:46:36 -0800
+  * Bug fixes and ticket closures:
+    - Added ability to pan camera (#4)
+    - Render atoms and bonds (#10)
+    - Handle trajectory unreadable by FAHClient, such as core 17's. (#13)
+    - Test of Launchpad PPA and .deb builds (#15)
+    - Optimization: removed minor redundancy during rendering (#18)
+    - Assigned colors to atoms in accordance with the CPK coloring scheme (#21)
+    - Fixed parsing bug that led to illegal bond positions (#24 and #25)
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Thu, 28 Aug 2013 19:17:00 -0600
