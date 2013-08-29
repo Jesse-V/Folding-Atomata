@@ -125,11 +125,11 @@ void Viewer::addLight()
 std::shared_ptr<Camera> Viewer::getCamera()
 {
     auto camera = std::make_shared<Camera>();
-    camera->setPosition(glm::vec3(0, -2.98502f, 2.09858f));
+    camera->setPosition(glm::vec3(0, -50, 0));
 
     camera->lookAt(
-        glm::vec3(0, 11.7493f, -0.712136f),
-        glm::vec3(0, 0.187381f, 0.982287f)
+        glm::vec3(0, 0, 0),
+        glm::vec3(0, 0, 1)
     );
 
     return camera;
