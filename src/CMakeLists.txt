@@ -104,8 +104,14 @@ target_link_libraries(FoldingAtomata glut GLEW GL ${GLEW_LIBRARIES})
 
 #for a "make install" installation
 set(DEB_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/debian/extra_includes")
+set(SKYBOX_FILES "${DEB_FOLDER}/skybox")
+set(SKYBOX_DESTINATION "/usr/share/FoldingAtomata/images/")
 set(MENU_DESKTOP_FILE "${DEB_FOLDER}/Folding Atomata.desktop")
-install(TARGETS FoldingAtomata DESTINATION /usr/bin)
+
+install(TARGETS FoldingAtomata     DESTINATION /usr/bin)
 install(FILES ${MENU_DESKTOP_FILE} DESTINATION /usr/share/applications)
 install(FILES ${DEB_FOLDER}/FoldingAtomata-logo.png DESTINATION /usr/share/pixmaps)
-install(FILES ${DEB_FOLDER}/FoldingAtomata.1.gz DESTINATION /usr/share/man/man1})
+install(FILES ${DEB_FOLDER}/FoldingAtomata.1.gz     DESTINATION /usr/share/man/man1})
+install(FILES ${SKYBOX_FILES}/MSM.png         DESTINATION ${SKYBOX_DESTINATION})
+install(FILES ${SKYBOX_FILES}/Primase.png     DESTINATION ${SKYBOX_DESTINATION})
+install(FILES ${SKYBOX_FILES}/Ribosome.png    DESTINATION ${SKYBOX_DESTINATION})

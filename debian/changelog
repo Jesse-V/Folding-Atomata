@@ -8,12 +8,6 @@ folding-atomata (0.4.9.0) quantal; urgency=medium
 
  -- Jesse Victors <jvictors@jessevictors.com>  Thu, 28 Aug 2013 11:43:00 -0600
 
-folding-atomata (0.4.8.1) quantal; urgency=medium
-
-  * Fixed compilation error.
-
- -- Jesse Victors <jvictors@jessevictors.com>  Thu, 28 Aug 2013 19:26:00 -0600
-
 folding-atomata (0.4.8.0) quantal; urgency=medium
 
   * Initial pre-release build:
