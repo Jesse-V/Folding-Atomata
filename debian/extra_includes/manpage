@@ -1,22 +1,26 @@
 .\" Manpage for Folding Atomata
 .\" Visit github.com/Jesse-V/Folding-Atomata to report bugs, errors, or typos.
-.TH man 8 "23 August 2013" "1.0" "FoldingAtomata man page"
+.TH man 8 "28 August 2013" "0.4.9.0" "FoldingAtomata man page"
+
 .SH NAME
 FoldingAtomata \- third-party 3D simulation viewer for Folding@home
+
 .SH SYNOPSIS
-FoldingAtomata - launches the 3D viewer application
+FoldingAtomata - this command launches the application. A shortcut is also available under Menu => Education.
+
 .SH DESCRIPTION
-Folding@home is a distributed computing project that uses
- volunteered computer resources for disease research.
- This package contains Folding Atomata, a 3D simulation viewer.
- It connects to the local FAHClient instance to visualize the
- running simulations.
+Folding@home is a distributed computing project that uses the spare resources of volunteered computers for disease research.
+
+This package contains Folding Atomata, a 3D simulation viewer. It connects to the local FAHClient instance to visualize the running simulations.
+
 .SH OPTIONS
-No options at the moment.
+No options at the moment. I am planning on supporting all of FAHViewer's flags and command-line options. This would allow Atomata to become a drop-in replacement for FAHViewer. Please watch https://github.com/Jesse-V/Folding-Atomata/issues/14 for more updates on this. 
+
 .SH SEE ALSO
 
 .SH BUGS
 Please visit https://github.com/Jesse-V/Folding-Atomata/issues for the list
 of known bugs. Github users are welcome to report bugs there.
+
 .SH AUTHOR
 Jesse Victors (jvictors@jessevictors.com)

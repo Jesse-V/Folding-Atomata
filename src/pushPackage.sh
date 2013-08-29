@@ -2,7 +2,7 @@
 
 ./clean.sh
 
-name="folding-atomata_0.4.8.0" #major.minor.patch.build
+name="folding-atomata_0.4.9.0" #major.minor.patch.build
 
 cd ..
 tar -czf ${name}.orig.tar.gz src/ #http://xkcd.com/1168/
