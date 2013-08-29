@@ -44,6 +44,7 @@ class Viewer
     public:
         void update(int deltaTime);
         void render();
+        void handleWindowReshape(int screenWidth, int screenHeight);
 
         void onKeyPress(unsigned char key, int, int);
         void onSpecialKeyPress(int key, int x , int y);
@@ -54,11 +55,11 @@ class Viewer
         static Viewer& getInstance();
 
     private:
-        Viewer(int screenWidth, int screenHeight);
+        Viewer();
         void reportFPS();
         void addModels();
         void addLight();
-        std::shared_ptr<Camera> getCamera(int screenWidth, int screenHeight);
+        std::shared_ptr<Camera> getCamera();
         static void sleep(int milliseconds);
 
     private:

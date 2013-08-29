@@ -42,8 +42,8 @@
 */
 
 
-Viewer::Viewer(int screenWidth, int screenHeight):
-    scene_(std::make_shared<Scene>(getCamera(screenWidth, screenHeight))),
+Viewer::Viewer() :
+    scene_(std::make_shared<Scene>(getCamera())),
     player_(std::make_shared<Player>(scene_)),
     timeSpentRendering_(0), frameCount_(0)
 {
@@ -122,10 +122,9 @@ void Viewer::addLight()
 
 
 
-std::shared_ptr<Camera> Viewer::getCamera(int screenWidth, int screenHeight)
+std::shared_ptr<Camera> Viewer::getCamera()
 {
     auto camera = std::make_shared<Camera>();
-    camera->setAspectRatio(screenWidth / (float)screenHeight);
     camera->setPosition(glm::vec3(0, -2.98502f, 2.09858f));
 
     camera->lookAt(
@@ -155,6 +154,16 @@ void Viewer::render()
     frameCount_++;
 
     glutSwapBuffers();
+}
+
+
+
+void Viewer::handleWindowReshape(int newWidth, int newHeight)
+{
+    scene_->getCamera()->setAspectRatio(newWidth / (float)newHeight);
+
+    std::cout << "Windows updated to " << newWidth << " by " << newHeight << 
+        ", a ratio of " << (newWidth / (float)newHeight) << std::endl;
 }
 
 
@@ -216,10 +225,7 @@ Viewer& Viewer::getInstance()
             return *singleton_;
 
         std::cout << "Creating Viewer..." << std::endl;
-        singleton_ = new Viewer(
-            glutGet(GLUT_SCREEN_WIDTH),
-            glutGet(GLUT_SCREEN_HEIGHT)
-        );
+        singleton_ = new Viewer();
         std::cout << "... finished creating Viewer." << std::endl;
     }
     catch (std::exception& e)

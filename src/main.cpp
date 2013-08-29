@@ -70,6 +70,22 @@ void renderCallback()
 }
 
 
+void windowReshapeCallback(int width, int height)
+{
+    try
+    {
+        Viewer::getInstance().handleWindowReshape(width, height);
+        glViewport(0, 0, width, height); //this is a subtle but critical call!
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught " << typeid(e).name() << " in window callback: " <<
+            e.what() << std::endl;
+        glutDestroyWindow(glutGetWindow());
+    }
+}
+
+
 
 void keyPressCallback(unsigned char key, int x, int y)
 {
@@ -210,6 +226,7 @@ void assignCallbacks()
 {
     glutIdleFunc(updateCallback);
     glutDisplayFunc(renderCallback);
+    glutReshapeFunc(windowReshapeCallback);
 
     glutKeyboardFunc(keyPressCallback);
     glutSpecialFunc(specialKeyPressCallback);
