@@ -23,17 +23,14 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "SampledBuffer.hpp"
+#include "Image.hpp"
 #include <png++/image.hpp>
 #include <png++/rgb_pixel.hpp>
 #include <stdexcept>
 #include <iostream>
 
 
-SampledBuffer::SampledBuffer(
-    const std::string& imagePath,
-    const std::vector<GLfloat>& coordinateMap):
-    coordinateMap_(coordinateMap)
+Image::Image(const std::string& imagePath)
 {
     std::cout << "Loading image from " << imagePath << " ...";
     
@@ -49,61 +46,7 @@ SampledBuffer::SampledBuffer(
 
 
 
-SampledBuffer::~SampledBuffer()
-{
-    deleteBufferFromRAM();
-}
-
-
-
-void SampledBuffer::initialize(GLuint programHandle)
-{
-    glGenBuffers(1, &vbo_coords_);
-}
-
-
-
-void SampledBuffer::store()
-{
-    storeImage();
-    storeCoordMap();
-}
-
-
-
-//ideas: http://stackoverflow.com/questions/4983532/what-are-the-texture-coordinates-for-a-cube-in-opengl
-void SampledBuffer::storeImage() //TODO: THE ISSUES WITH #22 MAY BE HERE
-{
-    // Give the image to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth_, imgHeight_, 0, GL_BGR, GL_UNSIGNED_BYTE, data_);
-
-    // When MAGnifying the image (no bigger mipmap available),
-    // use LINEAR filtering
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // When MINifying the image, use a LINEAR blend of two mipmaps,
-    // each filtered LINEARLY too
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-    // Generate mipmaps, by the way.
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   85:  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
-}
-
-
-
-void SampledBuffer::storeCoordMap()
-{
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_coords_);
-    glBufferData(GL_ARRAY_BUFFER, coordinateMap_.size() * sizeof(GLfloat),
-                 coordinateMap_.data(), GL_STATIC_DRAW);
-}
-
-
-
-void SampledBuffer::loadBMP(const std::string& imagePath)
+void Image::loadBMP(const std::string& imagePath)
 {
     unsigned char header[54];
 
@@ -135,13 +78,11 @@ void SampledBuffer::loadBMP(const std::string& imagePath)
 
     //Everything is in memory now, the file can be closed
     fclose(file);
-
-    isValid_ = true;
 }
 
 
 
-void SampledBuffer::loadPNG(const std::string& imagePath)
+void Image::loadPNG(const std::string& imagePath)
 {
     png::image<png::rgb_pixel> image(imagePath);
 
@@ -164,24 +105,11 @@ void SampledBuffer::loadPNG(const std::string& imagePath)
         data_[i + 1] = pix.green;
         data_[i + 2] = pix.red;
     }
-
-    isValid_ = true;
 }
 
 
 
-void SampledBuffer::deleteBufferFromRAM()
-{
-    if (isValid_)
-    {
-        delete [] data_;
-        isValid_ = false;
-    }
-}
-
-
-
-bool SampledBuffer::strHasEnding(const std::string& string, const std::string& ending)
+bool Image::strHasEnding(const std::string& string, const std::string& ending)
 {
     if (string.length() >= ending.length())
     {

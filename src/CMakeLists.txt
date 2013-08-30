@@ -51,6 +51,14 @@ else()
     message(ERROR " Glew not found!")
 endif()
 
+#find png++
+#http://fedetft.wordpress.com/2010/03/07/cmake-part-3-finding-libraries/
+find_package(PNG REQUIRED)
+include_directories(${PNG_INCLUDE_DIR})
+if(NOT PNG_FOUND)
+    message(ERROR " png++ not found!")
+endif()
+
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "-g -O3 --std=c++11 -Wno-c++98-compat-pedantic -pedantic -Weverything -Wno-unused-parameter -Wno-global-constructors -Wno-exit-time-destructors -Wno-non-virtual-dtor -Wno-weak-vtables -Wno-padded -Wno-cast-align -Wno-gnu -Wno-nested-anon-types -Wno-documentation-unknown-command -Wno-unknown-pragmas")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -81,8 +89,8 @@ add_executable(FoldingAtomata
     Modeling/DataBuffers/VertexBuffer.cpp
     Modeling/DataBuffers/IndexBuffer.cpp
     Modeling/DataBuffers/ColorBuffer.cpp
-    Modeling/DataBuffers/SampledBuffers/SampledBuffer.cpp
-    Modeling/DataBuffers/SampledBuffers/TextureBuffer.cpp
+    Modeling/DataBuffers/SampledBuffers/CubeTextureMap.cpp
+    Modeling/DataBuffers/SampledBuffers/Image.cpp
 
     Modeling/Shading/ShaderManager.cpp
     Modeling/Shading/ShaderSnippet.cpp
@@ -100,7 +108,7 @@ add_executable(FoldingAtomata
     Sockets/Socket.cpp
 )
 
-target_link_libraries(FoldingAtomata glut GLEW GL ${GLEW_LIBRARIES})
+target_link_libraries(FoldingAtomata glut GLEW GL ${GLEW_LIBRARIES} png)
 
 #for a "make install" installation
 set(DEB_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/debian/extra_includes")
