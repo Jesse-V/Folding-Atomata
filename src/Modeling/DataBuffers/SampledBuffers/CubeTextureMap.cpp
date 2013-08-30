@@ -36,23 +36,43 @@ CubeTextureMap::CubeTextureMap(
 ) :
     positiveX_(positiveX), negativeX_(negativeX),
     positiveY_(positiveY), negativeY_(negativeY),
-    positiveZ_(positiveZ), negativeZ_(negativeZ)
+    positiveZ_(positiveZ), negativeZ_(negativeZ),
+    tex_(0)
 {}
 
 
 
 void CubeTextureMap::initialize(GLuint programHandle)
 {
-    
-    //texCoordAttrib_ = glGetAttribLocation(programHandle, "textureCoordinate");
+    glActiveTexture(GL_TEXTURE1);
+    glGenBuffers(1, &tex_);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tex_);
+
+    texMapLocation_ = glGetUniformLocation(programHandle, "texMap");
+    glUniform1i(texMapLocation_, 1); //corresponds to unit 1
 }
 
 
 
 void CubeTextureMap::store()
 {
-    
-    //glVertexAttribPointer(texCoordAttrib_, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_X, positiveX_);
+    mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, negativeX_);
+    mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, positiveY_);
+    mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, negativeY_);
+    mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, positiveZ_);
+    mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, negativeZ_);
+
+    //when MAGnifying the image (no bigger mipmap available),
+    //use LINEAR filtering
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //when MINifying the image, use a LINEAR blend of two mipmaps,
+    //each filtered LINEARLY too
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    //generate mipmaps
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 }
 
 
@@ -71,21 +91,28 @@ void CubeTextureMap::disable()
 
 
 
+void CubeTextureMap::mapToFace(GLenum target, const std::shared_ptr<Image>& img)
+{
+    glTexImage2D(target, 0, GL_RGB, img->getWidth(), img->getHeight(),
+        0, GL_BGR, GL_UNSIGNED_BYTE, img->getImageData());
+}
+
+
+
 //todo: some of this code belongs to SampledBuffer, base class's method could be called
 SnippetPtr CubeTextureMap::getVertexShaderGLSL()
 {
     return std::make_shared<ShaderSnippet>(
         R".(
             //CubeTextureMap fields
-            attribute vec2 textureCoordinate;
-            varying vec2 UVcoordinate;
+            varying vec3 R;
         ).",
         R".(
             //CubeTextureMap methods
         ).",
         R".(
             //CubeTextureMap main method code
-            UVcoordinate = textureCoordinate;
+            R = vec3(0.5);
         )."
     );
 }
@@ -97,15 +124,14 @@ SnippetPtr CubeTextureMap::getFragmentShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //CubeTextureMap fields
-            uniform sampler2D textureSampler;
-            varying vec2 UVcoordinate;
+            uniform samplerCube texMap;
         ).",
         R".(
             //CubeTextureMap methods
         ).",
         R".(
             //CubeTextureMap main method code
-            colors.material = texture2D(textureSampler, UVcoordinate).rgb;
+            colors.material = textureCube(texMap, UVcoordinate).rgb;
         )."
     );
 }

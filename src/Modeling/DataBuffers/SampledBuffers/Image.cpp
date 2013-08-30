@@ -61,13 +61,13 @@ void Image::loadBMP(const std::string& imagePath)
         throw std::runtime_error(imagePath + " is not a valid .bmp image");
 
     auto char12Ptr = &header[0x12], char16Ptr = &header[0x16];
-    imgWidth_  = *(int*)char12Ptr;
-    imgHeight_ = *(int*)char16Ptr;
+    width_  = *(int*)char12Ptr;
+    height_ = *(int*)char16Ptr;
 
     auto char22Ptr = &header[0x22];
     int imageSize  = *(int*)char22Ptr;
     if (imageSize == 0)
-        imageSize = imgWidth_ * imgHeight_ * 3;
+        imageSize = width_ * height_ * 3;
 
     data_ = new unsigned char[imageSize];
 
@@ -88,17 +88,17 @@ void Image::loadPNG(const std::string& imagePath)
 
     auto pixbuf = image.get_pixbuf();
 
-    imgWidth_  = (int)image.get_width();
-    imgHeight_ = (int)image.get_height();
+    width_  = (int)image.get_width();
+    height_ = (int)image.get_height();
 
-    int imageSize = imgWidth_ * imgHeight_ * 3;
+    int imageSize = width_ * height_ * 3;
 
     data_ = new unsigned char[imageSize];
 
     for (int i = 0; i < imageSize; i += 3)
     {
-        int x = (i / 3) % imgWidth_;
-        int y = (i / 3) / imgWidth_;
+        int x = (i / 3) % width_;
+        int y = (i / 3) / width_;
         auto pix = pixbuf.get_pixel((std::size_t)x, (std::size_t)y);
 
         data_[i + 0] = pix.blue;
@@ -119,4 +119,25 @@ bool Image::strHasEnding(const std::string& string, const std::string& ending)
     }
     else
         return false;
+}
+
+
+
+int Image::getWidth()
+{
+    return width_;
+}
+
+
+
+int Image::getHeight()
+{
+    return height_;
+}
+
+
+
+unsigned char* Image::getImageData()
+{
+    return data_;
 }

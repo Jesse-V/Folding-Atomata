@@ -43,7 +43,7 @@ class Image
         bool strHasEnding(const std::string& string, const std::string& ending);
 
     protected:
-        int imgWidth_, imgHeight_;
+        int width_, height_;
         unsigned char* data_;
 };
 

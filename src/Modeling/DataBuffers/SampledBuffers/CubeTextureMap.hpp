@@ -42,6 +42,7 @@ class CubeTextureMap : public OptionalDataBuffer
             const std::shared_ptr<Image> positiveZ,
             const std::shared_ptr<Image> negativeZ
         );
+        void mapToFace(GLenum target, const std::shared_ptr<Image>& img);
 
         virtual void initialize(GLuint programHandle);
         virtual void store();
@@ -55,6 +56,8 @@ class CubeTextureMap : public OptionalDataBuffer
         std::shared_ptr<Image> positiveX_, negativeX_,
                                positiveY_, negativeY_,
                                positiveZ_, negativeZ_;
+        GLuint tex_;
+        GLint texMapLocation_;
 };
 
 #endif
