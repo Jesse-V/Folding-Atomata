@@ -24,7 +24,8 @@
 \******************************************************************************/
 
 #include "CubeTextureMap.hpp"
-
+#include <iostream>
+#include "Modeling/Shading/Program.hpp"
 
 CubeTextureMap::CubeTextureMap(
     const std::shared_ptr<Image> positiveX,
@@ -44,24 +45,42 @@ CubeTextureMap::CubeTextureMap(
 
 void CubeTextureMap::initialize(GLuint programHandle)
 {
-    glActiveTexture(GL_TEXTURE1);
+    std::cout << "In initialize1:" << std::endl;
+    std::cout.flush();
+    checkGlError();
+
+    //glActiveTexture(GL_TEXTURE1);
     glGenBuffers(1, &tex_);
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex_);
 
-    texMapLocation_ = glGetUniformLocation(programHandle, "texMap");
-    glUniform1i(texMapLocation_, 1); //corresponds to unit 1
+    
+
+    //texMapLocation_ = glGetUniformLocation(programHandle, "texMap");
+    //glUniform1i(texMapLocation_, 1); //corresponds to unit 1
+
+    std::cout << "In initialize2:" << std::endl;
+    std::cout.flush();
+    checkGlError();
 }
 
 
 
 void CubeTextureMap::store()
 {
+    std::cout << "In store0:" << std::endl;
+    std::cout.flush();
+    checkGlError();
+
     mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_X, positiveX_);
     mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, negativeX_);
     mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, positiveY_);
     mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, negativeY_);
     mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, positiveZ_);
     mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, negativeZ_);
+
+    std::cout << "In store1:" << std::endl;
+    std::cout.flush();
+    checkGlError();
 
     //when MAGnifying the image (no bigger mipmap available),
     //use LINEAR filtering
@@ -73,6 +92,10 @@ void CubeTextureMap::store()
 
     //generate mipmaps
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+    std::cout << "In store2:" << std::endl;
+    std::cout.flush();
+    checkGlError();
 }
 
 
@@ -94,7 +117,7 @@ void CubeTextureMap::disable()
 void CubeTextureMap::mapToFace(GLenum target, const std::shared_ptr<Image>& img)
 {
     glTexImage2D(target, 0, GL_RGB, img->getWidth(), img->getHeight(),
-        0, GL_BGR, GL_UNSIGNED_BYTE, img->getImageData());
+        0, GL_RGB, GL_UNSIGNED_BYTE, img->getImageData());
 }
 
 
@@ -112,7 +135,7 @@ SnippetPtr CubeTextureMap::getVertexShaderGLSL()
         ).",
         R".(
             //CubeTextureMap main method code
-            R = vec3(0.5);
+            R = (modelMatrix * vec4(vertex, 1)).xyz;
         )."
     );
 }
@@ -125,13 +148,14 @@ SnippetPtr CubeTextureMap::getFragmentShaderGLSL()
         R".(
             //CubeTextureMap fields
             uniform samplerCube texMap;
+            varying vec3 R;
         ).",
         R".(
             //CubeTextureMap methods
         ).",
         R".(
             //CubeTextureMap main method code
-            colors.material = textureCube(texMap, UVcoordinate).rgb;
+            colors.material = textureCube(texMap, R).rgb;
         )."
     );
 }
