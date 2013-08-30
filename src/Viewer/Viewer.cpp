@@ -28,6 +28,8 @@
 #include "FAHClientIO.hpp"
 #include "../Sockets/Connection.hpp"
 #include "../Sockets/SocketException.hpp"
+#include "../Modeling/DataBuffers/SampledBuffers/Image.hpp"
+#include "../Modeling/Shading/ShaderManager.hpp"
 #include <thread>
 #include <iostream>
 
@@ -43,7 +45,7 @@
 
 
 Viewer::Viewer() :
-    scene_(std::make_shared<Scene>(getCamera())),
+    scene_(std::make_shared<Scene>(createCamera())),
     player_(std::make_shared<Player>(scene_)),
     timeSpentRendering_(0), frameCount_(0)
 {
@@ -86,6 +88,85 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
+    addSkybox();
+    addSlotViewers();
+}
+
+
+
+void Viewer::addSkybox()
+{
+    std::cout << "Creating skybox..." << std::endl;
+
+    const std::string IMAGES_DIR("/usr/share/FoldingAtomata/images/");
+    auto msmImage      = std::make_shared<Image>(IMAGES_DIR + "MSM.png");
+    auto primaseImage  = std::make_shared<Image>(IMAGES_DIR + "Primase.png");
+    auto ribosomeImage = std::make_shared<Image>(IMAGES_DIR + "Ribosome.png");
+
+    //auto cubeTextureMap = std::make_shared<CubeTextureMap>(msmImage, msmImage,
+    //    primaseImage, primaseImage, ribosomeImage, ribosomeImage);
+    //BufferList list = { cubeTextureMap };
+
+    auto cBuffer = std::make_shared<ColorBuffer>(glm::vec3(0.05), 8);
+    BufferList list = { cBuffer };
+
+    auto model = std::make_shared<Model>(getSkyboxMesh(), list);
+    auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
+    model->setModelMatrix(matrix);
+
+    std::cout << "Generating program for skybox..." << std::endl;
+    auto program = ShaderManager::createProgram(model,
+        scene_->getVertexShaderGLSL(),
+        scene_->getFragmentShaderGLSL(), scene_->getLights()
+    );
+
+    std::cout << "... done generating skybox program." << std::endl;
+
+    scene_->addModel(model, program, true); //add to Scene and save
+
+    std::cout << "... done creating skybox." << std::endl;
+}
+
+
+
+std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
+{
+    static std::shared_ptr<Mesh> mesh = nullptr;
+
+    if (mesh)
+        return mesh;
+
+    const std::vector<glm::vec3> VERTICES = {
+        glm::vec3(-1, -1, -1),
+        glm::vec3(-1, -1,  1),
+        glm::vec3(-1,  1, -1),
+        glm::vec3(-1,  1,  1),
+        glm::vec3( 1, -1, -1),
+        glm::vec3( 1, -1,  1),
+        glm::vec3( 1,  1, -1),
+        glm::vec3( 1,  1,  1)
+    };
+
+    //visible from the inside only, so faces in
+    const std::vector<GLuint> INDICES = {
+        0, 1, 5, 4, //front
+        6, 7, 3, 2, //back
+        2, 0, 4, 6,  //top
+        7, 5, 1, 3, //bottom
+        2, 3, 1, 0, //left
+        4, 5, 7, 6  //right
+    };
+
+    auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
+    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_QUADS);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
+    return mesh;
+}
+
+
+
+void Viewer::addSlotViewers()
+{
     try
     {
         FAHClientIO io(Connection("localhost", 36330).createClientSocket());
@@ -122,7 +203,7 @@ void Viewer::addLight()
 
 
 
-std::shared_ptr<Camera> Viewer::getCamera()
+std::shared_ptr<Camera> Viewer::createCamera()
 {
     auto camera = std::make_shared<Camera>();
     camera->setPosition(glm::vec3(0, -50, 0));

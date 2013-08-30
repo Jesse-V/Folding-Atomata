@@ -58,8 +58,11 @@ class Viewer
         Viewer();
         void reportFPS();
         void addModels();
+        void addSkybox();
+        void addSlotViewers();
         void addLight();
-        std::shared_ptr<Camera> getCamera();
+        std::shared_ptr<Mesh> getSkyboxMesh();
+        std::shared_ptr<Camera> createCamera();
         static void sleep(int milliseconds);
 
     private:
