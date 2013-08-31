@@ -52,14 +52,20 @@ class SlotViewer
     public:
         const float ATOM_SCALE = 0.20f;
         const float BOND_SCALE = 0.10f;
+
         const unsigned int ATOM_STACKS = 8;
         const unsigned int ATOM_SLICES = 16;
+
+        const glm::vec3 ATOM_LIGHT_POSITION = glm::vec3(-1.5);
+        const float ATOM_LIGHT_POWER = 2.0f;
+        const glm::vec3 ATOM_LIGHT_COLOR = glm::vec3(4);
+
         const glm::vec3 BOND_COLOR = glm::vec3(0.8, 0.12, 0.5);
         const float PI = 3.141592653589f;
 
     private:
-        std::shared_ptr<Mesh> generateAtomMesh();
-        std::shared_ptr<Mesh> generateBondMesh();
+        std::shared_ptr<Mesh> getAtomMesh();
+        std::shared_ptr<Mesh> getBondMesh();
 
         void addAllAtoms();
         void addAllBonds();
@@ -67,6 +73,7 @@ class SlotViewer
         ModelPtr addAtom(const AtomPtr& atom, const glm::mat4& matrix);
         void addBond(const BondPtr& bond, const ModelPtr& model);
         
+        std::shared_ptr<ColorBuffer> generateColorBuffer(const AtomPtr& atom);
         ModelPtr generateAtomModel(const ColorPtr& cBuffer,
                                    const glm::mat4& matrix
         );

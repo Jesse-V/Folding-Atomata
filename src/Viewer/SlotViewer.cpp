@@ -54,7 +54,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
 
 
 
-std::shared_ptr<Mesh> SlotViewer::generateAtomMesh()
+std::shared_ptr<Mesh> SlotViewer::getAtomMesh()
 {
     static std::shared_ptr<Mesh> mesh = nullptr;
 
@@ -109,7 +109,7 @@ std::shared_ptr<Mesh> SlotViewer::generateAtomMesh()
 
 
 
-std::shared_ptr<Mesh> SlotViewer::generateBondMesh()
+std::shared_ptr<Mesh> SlotViewer::getBondMesh()
 {
     static std::shared_ptr<Mesh> mesh = nullptr;
 
@@ -194,7 +194,7 @@ void SlotViewer::addAllBonds()
         auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
         auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
 
-        auto model = std::make_shared<Model>(generateBondMesh(), list);
+        auto model = std::make_shared<Model>(getBondMesh(), list);
         model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
         addBond(bonds[j], model);
@@ -209,7 +209,6 @@ void SlotViewer::addAllBonds()
 ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
 {
     static std::unordered_map<char, AtomModelInfo> cache;
-    static auto N_VERTICES = (ATOM_STACKS + 1) * ATOM_SLICES;
 
     auto value = cache.find(atom->getElement());
     if (value == cache.end())
@@ -217,7 +216,7 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
         std::cout << "Program for element " << atom->getElement()
             << " is not cached. Generating..." << std::endl;
 
-        auto cBuffer = std::make_shared<ColorBuffer>(atom->getColor(), N_VERTICES);
+        auto cBuffer = generateColorBuffer(atom);
         auto model = generateAtomModel(cBuffer, matrix);
         auto program = ShaderManager::createProgram(model,
             scene_->getVertexShaderGLSL(),
@@ -266,11 +265,32 @@ void SlotViewer::addBond(const BondPtr& bond, const ModelPtr& model)
 
 
 
+std::shared_ptr<ColorBuffer> SlotViewer::generateColorBuffer(const AtomPtr& atom)
+{
+    static auto N_VERTICES = (ATOM_STACKS + 1) * ATOM_SLICES;
+    std::vector<glm::vec3> colors(N_VERTICES, atom->getColor());
+
+    auto vertices = getAtomMesh()->getVertices();
+    for (int j = 0; j < N_VERTICES; j++)
+    {
+        float distance = getMagnitude(vertices[j] - ATOM_LIGHT_POSITION);
+        float scaledDistance = distance / ATOM_LIGHT_POWER;
+        glm::vec3 luminosity = ATOM_LIGHT_COLOR * (1 - scaledDistance);
+
+        if (luminosity.x > 0 && luminosity.y > 0 && luminosity.z > 0)
+            colors[j] += luminosity;
+    }
+
+    return std::make_shared<ColorBuffer>(colors);
+}
+
+
+
 ModelPtr SlotViewer::generateAtomModel(const ColorPtr& cBuffer,
                                        const glm::mat4& matrix)
 {
     BufferList list = { cBuffer };
-    auto model = std::make_shared<Model>(generateAtomMesh(), list);
+    auto model = std::make_shared<Model>(getAtomMesh(), list);
     model->setModelMatrix(matrix);
     return model;
 }
@@ -370,7 +390,7 @@ float SlotViewer::getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB)
 
 float SlotViewer::getMagnitude(const glm::vec3& vector)
 {
-    return (float)sqrt(getDotProduct(vector, vector));
+    return (float)std::sqrt(getDotProduct(vector, vector));
 }
 
 
