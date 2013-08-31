@@ -64,14 +64,14 @@ class SlotViewer
         const float PI = 3.141592653589f;
 
     private:
-        std::shared_ptr<Mesh> getAtomMesh();
-        std::shared_ptr<Mesh> getBondMesh();
-
         void addAllAtoms();
         void addAllBonds();
 
         ModelPtr addAtom(const AtomPtr& atom, const glm::mat4& matrix);
         void addBond(const BondPtr& bond, const ModelPtr& model);
+
+        std::shared_ptr<Mesh> getAtomMesh();
+        std::shared_ptr<Mesh> getBondMesh();
         
         std::shared_ptr<ColorBuffer> generateColorBuffer(const AtomPtr& atom);
         ModelPtr generateAtomModel(const ColorPtr& cBuffer,

@@ -54,108 +54,6 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
 
 
 
-std::shared_ptr<Mesh> SlotViewer::getAtomMesh()
-{
-    static std::shared_ptr<Mesh> mesh = nullptr;
-
-    if (mesh)
-        return mesh;
-
-    std::cout << "Generating atom mesh... ";
-
-    //adapted from sandy_bence's 2005 post over at:
-    //http://www.gamedev.net/topic/350823-rendering-a-sphere-using-triangle-strips/
-
-    std::vector<glm::vec3> vertices;
-    for (unsigned int stack = 0; stack <= ATOM_STACKS; stack++)
-    {
-        for (unsigned int slice = 0; slice < ATOM_SLICES; slice++)
-        {
-            float theta = stack * PI / ATOM_STACKS;
-            float phi   = slice * 2 * PI / ATOM_SLICES;
-
-            float sinTheta = std::sin(theta);
-            float cosTheta = std::cos(theta);
-
-            float sinPhi = std::sin(phi);
-            float cosPhi = std::cos(phi);
-
-            vertices.push_back(glm::vec3(
-                cosPhi * sinTheta,
-                sinPhi * sinTheta,
-                cosTheta
-            ));
-        }
-    }
-
-    std::vector<GLuint> indices;
-    for (unsigned int stack = 0; stack < ATOM_STACKS; stack++)
-    {
-        for (unsigned int slice = 0; slice <= ATOM_SLICES; slice++)
-        {
-            auto sliceMod = slice % ATOM_SLICES;
-            indices.push_back((stack       * ATOM_SLICES) + sliceMod);
-            indices.push_back(((stack + 1) * ATOM_SLICES) + sliceMod);
-        }
-    }
-
-    auto vBuffer = std::make_shared<VertexBuffer>(vertices);
-    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
-
-    std::cout << "done. Cached the result." << std::endl;
-    return mesh;
-}
-
-
-
-std::shared_ptr<Mesh> SlotViewer::getBondMesh()
-{
-    static std::shared_ptr<Mesh> mesh = nullptr;
-
-    if (mesh)
-        return mesh;
-
-    std::cout << "Generating bond mesh... ";
-
-    // http://in.answers.yahoo.com/question/index?qid=20060907224537AA8MBBH
-    const float sqrt3over2 = 0.86602540378f;
-    const float sqrt3over4 = sqrt3over2 / 2;
-    std::vector<glm::vec3> vertices = {
-        glm::vec3(0,            0, 0),
-        glm::vec3(1,            0, 0),
-        glm::vec3(0.5, sqrt3over2, 0),
-        glm::vec3(0,            0, 1),
-        glm::vec3(1,            0, 1),
-        glm::vec3(0.5, sqrt3over2, 1)
-    };
-
-    std::vector<GLuint> indices = {
-        2, 5, 4, 1,
-        3, 5, 2, 0,
-        1, 4, 3, 0,
-        0, 2, 1, 0/*, //this and next line are the end caps
-        3, 4, 5, 3*/
-    };
-
-    const glm::vec3 OFFSET = glm::vec3(0.25, sqrt3over4, 0);
-    std::transform(vertices.begin(), vertices.end(), vertices.begin(), 
-        [&](const glm::vec3& vertex)
-        {
-            return vertex - OFFSET;
-        }
-    );
-
-    auto vBuffer = std::make_shared<VertexBuffer>(vertices);
-    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_QUADS);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
-
-    std::cout << "done. Cached the result." << std::endl;
-    return mesh;
-}
-
-
-
 void SlotViewer::addAllAtoms()
 {
     auto atoms = trajectory_->getTopology()->getAtoms();
@@ -265,57 +163,6 @@ void SlotViewer::addBond(const BondPtr& bond, const ModelPtr& model)
 
 
 
-std::shared_ptr<ColorBuffer> SlotViewer::generateColorBuffer(const AtomPtr& atom)
-{
-    static auto N_VERTICES = (ATOM_STACKS + 1) * ATOM_SLICES;
-    std::vector<glm::vec3> colors(N_VERTICES, atom->getColor());
-
-    auto vertices = getAtomMesh()->getVertices();
-    for (int j = 0; j < N_VERTICES; j++)
-    {
-        float distance = getMagnitude(vertices[j] - ATOM_LIGHT_POSITION);
-        float scaledDistance = distance / ATOM_LIGHT_POWER;
-        glm::vec3 luminosity = ATOM_LIGHT_COLOR * (1 - scaledDistance);
-
-        if (luminosity.x > 0 && luminosity.y > 0 && luminosity.z > 0)
-            colors[j] += luminosity;
-    }
-
-    return std::make_shared<ColorBuffer>(colors);
-}
-
-
-
-ModelPtr SlotViewer::generateAtomModel(const ColorPtr& cBuffer,
-                                       const glm::mat4& matrix)
-{
-    BufferList list = { cBuffer };
-    auto model = std::make_shared<Model>(getAtomMesh(), list);
-    model->setModelMatrix(matrix);
-    return model;
-}
-
-
-
-glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position)
-{
-    auto matrix = glm::translate(glm::mat4(), position);
-    return glm::scale(matrix, glm::vec3(ATOM_SCALE));
-}
-
-
-
-glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
-                                         const glm::vec3& endPosition
-)
-{
-    float distance = getMagnitude(startPosition - endPosition);
-    auto matrix = alignBetween(startPosition, endPosition);
-    return glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
-}
-
-
-
 void SlotViewer::update(int deltaTime)
 {
     const int snapshotCount = trajectory_->countSnapshots();
@@ -366,6 +213,158 @@ void SlotViewer::update(int deltaTime)
 
 
 
+std::shared_ptr<ColorBuffer> SlotViewer::generateColorBuffer(const AtomPtr& atom)
+{
+    static auto N_VERTICES = (ATOM_STACKS + 1) * ATOM_SLICES;
+    std::vector<glm::vec3> colors(N_VERTICES, atom->getColor());
+
+    auto vertices = getAtomMesh()->getVertices();
+    for (std::size_t j = 0; j < N_VERTICES; j++)
+    {
+        float distance = getMagnitude(vertices[j] - ATOM_LIGHT_POSITION);
+        float scaledDistance = distance / ATOM_LIGHT_POWER;
+        glm::vec3 luminosity = ATOM_LIGHT_COLOR * (1 - scaledDistance);
+
+        if (luminosity.x > 0 && luminosity.y > 0 && luminosity.z > 0)
+            colors[j] += luminosity;
+    }
+
+    return std::make_shared<ColorBuffer>(colors);
+}
+
+
+
+std::shared_ptr<Mesh> SlotViewer::getAtomMesh()
+{
+    static std::shared_ptr<Mesh> mesh = nullptr;
+
+    if (mesh)
+        return mesh;
+
+    std::cout << "Generating atom mesh... ";
+
+    //adapted from sandy_bence's 2005 post over at:
+    //http://www.gamedev.net/topic/350823-rendering-a-sphere-using-triangle-strips/
+
+    std::vector<glm::vec3> vertices;
+    for (unsigned int stack = 0; stack <= ATOM_STACKS; stack++)
+    {
+        for (unsigned int slice = 0; slice < ATOM_SLICES; slice++)
+        {
+            float theta = stack * PI / ATOM_STACKS;
+            float phi   = slice * 2 * PI / ATOM_SLICES;
+
+            float sinTheta = std::sin(theta);
+            float cosTheta = std::cos(theta);
+
+            float sinPhi = std::sin(phi);
+            float cosPhi = std::cos(phi);
+
+            vertices.push_back(glm::vec3(
+                cosPhi * sinTheta,
+                sinPhi * sinTheta,
+                cosTheta
+            ));
+        }
+    }
+
+    std::vector<GLuint> indices;
+    for (unsigned int stack = 0; stack < ATOM_STACKS; stack++)
+    {
+        for (unsigned int slice = 0; slice <= ATOM_SLICES; slice++)
+        {
+            auto sliceMod = slice % ATOM_SLICES;
+            indices.push_back((stack       * ATOM_SLICES) + sliceMod);
+            indices.push_back(((stack + 1) * ATOM_SLICES) + sliceMod);
+        }
+    }
+
+    auto vBuffer = std::make_shared<VertexBuffer>(vertices);
+    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
+
+    std::cout << "done. Cached the result." << std::endl;
+    return mesh;
+}
+
+
+
+std::shared_ptr<Mesh> SlotViewer::getBondMesh()
+{
+    static std::shared_ptr<Mesh> mesh = nullptr;
+
+    if (mesh)
+        return mesh;
+
+    std::cout << "Generating bond mesh... ";
+
+    // http://in.answers.yahoo.com/question/index?qid=20060907224537AA8MBBH
+    const float sqrt3over2 = 0.86602540378f;
+    const float sqrt3over4 = sqrt3over2 / 2;
+    std::vector<glm::vec3> vertices = {
+        glm::vec3(0,            0, 0),
+        glm::vec3(1,            0, 0),
+        glm::vec3(0.5, sqrt3over2, 0),
+        glm::vec3(0,            0, 1),
+        glm::vec3(1,            0, 1),
+        glm::vec3(0.5, sqrt3over2, 1)
+    };
+
+    std::vector<GLuint> indices = {
+        2, 5, 4, 1,
+        3, 5, 2, 0,
+        1, 4, 3, 0,
+        0, 2, 1, 0/*, //this and next line are the end caps
+        3, 4, 5, 3*/
+    };
+
+    const glm::vec3 OFFSET = glm::vec3(0.25, sqrt3over4, 0);
+    std::transform(vertices.begin(), vertices.end(), vertices.begin(), 
+        [&](const glm::vec3& vertex)
+        {
+            return vertex - OFFSET;
+        }
+    );
+
+    auto vBuffer = std::make_shared<VertexBuffer>(vertices);
+    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_QUADS);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
+
+    std::cout << "done. Cached the result." << std::endl;
+    return mesh;
+}
+
+
+
+ModelPtr SlotViewer::generateAtomModel(const ColorPtr& cBuffer,
+                                       const glm::mat4& matrix)
+{
+    BufferList list = { cBuffer };
+    auto model = std::make_shared<Model>(getAtomMesh(), list);
+    model->setModelMatrix(matrix);
+    return model;
+}
+
+
+
+glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position)
+{
+    auto matrix = glm::translate(glm::mat4(), position);
+    return glm::scale(matrix, glm::vec3(ATOM_SCALE));
+}
+
+
+
+glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
+                                         const glm::vec3& endPosition
+)
+{
+    float distance = getMagnitude(startPosition - endPosition);
+    auto matrix = alignBetween(startPosition, endPosition);
+    return glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
+}
+
+
 glm::mat4 SlotViewer::alignBetween(const glm::vec3& ptA, const glm::vec3& ptB)
 { //adapted from http://www.thjsmith.com/40/cylinder-between-two-points-opengl-c
     
@@ -392,15 +391,6 @@ float SlotViewer::getMagnitude(const glm::vec3& vector)
 {
     return (float)std::sqrt(getDotProduct(vector, vector));
 }
-
-
-
-
-/*
-    2 seconds between snapshots. When the accumulated time has exceeded this,
-    calculate where we should be between the next pair
-*/
-
 
 
 
