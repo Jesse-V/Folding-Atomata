@@ -28,6 +28,7 @@
 
 #include "Player.hpp"
 #include "World/Scene.hpp"
+#include "SlotViewer.hpp"
 #include <memory>
 
 /**
@@ -72,6 +73,8 @@ class Viewer
         std::shared_ptr<Player> player_;
         float timeSpentRendering_;
         int frameCount_;
+
+        std::vector<std::shared_ptr<SlotViewer>> slotViewers_;
 };
 
 #endif

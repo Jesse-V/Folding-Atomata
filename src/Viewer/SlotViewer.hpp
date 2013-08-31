@@ -70,6 +70,7 @@ class SlotViewer
         ModelPtr generateAtomModel(const ColorPtr& cBuffer,
                                    const glm::mat4& matrix
         );
+        glm::mat4 generateAtomMatrix(const glm::vec3& position);
 
         glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
         float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
@@ -80,6 +81,9 @@ class SlotViewer
         std::shared_ptr<Scene> scene_;
         std::vector<ModelPtr> atomModels_;
         std::vector<ModelPtr> bondModels_;
+
+        int transitionTime_; //how much elapsed time between each snapshot
+        int snapshotA_, snapshotB_; //used to interpolate between during animation
 };
 
 #endif

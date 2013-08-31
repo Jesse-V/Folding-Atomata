@@ -24,13 +24,13 @@
 \******************************************************************************/
 
 #include "Viewer.hpp"
-#include "SlotViewer.hpp"
 #include "FAHClientIO.hpp"
 #include "../Sockets/Connection.hpp"
 #include "../Sockets/SocketException.hpp"
 #include "../Modeling/DataBuffers/SampledBuffers/CubeTextureMap.hpp"
 #include "../Modeling/Shading/ShaderManager.hpp"
 #include <thread>
+#include <algorithm>
 #include <iostream>
 
 /*
@@ -103,12 +103,12 @@ void Viewer::addSkybox()
     auto primaseImage  = std::make_shared<Image>(IMAGES_DIR + "Primase.png");
     auto ribosomeImage = std::make_shared<Image>(IMAGES_DIR + "Ribosome.png");
 
-    auto cubeTextureMap = std::make_shared<CubeTextureMap>(msmImage, msmImage,
-        primaseImage, primaseImage, ribosomeImage, ribosomeImage);
-    BufferList list = { cubeTextureMap };
+    //auto cubeTextureMap = std::make_shared<CubeTextureMap>(msmImage, msmImage,
+    //    primaseImage, primaseImage, ribosomeImage, ribosomeImage);
+    //BufferList list = { cubeTextureMap };
 
-    //auto cBuffer = std::make_shared<ColorBuffer>(glm::vec3(0.05), 8);
-    //BufferList list = { cBuffer };
+    auto cBuffer = std::make_shared<ColorBuffer>(glm::vec3(0.05), 8);
+    BufferList list = { cBuffer };
 
     auto model = std::make_shared<Model>(getSkyboxMesh(), list);
     auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
@@ -176,7 +176,8 @@ void Viewer::addSlotViewers()
         if (trajectories.size() == 0)
             throw std::runtime_error("Not enough slots to work with.");
 
-        SlotViewer slotViewer(trajectories[0], scene_);
+        auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
+        slotViewers_.push_back(slot0Viewer);
     }
     catch (SocketException&)
     {
@@ -220,7 +221,12 @@ std::shared_ptr<Camera> Viewer::createCamera()
 
 void Viewer::update(int deltaTime)
 {
-
+    for_each (slotViewers_.begin(), slotViewers_.end(),
+        [&](const std::shared_ptr<SlotViewer>& viewer)
+        {
+            viewer->update(deltaTime);
+        }
+    );
 }
 
 
@@ -307,7 +313,7 @@ Viewer& Viewer::getInstance()
 
         std::cout << "Creating Viewer..." << std::endl;
         singleton_ = new Viewer();
-        std::cout << "... finished creating Viewer." << std::endl;
+        std::cout << "... done creating Viewer." << std::endl;
     }
     catch (std::exception& e)
     {

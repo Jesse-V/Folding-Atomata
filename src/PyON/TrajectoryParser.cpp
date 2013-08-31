@@ -37,13 +37,13 @@ TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
     auto top = parseTopology(StringManip::between(trajStr, topBegin, topEnd));
     TrajectoryPtr trajectory = std::make_shared<Trajectory>(top);
 
-    std::size_t index = 0;
     const std::string snapBegin = "PyON 1 positions\n[", snapEnd = "]\n---";
+    std::size_t index = trajStr.find(snapBegin, 0);
     while (index != std::string::npos)
     {
         auto snapStr = StringManip::between(trajStr, snapBegin, snapEnd, index);
         trajectory->addSnapshot(parseSnapshot(snapStr));
-        index = trajStr.find("PyON 1 positions", index + 1);
+        index = trajStr.find(snapBegin, index + 1);
     }
 
     std::cout << "done." << std::endl;

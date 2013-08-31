@@ -34,16 +34,23 @@
 
 SlotViewer::SlotViewer(const TrajectoryPtr& trajectory, 
                        const std::shared_ptr<Scene>& scene) :
-    trajectory_(trajectory), scene_(scene)
+    trajectory_(trajectory), scene_(scene),
+    snapshotA_(0), snapshotB_(1)
 {
+    std::cout << std::endl;
+
     if (trajectory_->countSnapshots() == 0)
         throw std::runtime_error("No snapshots to work with!");
+    else
+        std::cout << "Creating viewer for trajectory with " <<
+            trajectory_->countSnapshots() << " snapshots..." << std::endl;
 
-    std::cout << std::endl;
     addAllAtoms();
     std::cout << std::endl;
     addAllBonds();
     std::cout << std::endl;
+
+    std::cout << "... done creating SlotViewer." << std::endl;
 }
 
 
@@ -162,10 +169,7 @@ void SlotViewer::addAllAtoms()
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
-        auto position = snapshotZero->getPosition((int)j);
-        auto matrix = glm::translate(glm::mat4(), position);
-        matrix      = glm::scale(matrix, glm::vec3(ATOM_SCALE));
-        
+        auto matrix = generateAtomMatrix(snapshotZero->getPosition((int)j));        
         auto atomModel = addAtom(atoms[j], matrix);
         atomModels_.push_back(atomModel);
     }
@@ -277,9 +281,47 @@ ModelPtr SlotViewer::generateAtomModel(const ColorPtr& cBuffer,
 
 
 
+glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position)
+{
+    auto matrix = glm::translate(glm::mat4(), position);
+    return glm::scale(matrix, glm::vec3(ATOM_SCALE));
+}
+
+
+
 void SlotViewer::update(int deltaTime)
 {
+    const int snapshotCount = trajectory_->countSnapshots();
 
+    if (snapshotCount <= 1)
+        return; //can't animate as we don't have enough snapshots
+
+    transitionTime_ += deltaTime;
+    int a = transitionTime_ / 2000; //int division on purpose
+    int b = transitionTime_ % 2000;
+    transitionTime_ = b;
+
+    if (snapshotCount > 2)
+    {
+        snapshotA_ = (snapshotA_ + a) % (snapshotCount - 2);
+        snapshotB_ = snapshotA_ + 1;
+    }
+
+    auto snapA = trajectory_->getSnapshot(snapshotA_);
+    auto snapB = trajectory_->getSnapshot(snapshotB_);
+    for (std::size_t j = 0; j < atomModels_.size(); j++)
+    {
+        auto startPosition = snapA->getPosition((int)j);
+        auto endPosition   = snapB->getPosition((int)j);
+        auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
+
+        /*std::cout << j << "," << (b / 2000.0f) << std::endl;
+        std::cout << startPosition.x << "," << startPosition.y << "," << startPosition.z << std::endl;
+        std::cout << endPosition.x << "," << endPosition.y << "," << endPosition.z << std::endl;
+        std::cout << "  " << position.x << "," << position.y << "," << position.z << std::endl;*/
+
+        atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
+    }
 }
 
 
