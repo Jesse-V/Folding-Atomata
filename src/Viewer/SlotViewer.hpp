@@ -71,6 +71,9 @@ class SlotViewer
                                    const glm::mat4& matrix
         );
         glm::mat4 generateAtomMatrix(const glm::vec3& position);
+        glm::mat4 generateBondMatrix(const glm::vec3& startPosition,
+                                     const glm::vec3& endPosition
+        );
 
         glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
         float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);

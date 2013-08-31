@@ -28,7 +28,6 @@
 #include "../Modeling/DataBuffers/ColorBuffer.hpp"
 #include <memory>
 #include <algorithm>
-#include <cmath>
 #include <iostream>
 
 
@@ -192,14 +191,11 @@ void SlotViewer::addAllBonds()
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
-        auto model = std::make_shared<Model>(generateBondMesh(), list);
         auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
         auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
-        float distance = getMagnitude(positionA - positionB);
 
-        auto matrix = alignBetween(positionA, positionB);
-        matrix = glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
-        model->setModelMatrix(matrix);
+        auto model = std::make_shared<Model>(generateBondMesh(), list);
+        model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
         addBond(bonds[j], model);
         bondModels_.push_back(model);
@@ -289,6 +285,17 @@ glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position)
 
 
 
+glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
+                                         const glm::vec3& endPosition
+)
+{
+    float distance = getMagnitude(startPosition - endPosition);
+    auto matrix = alignBetween(startPosition, endPosition);
+    return glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
+}
+
+
+
 void SlotViewer::update(int deltaTime)
 {
     const int snapshotCount = trajectory_->countSnapshots();
@@ -306,10 +313,14 @@ void SlotViewer::update(int deltaTime)
         snapshotA_ = (snapshotA_ + a) % (snapshotCount - 2);
         snapshotB_ = snapshotA_ + 1;
     }
-
+    
     auto snapA = trajectory_->getSnapshot(snapshotA_);
     auto snapB = trajectory_->getSnapshot(snapshotB_);
-    for (std::size_t j = 0; j < atomModels_.size(); j++)
+
+    const std::size_t ATOM_COUNT = trajectory_->getTopology()->getAtoms().size();
+    std::vector<glm::vec3> newPositions(ATOM_COUNT, glm::vec3());
+
+    for (std::size_t j = 0; j < ATOM_COUNT; j++)
     {
         auto startPosition = snapA->getPosition((int)j);
         auto endPosition   = snapB->getPosition((int)j);
@@ -320,7 +331,16 @@ void SlotViewer::update(int deltaTime)
         std::cout << endPosition.x << "," << endPosition.y << "," << endPosition.z << std::endl;
         std::cout << "  " << position.x << "," << position.y << "," << position.z << std::endl;*/
 
+        newPositions[j] = position;
         atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
+    }
+
+    const auto BONDS = trajectory_->getTopology()->getBonds();
+    for (std::size_t j = 0; j < BONDS.size(); j++)
+    {
+        auto positionA = newPositions[(std::size_t)BONDS[j]->getAtomA()];
+        auto positionB = newPositions[(std::size_t)BONDS[j]->getAtomB()];
+        bondModels_[j]->setModelMatrix(generateBondMatrix(positionA, positionB));
     }
 }
 
@@ -332,7 +352,7 @@ glm::mat4 SlotViewer::alignBetween(const glm::vec3& ptA, const glm::vec3& ptB)
     glm::vec3 z(0, 0, 1);
     glm::vec3 p = ptB - ptA;
 
-    float radians = (float)acos(getDotProduct(z, p) / getMagnitude(p));
+    float radians = (float)std::acos(getDotProduct(z, p) / getMagnitude(p));
     float angle = 180 / 3.1415926f * radians;
 
     auto translated = glm::translate(glm::mat4(), ptA);
