@@ -49,18 +49,10 @@ class Player
         const float YAW_COEFFICIENT = 0.05f;
         const float ROLL_SPEED = 1.8f;
 
-        const int CENTER_X, CENTER_Y;
-/*
-        enum Action
-        {
-            MOVE_LEFT, MOVE_RIGHT,
-            MOVE_FORWARD, MOVE_BACKWARD,
-            MOVE_DOWN, MOVE_UP
-        };*/
-
     public:
         Player(std::shared_ptr<Scene> scene);
         void update(int deltaTime);
+        void setWindowOffset(int x, int y);
         void grabPointer();
         void releasePointer();
         void recenterCursor();
@@ -74,6 +66,7 @@ class Player
     private:
         std::shared_ptr<Scene> scene_;
         bool mouseControlsCamera_;
+        int windowCenterX_, windowCenterY_;
 
         glm::vec3 movementDelta_;
         std::chrono::time_point<std::chrono::steady_clock> lastKeyPressed_;

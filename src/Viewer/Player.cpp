@@ -29,8 +29,8 @@
 
 
 Player::Player(std::shared_ptr<Scene> scene) : 
-    CENTER_X(glutGet(GLUT_SCREEN_WIDTH) / 2),
-    CENTER_Y(glutGet(GLUT_SCREEN_HEIGHT) / 2),
+    windowCenterX_(glutGet(GLUT_WINDOW_WIDTH)  / 2),
+    windowCenterY_(glutGet(GLUT_WINDOW_HEIGHT) / 2),
     scene_(scene), mouseControlsCamera_(true),
     lastKeyPressed_(std::chrono::steady_clock::now())
 {}
@@ -56,7 +56,7 @@ void Player::releasePointer()
 
 void Player::recenterCursor()
 {
-    glutWarpPointer(CENTER_X, CENTER_Y); //moves mouse cursor
+    glutWarpPointer(windowCenterX_, windowCenterY_); //moves mouse cursor
 }
 
 
@@ -149,7 +149,7 @@ void Player::onMouseMotion(int x, int y)
         return;
     }
 
-    if (x != CENTER_X || y != CENTER_Y)
+    if (x != windowCenterX_ || y != windowCenterY_)
     {
         scene_->getCamera()->pitch((lastY - y) * PITCH_COEFFICIENT);
         scene_->getCamera()->yaw((lastX - x) * YAW_COEFFICIENT);
@@ -183,4 +183,15 @@ void Player::update(int deltaTime)
     
     if (ms >= KEY_PRESSED_TIMEOUT) //if the key is no longer considered down, brake
         movementDelta_ *= GEOMETRIC_SPEED_DECAY;
+}
+
+
+
+void Player::setWindowOffset(int x, int y)
+{
+    //there's something upstream in Linux going on here: 
+    //this code alone shouldn't fix #30, yet it does for some reason
+    
+    windowCenterX_ = glutGet(GLUT_WINDOW_WIDTH)  / 2;
+    windowCenterY_ = glutGet(GLUT_WINDOW_HEIGHT) / 2;
 }

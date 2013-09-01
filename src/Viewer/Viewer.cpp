@@ -245,6 +245,7 @@ void Viewer::render()
 void Viewer::handleWindowReshape(int newWidth, int newHeight)
 {
     scene_->getCamera()->setAspectRatio(newWidth / (float)newHeight);
+    player_->setWindowOffset(glutGet(GLUT_WINDOW_X), glutGet(GLUT_WINDOW_Y));
 
     std::cout << "Windows updated to " << newWidth << " by " << newHeight << 
         ", a ratio of " << (newWidth / (float)newHeight) << std::endl;
