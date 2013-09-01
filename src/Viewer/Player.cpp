@@ -32,7 +32,7 @@ Player::Player(std::shared_ptr<Scene> scene) :
     CENTER_X(glutGet(GLUT_SCREEN_WIDTH) / 2),
     CENTER_Y(glutGet(GLUT_SCREEN_HEIGHT) / 2),
     scene_(scene), mouseControlsCamera_(true),
-    speed(0)
+    speed_(0)
 {}
 
 
@@ -71,26 +71,32 @@ void Player::onKeyPress(unsigned char key)
     {
         case 'a':
             actions_.push(MOVE_LEFT);
+            last_ = MOVE_LEFT;
             break;
 
         case 'd':
             actions_.push(MOVE_RIGHT);
+            last_ = MOVE_RIGHT;
             break;
 
         case 's':
             actions_.push(MOVE_BACKWARD);
+            last_ = MOVE_BACKWARD;
             break;
 
         case 'w':
             actions_.push(MOVE_FORWARD);
+            last_ = MOVE_FORWARD;
             break;
 
         case 'q':
-            actions_.push(MOVE_BACKWARD);
+            actions_.push(MOVE_UP);
+            last_ = MOVE_UP;
             break;
 
         case 'e':
-            actions_.push(MOVE_FORWARD);
+            actions_.push(MOVE_DOWN);
+            last_ = MOVE_DOWN;
             break;
 
         case ESCAPE:
@@ -98,7 +104,7 @@ void Player::onKeyPress(unsigned char key)
             break;
     }
 
-    speed += ACCELERATION;
+    speed_ += ACCELERATION;
 
     //scene_->getLights()[0]->setPosition(scene_->getCamera()->getPosition());
     //std::cout << scene_->getCamera()->toString() << std::endl;
@@ -175,44 +181,50 @@ void Player::onMouseDrag(int x, int y)
 
 void Player::update(int deltaTime)
 {
-    std::shared_ptr<Camera> camera = scene_->getCamera();
-
-    float translationDelta = TRANSLATION_SPEED * speed;
-    if (translationDelta > 0)
-        camera->moveForward(translationDelta);
+    if (speed_ > 0)
+        applyCameraAction(last_);
     
     while (!actions_.empty())
     {
         Action action = actions_.front();
         actions_.pop();
 
-        switch(action)
-        {
-            case MOVE_LEFT:
-                camera->moveRight(-translationDelta);
-                break;
-
-            case MOVE_RIGHT:
-                camera->moveRight(translationDelta);
-                break;
-
-            case MOVE_BACKWARD:
-                camera->moveForward(-translationDelta);
-                break;
-
-            case MOVE_FORWARD:
-                camera->moveForward(translationDelta);
-                break;
-
-            case MOVE_DOWN:
-                camera->moveUp(-translationDelta);
-                break;
-
-            case MOVE_UP:
-                camera->moveUp(translationDelta);
-                break;
-        }
+        applyCameraAction(action);
     }
 
-    speed = std::max(0.0f, std::min(speed - deltaTime * BRAKE_SPEED, MAX_SPEED));
+    speed_ = std::max(0.0f, std::min(speed_ - deltaTime * BRAKE_SPEED, MAX_SPEED));
+}
+
+
+
+void Player::applyCameraAction(const Action& action)
+{
+    auto camera = scene_->getCamera();
+
+    switch(action)
+    {
+        case MOVE_LEFT:
+            camera->moveRight(-speed_);
+            break;
+
+        case MOVE_RIGHT:
+            camera->moveRight(speed_);
+            break;
+
+        case MOVE_BACKWARD:
+            camera->moveForward(-speed_);
+            break;
+
+        case MOVE_FORWARD:
+            camera->moveForward(speed_);
+            break;
+
+        case MOVE_DOWN:
+            camera->moveUp(-speed_);
+            break;
+
+        case MOVE_UP:
+            camera->moveUp(speed_);
+            break;
+    }
 }
