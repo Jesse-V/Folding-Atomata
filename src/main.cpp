@@ -87,11 +87,11 @@ void windowReshapeCallback(int width, int height)
 
 
 
-void keyPressCallback(unsigned char key, int x, int y)
+void keyPressCallback(unsigned char key, int, int)
 {
     try
     {
-        Viewer::getInstance().onKeyPress(key, x, y);
+        Viewer::getInstance().getPlayer()->onKeyPress(key);
     }
     catch (std::exception& e)
     {
@@ -103,11 +103,43 @@ void keyPressCallback(unsigned char key, int x, int y)
 
 
 
-void specialKeyPressCallback(int key, int x, int y)
+void keyReleaseCallback(unsigned char key, int, int)
 {
     try
     {
-        Viewer::getInstance().onSpecialKeyPress(key, x, y);
+        Viewer::getInstance().getPlayer()->onKeyRelease(key);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught " << typeid(e).name() << " during key press: " <<
+            e.what() << std::endl;
+        glutDestroyWindow(glutGetWindow());
+    }
+}
+
+
+
+void specialKeyPressCallback(int key, int, int)
+{
+    try
+    {
+        Viewer::getInstance().getPlayer()->onSpecialKeyPress(key);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught " << typeid(e).name()
+            << " during special key press: " << e.what() << std::endl;
+        glutDestroyWindow(glutGetWindow());
+    }
+}
+
+
+
+void specialKeyReleaseCallback(int key, int, int)
+{
+    try
+    {
+        Viewer::getInstance().getPlayer()->onSpecialKeyRelease(key);
     }
     catch (std::exception& e)
     {
@@ -123,7 +155,7 @@ void mouseClickCallback(int button, int state, int x, int y)
 {
     try
     {
-        Viewer::getInstance().onMouseClick(button, state, x, y);
+        Viewer::getInstance().getPlayer()->onMouseClick(button, state, x, y);
     }
     catch (std::exception& e)
     {
@@ -139,7 +171,7 @@ void mouseMotionCallback(int x, int y)
 {
     try
     {
-        Viewer::getInstance().onMouseMotion(x, y);
+        Viewer::getInstance().getPlayer()->onMouseMotion(x, y);
     }
     catch (std::exception& e)
     {
@@ -155,7 +187,7 @@ void mouseDragCallback(int x, int y)
 {
     try
     {
-        Viewer::getInstance().onMouseDrag(x, y);
+        Viewer::getInstance().getPlayer()->onMouseDrag(x, y);
     }
     catch (std::exception& e)
     {
@@ -229,7 +261,9 @@ void assignCallbacks()
     glutReshapeFunc(windowReshapeCallback);
 
     glutKeyboardFunc(keyPressCallback);
+    glutKeyboardUpFunc(keyReleaseCallback);
     glutSpecialFunc(specialKeyPressCallback);
+    glutSpecialUpFunc(specialKeyReleaseCallback);
 
     glutMouseFunc(mouseClickCallback);
     glutMotionFunc(mouseDragCallback);
@@ -251,6 +285,7 @@ int main(int argc, char **argv)
         createGlContext();
         assertSystemRequirements();
         assignCallbacks();
+        glutIgnoreKeyRepeat(true);
 
         std::cout << "Finished Glut and window initialization." << std::endl;
 

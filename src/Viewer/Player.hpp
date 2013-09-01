@@ -28,7 +28,7 @@
 
 #include "World/Scene.hpp"
 #include <memory>
-#include <chrono>
+#include <unordered_set>
 
 /**
     The Player class handles functions relating to user interaction and movement.
@@ -40,8 +40,7 @@
 class Player
 {
     public:
-        const float ACCELERATION = 0.018f;
-        const float KEY_PRESSED_TIMEOUT = 100; //ms
+        const float ACCELERATION = 0.0011f;
         const float GEOMETRIC_SPEED_DECAY = 0.96f;
         const float MAX_SPEED = 1.5f;
 
@@ -58,18 +57,37 @@ class Player
         void recenterCursor();
 
         void onKeyPress(unsigned char key);
+        void onKeyRelease(unsigned char key);
         void onSpecialKeyPress(int key);
+        void onSpecialKeyRelease(int key);
         void onMouseClick(int button, int state, int x, int y);
         void onMouseMotion(int x, int y);
         void onMouseDrag(int x, int y);
 
     private:
+        enum class KeyAction : short
+        {
+            BACKWARD, FORWARDS,
+            LEFT, RIGHT,
+            DOWN, UP,
+            NEGATIVE_ROLL, POSITIVE_ROLL
+        };
+
+        struct KeyHash
+        {
+            std::size_t operator()(const KeyAction& myEnum) const
+            {
+                return static_cast<std::size_t>(myEnum);
+            }
+        };
+
         std::shared_ptr<Scene> scene_;
         bool mouseControlsCamera_;
         int windowCenterX_, windowCenterY_;
-
+        
         glm::vec3 movementDelta_;
-        std::chrono::time_point<std::chrono::steady_clock> lastKeyPressed_;
+        std::unordered_set<KeyAction, KeyHash> downKeys_;
+        //std::hash_map<char, CameraKey> keyBindings;
 };
 
 #endif

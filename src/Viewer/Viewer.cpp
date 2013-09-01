@@ -265,37 +265,9 @@ void Viewer::sleep(int milliseconds)
 
 
 
-void Viewer::onKeyPress(unsigned char key, int, int)
+std::shared_ptr<Player> Viewer::getPlayer()
 {
-    player_->onKeyPress(key);
-}
-
-
-
-void Viewer::onSpecialKeyPress(int key, int, int)
-{
-    player_->onSpecialKeyPress(key);
-}
-
-
-
-void Viewer::onMouseClick(int button, int state, int x, int y)
-{
-    player_->onMouseClick(button, state, x, y);
-}
-
-
-
-void Viewer::onMouseMotion(int x, int y)
-{
-    player_->onMouseMotion(x, y);
-}
-
-
-
-void Viewer::onMouseDrag(int x, int y)
-{
-    player_->onMouseDrag(x, y);
+    return player_;
 }
 
 

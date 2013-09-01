@@ -46,13 +46,7 @@ class Viewer
         void update(int deltaTime);
         void render();
         void handleWindowReshape(int screenWidth, int screenHeight);
-
-        void onKeyPress(unsigned char key, int, int);
-        void onSpecialKeyPress(int key, int x , int y);
-        void onMouseClick(int button, int state, int x, int y);
-        void onMouseMotion(int x, int y);
-        void onMouseDrag(int x, int y);
-
+        std::shared_ptr<Player> getPlayer();
         static Viewer& getInstance();
 
     private:

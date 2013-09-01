@@ -26,13 +26,13 @@
 #include "Player.hpp"
 #include "World/Camera.hpp"
 #include <algorithm>
+#include <iostream>
 
 
 Player::Player(std::shared_ptr<Scene> scene) : 
-    windowCenterX_(glutGet(GLUT_WINDOW_WIDTH)  / 2),
-    windowCenterY_(glutGet(GLUT_WINDOW_HEIGHT) / 2),
     scene_(scene), mouseControlsCamera_(true),
-    lastKeyPressed_(std::chrono::steady_clock::now())
+    windowCenterX_(glutGet(GLUT_WINDOW_WIDTH)  / 2),
+    windowCenterY_(glutGet(GLUT_WINDOW_HEIGHT) / 2)
 {}
 
 
@@ -68,52 +68,95 @@ void Player::onKeyPress(unsigned char key)
     switch(key)
     {
         case 'w':
-            movementDelta_.x += ACCELERATION; //move forwards
+            downKeys_.insert(KeyAction::FORWARDS);
             break;
 
         case 's':
-            movementDelta_.x -= ACCELERATION; //move backwards
+            downKeys_.insert(KeyAction::BACKWARD);
             break;
 
         case 'd':
-            movementDelta_.y += ACCELERATION; //move right
+            downKeys_.insert(KeyAction::RIGHT);
             break;
 
         case 'a':
-            movementDelta_.y -= ACCELERATION; //move left
+            downKeys_.insert(KeyAction::LEFT);
             break;
 
         case 'e':
-            movementDelta_.z += ACCELERATION; //move up
+            downKeys_.insert(KeyAction::UP);
             break;
 
         case 'q':
-            movementDelta_.z -= ACCELERATION; //move down
+            downKeys_.insert(KeyAction::DOWN);
             break;
 
         case ESCAPE:
             releasePointer();
             break;
     }
+}
 
-    movementDelta_ = glm::clamp(movementDelta_, -MAX_SPEED, MAX_SPEED);
-    lastKeyPressed_ = std::chrono::steady_clock::now();
+
+
+void Player::onKeyRelease(unsigned char key)
+{
+    switch(key)
+    {
+        case 'w':
+            downKeys_.erase(KeyAction::FORWARDS);
+            break;
+
+        case 's':
+            downKeys_.erase(KeyAction::BACKWARD);
+            break;
+
+        case 'd':
+            downKeys_.erase(KeyAction::RIGHT);
+            break;
+
+        case 'a':
+            downKeys_.erase(KeyAction::LEFT);
+            break;
+
+        case 'e':
+            downKeys_.erase(KeyAction::UP);
+            break;
+
+        case 'q':
+            downKeys_.erase(KeyAction::DOWN);
+            break;
+    }
 }
 
 
 
 void Player::onSpecialKeyPress(int key)
 {
-    std::shared_ptr<Camera> camera = scene_->getCamera();
-
     switch(key)
     {
         case GLUT_KEY_PAGE_UP:
-            camera->constrainedRoll(-ROLL_SPEED);
+            downKeys_.insert(KeyAction::NEGATIVE_ROLL);
             break;
 
         case GLUT_KEY_PAGE_DOWN:
-            camera->constrainedRoll(ROLL_SPEED);
+            downKeys_.insert(KeyAction::POSITIVE_ROLL);
+            break;
+    }
+}
+
+
+
+void Player::onSpecialKeyRelease(int key)
+{
+    switch(key)
+    {
+        case GLUT_KEY_PAGE_UP:
+            downKeys_.erase(KeyAction::NEGATIVE_ROLL);
+            break;
+
+        case GLUT_KEY_PAGE_DOWN:
+            downKeys_.erase(KeyAction::POSITIVE_ROLL);
             break;
     }
 }
@@ -169,19 +212,29 @@ void Player::onMouseDrag(int x, int y)
 
 void Player::update(int deltaTime)
 {
-    auto camera = scene_->getCamera();
+    if (downKeys_.count(KeyAction::FORWARDS))
+        movementDelta_.x += ACCELERATION * deltaTime;
+    if (downKeys_.count(KeyAction::BACKWARD))
+        movementDelta_.x -= ACCELERATION * deltaTime;
 
+    if (downKeys_.count(KeyAction::RIGHT))
+        movementDelta_.y += ACCELERATION * deltaTime;
+    if (downKeys_.count(KeyAction::LEFT))
+        movementDelta_.y -= ACCELERATION * deltaTime;
+
+    if (downKeys_.count(KeyAction::UP))
+        movementDelta_.z += ACCELERATION * deltaTime;
+    if (downKeys_.count(KeyAction::DOWN))
+        movementDelta_.z -= ACCELERATION * deltaTime;
+
+    movementDelta_ = glm::clamp(movementDelta_, -MAX_SPEED, MAX_SPEED);
+
+    auto camera = scene_->getCamera();
     camera->moveForward(movementDelta_.x);
     camera->moveRight(movementDelta_.y);
     camera->moveUp(movementDelta_.z);
 
-    using std::chrono::duration_cast;
-    using std::chrono::milliseconds;
-    using std::chrono::steady_clock;
-    auto timeDiff = steady_clock::now() - lastKeyPressed_;
-    long ms = duration_cast<milliseconds>(timeDiff).count();
-    
-    if (ms >= KEY_PRESSED_TIMEOUT) //if the key is no longer considered down, brake
+    if (downKeys_.empty())
         movementDelta_ *= GEOMETRIC_SPEED_DECAY;
 }
 
@@ -189,9 +242,9 @@ void Player::update(int deltaTime)
 
 void Player::setWindowOffset(int x, int y)
 {
-    //there's something upstream in Linux going on here: 
+    //there's something upstream in Linux or the drivers going on here: 
     //this code alone shouldn't fix #30, yet it does for some reason
-    
+
     windowCenterX_ = glutGet(GLUT_WINDOW_WIDTH)  / 2;
     windowCenterY_ = glutGet(GLUT_WINDOW_HEIGHT) / 2;
 }
