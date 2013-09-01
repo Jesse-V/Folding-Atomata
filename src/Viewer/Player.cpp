@@ -32,7 +32,7 @@ Player::Player(std::shared_ptr<Scene> scene) :
     CENTER_X(glutGet(GLUT_SCREEN_WIDTH) / 2),
     CENTER_Y(glutGet(GLUT_SCREEN_HEIGHT) / 2),
     scene_(scene), mouseControlsCamera_(true),
-    speed_(0)
+    lastKeyPressed_(std::chrono::steady_clock::now())
 {}
 
 
@@ -64,39 +64,31 @@ void Player::recenterCursor()
 void Player::onKeyPress(unsigned char key)
 {
     static const auto ESCAPE = (unsigned char)27;
-
-    std::shared_ptr<Camera> camera = scene_->getCamera();
     
     switch(key)
     {
-        case 'a':
-            actions_.push(MOVE_LEFT);
-            last_ = MOVE_LEFT;
-            break;
-
-        case 'd':
-            actions_.push(MOVE_RIGHT);
-            last_ = MOVE_RIGHT;
+        case 'w':
+            movementDelta_.x += ACCELERATION; //move forwards
             break;
 
         case 's':
-            actions_.push(MOVE_BACKWARD);
-            last_ = MOVE_BACKWARD;
+            movementDelta_.x -= ACCELERATION; //move backwards
             break;
 
-        case 'w':
-            actions_.push(MOVE_FORWARD);
-            last_ = MOVE_FORWARD;
+        case 'd':
+            movementDelta_.y += ACCELERATION; //move right
             break;
 
-        case 'q':
-            actions_.push(MOVE_UP);
-            last_ = MOVE_UP;
+        case 'a':
+            movementDelta_.y -= ACCELERATION; //move left
             break;
 
         case 'e':
-            actions_.push(MOVE_DOWN);
-            last_ = MOVE_DOWN;
+            movementDelta_.z += ACCELERATION; //move up
+            break;
+
+        case 'q':
+            movementDelta_.z -= ACCELERATION; //move down
             break;
 
         case ESCAPE:
@@ -104,10 +96,8 @@ void Player::onKeyPress(unsigned char key)
             break;
     }
 
-    speed_ += ACCELERATION;
-
-    //scene_->getLights()[0]->setPosition(scene_->getCamera()->getPosition());
-    //std::cout << scene_->getCamera()->toString() << std::endl;
+    movementDelta_ = glm::clamp(movementDelta_, -MAX_SPEED, MAX_SPEED);
+    lastKeyPressed_ = std::chrono::steady_clock::now();
 }
 
 
@@ -173,58 +163,24 @@ void Player::onMouseMotion(int x, int y)
 
 
 void Player::onMouseDrag(int x, int y)
-{
-
-}
+{}
 
 
 
 void Player::update(int deltaTime)
 {
-    if (speed_ > 0)
-        applyCameraAction(last_);
-    
-    while (!actions_.empty())
-    {
-        Action action = actions_.front();
-        actions_.pop();
-
-        applyCameraAction(action);
-    }
-
-    speed_ = std::max(0.0f, std::min(speed_ - deltaTime * BRAKE_SPEED, MAX_SPEED));
-}
-
-
-
-void Player::applyCameraAction(const Action& action)
-{
     auto camera = scene_->getCamera();
 
-    switch(action)
-    {
-        case MOVE_LEFT:
-            camera->moveRight(-speed_);
-            break;
+    camera->moveForward(movementDelta_.x);
+    camera->moveRight(movementDelta_.y);
+    camera->moveUp(movementDelta_.z);
 
-        case MOVE_RIGHT:
-            camera->moveRight(speed_);
-            break;
-
-        case MOVE_BACKWARD:
-            camera->moveForward(-speed_);
-            break;
-
-        case MOVE_FORWARD:
-            camera->moveForward(speed_);
-            break;
-
-        case MOVE_DOWN:
-            camera->moveUp(-speed_);
-            break;
-
-        case MOVE_UP:
-            camera->moveUp(speed_);
-            break;
-    }
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::steady_clock;
+    auto timeDiff = steady_clock::now() - lastKeyPressed_;
+    long ms = duration_cast<milliseconds>(timeDiff).count();
+    
+    if (ms >= KEY_PRESSED_TIMEOUT) //if the key is no longer considered down, brake
+        movementDelta_ *= GEOMETRIC_SPEED_DECAY;
 }

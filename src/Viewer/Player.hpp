@@ -28,7 +28,7 @@
 
 #include "World/Scene.hpp"
 #include <memory>
-#include <queue>
+#include <chrono>
 
 /**
     The Player class handles functions relating to user interaction and movement.
@@ -40,22 +40,23 @@
 class Player
 {
     public:
-        const float ACCELERATION = 0.05f;
-        const float BRAKE_SPEED = 0.0006f;
+        const float ACCELERATION = 0.018f;
+        const float KEY_PRESSED_TIMEOUT = 100; //ms
+        const float GEOMETRIC_SPEED_DECAY = 0.96f;
         const float MAX_SPEED = 1.5f;
 
-        const float PITCH_COEFFICIENT = 0.1f;
+        const float PITCH_COEFFICIENT = 0.05f;
         const float YAW_COEFFICIENT = 0.05f;
         const float ROLL_SPEED = 1.8f;
 
         const int CENTER_X, CENTER_Y;
-
+/*
         enum Action
         {
             MOVE_LEFT, MOVE_RIGHT,
             MOVE_FORWARD, MOVE_BACKWARD,
             MOVE_DOWN, MOVE_UP
-        };
+        };*/
 
     public:
         Player(std::shared_ptr<Scene> scene);
@@ -71,15 +72,11 @@ class Player
         void onMouseDrag(int x, int y);
 
     private:
-        void applyCameraAction(const Action& action);
-
-    private:
         std::shared_ptr<Scene> scene_;
         bool mouseControlsCamera_;
 
-        float speed_;
-        Action last_;
-        std::queue<Action> actions_;
+        glm::vec3 movementDelta_;
+        std::chrono::time_point<std::chrono::steady_clock> lastKeyPressed_;
 };
 
 #endif
