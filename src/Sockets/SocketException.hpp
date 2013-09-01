@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef SOCKET_EXCEPTION_HPP
-#define SOCKET_EXCEPTION_HPP
+#ifndef SOCKET_EXCEPTION
+#define SOCKET_EXCEPTION
 
 #include <string>
 

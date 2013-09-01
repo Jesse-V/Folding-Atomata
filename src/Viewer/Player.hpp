@@ -28,6 +28,7 @@
 
 #include "World/Scene.hpp"
 #include <memory>
+#include <queue>
 
 /**
     The Player class handles functions relating to user interaction and movement.
@@ -39,7 +40,11 @@
 class Player
 {
     public:
-        const float TRANSLATION_SPEED = 0.30f;
+        const float TRANSLATION_SPEED = 0.3f;
+        const float ACCELERATION = 0.05f;
+        const float BRAKE_SPEED = 0.0006f;
+        const float MAX_SPEED = 1.5f;
+
         const float PITCH_COEFFICIENT = 0.1f;
         const float YAW_COEFFICIENT = 0.05f;
         const float ROLL_SPEED = 1.8f;
@@ -48,6 +53,7 @@ class Player
 
     public:
         Player(std::shared_ptr<Scene> scene);
+        void update(int deltaTime);
         void grabPointer();
         void releasePointer();
         void recenterCursor();
@@ -61,6 +67,16 @@ class Player
     private:
         std::shared_ptr<Scene> scene_;
         bool mouseControlsCamera_;
+
+        enum Action
+        {
+            MOVE_LEFT, MOVE_RIGHT,
+            MOVE_FORWARD, MOVE_BACKWARD,
+            MOVE_DOWN, MOVE_UP
+        };
+
+        float speed;
+        std::queue<Action> actions_;
 };
 
 #endif

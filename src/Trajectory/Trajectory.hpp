@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef TRAJECTORY_HPP
-#define TRAJECTORY_HPP
+#ifndef TRAJECTORY
+#define TRAJECTORY
 
 #include "Topology.hpp"
 #include "Snapshot.hpp"

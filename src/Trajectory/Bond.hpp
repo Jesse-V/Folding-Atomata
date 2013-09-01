@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef BOND_HPP
-#define BOND_HPP
+#ifndef BOND
+#define BOND
 
 #include <memory>
 

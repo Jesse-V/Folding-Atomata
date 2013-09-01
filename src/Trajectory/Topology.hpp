@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef TOPOLOGY_HPP
-#define TOPOLOGY_HPP
+#ifndef TOPOLOGY
+#define TOPOLOGY
 
 #include "Atom.hpp"
 #include "Bond.hpp"

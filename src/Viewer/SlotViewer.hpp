@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef SLOT_VIEWER_HPP
-#define SLOT_VIEWER_HPP
+#ifndef SLOT_VIEWER
+#define SLOT_VIEWER
 
 #include "../Trajectory/Trajectory.hpp"
 #include "../Modeling/Mesh/Mesh.hpp"

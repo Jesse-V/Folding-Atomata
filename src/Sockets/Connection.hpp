@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef CONNECTION_HPP
-#define CONNECTION_HPP
+#ifndef CONNECTION
+#define CONNECTION
 
 #include "ClientSocket.hpp"
 #include <string>

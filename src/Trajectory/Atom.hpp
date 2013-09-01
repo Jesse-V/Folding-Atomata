@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef ATOM_HPP
-#define ATOM_HPP
+#ifndef ATOM
+#define ATOM
 
 #include "glm/glm.hpp"
 #include <string>

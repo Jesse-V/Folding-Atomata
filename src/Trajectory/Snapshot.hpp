@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef SNAPSHOT_HPP
-#define SNAPSHOT_HPP
+#ifndef SNAPSHOT
+#define SNAPSHOT
 
 #include "glm/glm.hpp"
 #include <vector>

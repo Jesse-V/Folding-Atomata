@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef SOCKET_HPP
-#define SOCKET_HPP
+#ifndef SOCKET
+#define SOCKET
 
 #include <sys/types.h>
 #include <sys/socket.h>

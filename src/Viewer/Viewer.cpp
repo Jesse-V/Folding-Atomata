@@ -88,7 +88,7 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    addSkybox();
+    //addSkybox();
     addSlotViewers();
 }
 
@@ -103,12 +103,9 @@ void Viewer::addSkybox()
     auto primaseImage  = std::make_shared<Image>(IMAGES_DIR + "Primase.png");
     auto ribosomeImage = std::make_shared<Image>(IMAGES_DIR + "Ribosome.png");
 
-    //auto cubeTextureMap = std::make_shared<CubeTextureMap>(msmImage, msmImage,
-    //    primaseImage, primaseImage, ribosomeImage, ribosomeImage);
-    //BufferList list = { cubeTextureMap };
-
-    auto cBuffer = std::make_shared<ColorBuffer>(glm::vec3(0.05), 8);
-    BufferList list = { cBuffer };
+    auto cubeTextureMap = std::make_shared<CubeTextureMap>(msmImage, msmImage,
+        primaseImage, primaseImage, ribosomeImage, ribosomeImage);
+    BufferList list = { cubeTextureMap };
 
     auto model = std::make_shared<Model>(getSkyboxMesh(), list);
     auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
@@ -221,6 +218,8 @@ std::shared_ptr<Camera> Viewer::createCamera()
 
 void Viewer::update(int deltaTime)
 {
+    player_->update(deltaTime);
+    
     for_each (slotViewers_.begin(), slotViewers_.end(),
         [&](const std::shared_ptr<SlotViewer>& viewer)
         {
@@ -233,8 +232,6 @@ void Viewer::update(int deltaTime)
 
 void Viewer::render()
 {
-    //glClearColor(.39f, 0.58f, 0.93f, 0.0f); //nice blue background
-    //glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     timeSpentRendering_ += scene_->render();

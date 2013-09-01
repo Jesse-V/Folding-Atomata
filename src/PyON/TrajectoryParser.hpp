@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef TRAJECTORY_PARSER_HPP
-#define TRAJECTORY_PARSER_HPP
+#ifndef TRAJECTORY_PARSER
+#define TRAJECTORY_PARSER
 
 #include "../Trajectory/Trajectory.hpp"
 
