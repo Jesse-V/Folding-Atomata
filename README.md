@@ -10,7 +10,7 @@ View the biological machines that run the body! Folding Atomata is a third-party
 
 ### Installation
 
-There are several ways to install Folding Atomata:
+Once you have Folding@home installed and running, you're ready to install Atomata. There are several ways to do this:
 
 * **Installation from PPA. This is the recommended, easiest, and most secure route.** Simply run these commands:
 > 1. **sudo add-apt-repository ppa:jvictors/gitstable**
@@ -21,21 +21,21 @@ There are several ways to install Folding Atomata:
 
 * Installation from .deb file. This is for Debian systems or if you don't want Atomata to automatically update.
 > 1. Visit the [Releases page](https://github.com/Jesse-V/Folding-Atomata/releases).
-> 2. Download the .deb folder from the latest release (the one at the top). i386 is 32-bit, amd64 is 64-bit.
-> 3. Install the .deb file package.
+> 2. Download the .deb file for the latest release. i386 is 32-bit, amd64 is 64-bit.
+> 3. Install the .deb package.
 
-    That .deb folder is hosted by Github. If you prefer, you can download the one from Launchpad by visiting [my PPA](https://launchpad.net/~jvictors/+archive/gitstable/+packages), clicking on the latest version build for your distribution, and then downloading and installing the appropriate .deb file.
+    Those .deb files are hosted by Github. If you prefer, you can download the one from Launchpad by visiting [my PPA](https://launchpad.net/~jvictors/+archive/gitstable/+packages), clicking on the latest version build for your distribution, and then downloading and installing the appropriate .deb file.
 
 * Install from source, for the latest and greatest!
 
     There's also the option of installing Folding Atomata directly from the source repository. I recommend visiting the [Releases page](https://github.com/Jesse-V/Folding-Atomata/releases) and downloading the .zip source of the latest stable edition. If you really want the cutting-edge and possible unstable edition, download the .zip from the top of the source tree via [this link](https://github.com/Jesse-V/Folding-Atomata/archive/master.zip).
 
-    > 1. Once you have download the source, use the .gitInstall.sh script to install build, compile, and install the program. You will need the root password for this, because that script installs the libglew-dev, freeglut3-dev, and cmake libraries and installs to /usr/share/.
-    > 2. If you don't want to install Atomata from the source, install those libraries via **sudo apt-get install libglew-dev freeglut3-dev cmake build-essential**, navigate into the _src_ directory, and then use the **./ClangCompileRun.sh** script to compile with the [Clang compiler](https://en.wikipedia.org/wiki/Clang), or alternatively, use **./compileRun.sh** to compile using GCC. I prefer using Clang for development, but it doesn't matter too much if you're installing it from source.
+    > 1. Once you have download the source, use **./gitInstall.sh** to install build, compile, and install the program. You will need the root password for this, because that script installs the libglew-dev, freeglut3-dev, and cmake libraries and installs to /usr/share/.
+    > 2. If you don't want to install Atomata from the source, install those libraries via **sudo apt-get install libglew-dev freeglut3-dev cmake build-essential**, navigate into the _src_ directory, and then use **./ClangCompileRun.sh** to compile with the [Clang compiler](https://en.wikipedia.org/wiki/Clang), or alternatively, use **./compileRun.sh** to compile using GCC. I prefer using Clang for development, but it doesn't matter too much if you're installing it from source.
 
 ### Usage
 
-Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata** and it will run with verbose output. If you need help, type **man FoldingAtomata**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](http://foldingforum.org/), or via email.
+Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata** and it will run with verbose output. **You need to have FAHClient running on your local machine for Atomata to connect. ([#17](https://github.com/Jesse-V/Folding-Atomata/issues/17))** If you need help, type **man FoldingAtomata**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](http://foldingforum.org/), or via email.
 
 The camera is controlled via the standard game keybindings: W and S go forward and backward respectively, A and D moves left and right, and Q and E moves up and down. You can look around using the mouse. These are ordinary controls used in many games, including Minecraft. Your motion through space is supposed to be fluid and smooth, so enjoy and don't forget to look around as you're moving!
 
@@ -55,7 +55,7 @@ Encountered a bug? Would you like to help improve Atomata by offering suggestion
 
 The _master_ branch is the unstable development edition. I usually push compilable versions, but not all the time. I also prefer to make small commits, so features in the master branch aren't guaranteed to be complete or work as intended. When I've reached a stable point, I'll tag the commit, (using a 2048-bit digital signature) create a Github release, and push to my Launchpad PPA. These releases generally follow the [milestones](https://github.com/Jesse-V/Folding-Atomata/issues/milestones) and the completeness of their corresponding issues. I try to follow [semantic versioning](http://semver.org/) so the version format is major.minor.patch.build. 
 
-When developing, the *clean.sh* script in the _src_ directory is useful for cleaning out the files generated by CMake when it builds and compiles the code. Since this process is dependent on the working directory and environment, it makes sense to me to run this script to clean the build environment before I push to Github.
+When developing, the **clean.sh** script in the _src_ directory is useful for cleaning out the files generated by CMake when it builds and compiles the code. Since this process is dependent on the working directory and environment, it makes sense to me to run this script to clean the build environment before I push to Github.
 
 Wherever reasonably possible, the programming style strives to follow http://geosoft.no/development/cppstyle.html with the exception of #85.
 
