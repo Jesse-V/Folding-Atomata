@@ -31,8 +31,6 @@
 #include <vector>
 #include <memory>
 
-typedef std::vector<std::shared_ptr<OptionalDataBuffer>> BufferList;
-
 /**
     A Model is a polygon-based representation of a real-world object.
     Models are essentially defined by a Mesh, which specifies their shape
@@ -43,9 +41,12 @@ typedef std::vector<std::shared_ptr<OptionalDataBuffer>> BufferList;
     to the Model. These can define per-vertex properties such as normals or colors,
     or even per-fragment properties such as textures or bump maps.
     All of these are saved under a cs5400::Program, a wrapper for the OpenGL
-    program on the GPU. Whether or not a Model (and all its corresponding data)
-    is rendered can be toggled with the setVisible method.
+    program on the GPU. The setVisible method determines whether a Model and all
+    of its corresponding data is rendered or not.
 **/
+
+typedef std::vector<std::shared_ptr<OptionalDataBuffer>> BufferList;
+
 class Model
 {
     public:

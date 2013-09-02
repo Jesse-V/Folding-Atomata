@@ -26,6 +26,14 @@
 #ifndef COLOR_BUFFER
 #define COLOR_BUFFER
 
+/**
+    A ColorBuffer assigns a RGB color to each vertex in a Mesh.
+    During rendering, the graphics card blends these colors together to
+    produce a final fragment color on a face in between vertices.
+    When the colors aren't uniform for all vertices, this can be used for a
+    per-vertex lighting effect, which doesn't have to be done in real-time.
+**/
+
 #include "OptionalDataBuffer.hpp"
 #include <glm/glm.hpp>
 #include <memory>

@@ -26,14 +26,6 @@
 #ifndef SHADER_MANAGER
 #define SHADER_MANAGER
 
-#include "Modeling/Model.hpp"
-#include "Modeling/DataBuffers/DataBuffer.hpp"
-#include "World/Light.hpp"
-#include "Program.hpp"
-#include <memory>
-#include <vector>
-#include <GL/glut.h>
-
 /**
     A ShaderManager's primary job is to assemble GLSL code from the ShaderManager
     subclasses, and then create a cs5400:Program from that shader code.
@@ -46,6 +38,15 @@
     of templatized types. Refer to Program.hpp, ShaderUtilizer.hpp, and
     /World/Light.hpp for full typedef declarations if they are not obvious.
 **/
+
+#include "Modeling/Model.hpp"
+#include "Modeling/DataBuffers/DataBuffer.hpp"
+#include "World/Light.hpp"
+#include "Program.hpp"
+#include <memory>
+#include <vector>
+#include <GL/glut.h>
+
 class ShaderManager
 {
     public:

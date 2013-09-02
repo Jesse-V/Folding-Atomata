@@ -4,25 +4,6 @@
 #include <thread>
 #include <sstream>
 
-/*
-glm::unproject:
-    http://stackoverflow.com/questions/15709045/glmunproject-issues-world-to-screen-space-alignment-error
-    http://stackoverflow.com/questions/15060583/glmunproject-to-convert-mouse-position-to-3-coordinates
-    http://glm.g-truc.net/api/a00151.html#ga540d5f6bb3f41e5dfa38d6ebd8771765
-    http://stackoverflow.com/questions/9901453/using-glms-unproject
-
-Useful socket links:
-    http://www.codeproject.com/Questions/368114/telnet-within-a-C-Cplusplus-program
-    http://www.cpp-home.com/forum/viewtopic.php?t=8936
-    http://codebase.eu/tutorial/linux-socket-programming-c/
-    http://stackoverflow.com/questions/2952733/using-sys-socket-h-functions-on-windows
-
-    http://stackoverflow.com/questions/670891/is-there-a-way-for-multiple-processes-to-share-a-listening-socket
-    https://forums.oracle.com/thread/2416799?tstart=210
-    http://msdn.microsoft.com/en-us/library/5w7b7x5f.aspx
-    http://www.cplusplus.com/forum/general/12836/
-*/
-
 static bool readyToUpdate = false;
 
 void updateCallback()
@@ -275,9 +256,10 @@ void assignCallbacks()
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-    initializeGlutWindow(glutGet(GLUT_SCREEN_WIDTH),
-                         glutGet(GLUT_SCREEN_HEIGHT),
-                         "Folding Atomata - third-party F@h simulation viewer"
+    initializeGlutWindow(
+        glutGet(GLUT_SCREEN_WIDTH),
+        glutGet(GLUT_SCREEN_HEIGHT),
+        "Folding Atomata - third-party Folding@home simulation viewer"
     );
 
     try

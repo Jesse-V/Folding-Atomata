@@ -26,12 +26,13 @@
 #ifndef QUAD_STRUCT
 #define QUAD_STRUCT
 
+/**
+   Represents a face that is defined by four point indicies.
+**/
+
 #include <GL/glut.h>
 #include "glm/glm.hpp"
 
-/**
-    
-**/
 struct Quad
 {
     Quad(GLuint aa = 0, GLuint bb = 0, GLuint cc = 0, GLuint dd = 0)

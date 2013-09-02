@@ -26,6 +26,21 @@
 #ifndef SCENE
 #define SCENE
 
+/**
+    A Scene is basically a high-level container for Models, Lights, and a Camera.
+    This allows for an application to use multiple Scenes for different 
+    environments or locations. Scene::render() will handle the management of
+    rendering all Models with all the Lights, as seen by the given Camera. A
+    Scene uses a multimap to create a 1-to-many mapping between Programs and
+    Models. This is useful when many Models are the same, but they
+    are drawn in different locations. They would all share the same Program and
+    the same GPU-side data, and synchronizing data with their Program would
+    affect them all simultaneously. This adds a bit of complexity, but is a
+    very significant optimization: it gave an 9x speedup when it was first
+    implemented, but this depends on the mapping of course.
+
+**/
+
 #include "Camera.hpp"
 #include "Light.hpp"
 #include "Modeling/Shading/Program.hpp"
@@ -37,13 +52,6 @@
 typedef std::shared_ptr<Model> ModelPtr;
 typedef std::unordered_multimap<ProgramPtr, ModelPtr> ProgramModelMultimap;
 
-/**
-    A Scene is basically a high-level container for Models, Lights, and a Camera.
-    This allows for an application to use multiple Scenes for different environments
-    or locations. Another advantage is that Scene::render() will handle the
-    management of rendering all Models with all the Lights, as seen by the given
-    Camera.
-**/
 class Scene
 {
     public:
@@ -55,13 +63,10 @@ class Scene
         void setCamera(const std::shared_ptr<Camera>& camera);
         void setAmbientLight(const glm::vec3& rgb);
         void sync();
-        float render(); //iterate through all Programs to render
+        float render();
 
         std::shared_ptr<Camera> getCamera();
         int getModelCount();
-        //std::vector<ModelPtr> getModels();
-        //std::vector<ProgramPtr> getPrograms();
-        //int getModelCount(), getProgramCount();
         LightList getLights();
         glm::vec3 getAmbientLight();
 

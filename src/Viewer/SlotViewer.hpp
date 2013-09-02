@@ -26,18 +26,19 @@
 #ifndef SLOT_VIEWER
 #define SLOT_VIEWER
 
+/*
+    SlotViewer handles the viewing of the protein from a particular slot.
+    It is given the Trajectory for that slot, and then adds atoms and bonds
+    Models to the Scene. The update function animates them by interpolating
+    between the available checkpoints. The animation jumps to the first
+    checkpoint when it reaches the final one. This is in contrast to FAHViewer,
+    which runs the animation backwards.
+*/
+
 #include "../Trajectory/Trajectory.hpp"
 #include "../Modeling/Mesh/Mesh.hpp"
 #include "../Modeling/DataBuffers/ColorBuffer.hpp"
 #include "../World/Scene.hpp"
-
-/*
-SlotViewer handles the viewing of the protein from a particular slot.
-The protein is displayed as soon as the topology comes in, and then explodes
-into position once the first checkpoint becomes available. From there, it iterates
-through all checkpoints, and then jumps to the first checkpoint and repeats.
-If Tracers are enabled, it shows them.
-*/
 
 typedef std::pair<ProgramPtr, ColorPtr> AtomModelInfo;
 

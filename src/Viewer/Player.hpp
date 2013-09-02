@@ -26,17 +26,20 @@
 #ifndef PLAYER
 #define PLAYER
 
-#include "World/Scene.hpp"
-#include <memory>
-#include <unordered_set>
-
 /**
     The Player class handles functions relating to user interaction and movement.
     Its main goal is to represent the user interacting with the Scene.
     For example, one of its basic jobs is to accept and handle mouse and keyboard
     actions and use them to move the Scene's Camera accordingly.
-    the Scene's Camera.
+    The mouse controls the orientation of the camera, and the WASDQE keys
+    control the location. The camera moves with linear acceleration and
+    geometric (non-linear) deceleration, which creates smooth and fluid movement.
 **/
+
+#include "World/Scene.hpp"
+#include <memory>
+#include <unordered_set>
+
 class Player
 {
     public:
@@ -46,11 +49,12 @@ class Player
 
         const float PITCH_COEFFICIENT = 0.05f;
         const float YAW_COEFFICIENT = 0.05f;
-        const float ROLL_SPEED = 1.8f;
+        const float ROLL_SPEED = 0.05f;
 
     public:
         Player(std::shared_ptr<Scene> scene);
         void update(int deltaTime);
+        void applyAcceleration(int deltaTime);
         void setWindowOffset(int x, int y);
         void grabPointer();
         void releasePointer();
@@ -63,14 +67,14 @@ class Player
         void onMouseClick(int button, int state, int x, int y);
         void onMouseMotion(int x, int y);
         void onMouseDrag(int x, int y);
-
+        
     private:
         enum class KeyAction : short
         {
-            BACKWARD, FORWARDS,
-            LEFT, RIGHT,
-            DOWN, UP,
-            NEGATIVE_ROLL, POSITIVE_ROLL
+            FORWARD, BACKWARD,
+            RIGHT, LEFT,
+            UP, DOWN, 
+            POSITIVE_ROLL, NEGATIVE_ROLL
         };
 
         struct KeyHash

@@ -26,6 +26,11 @@
 #ifndef STRING_MANIP
 #define STRING_MANIP
 
+/**
+    Defines some useful string manipulation methods. These are used by the
+    TrajectoryParser class for isolating data in a PyON-formatted string.
+**/
+
 #include <string>
 #include <vector>
 

@@ -26,14 +26,15 @@
 #ifndef SHADER_SNIPPET
 #define SHADER_SNIPPET
 
-#include <string>
-
 /**
-    GLSL is a C-based language, and follows a very similar format. Fields follow
+    The ShaderSnippet class is a container for three sections of GLSL code:
+    fields, methods, and code that goes in main(). Fields follow
     preprocessor directives, methods follow fields, and main() follows fields.
-    The ShaderSnippet class is a container for these three sections of code.
     The ShaderManager then assembles then in the correct order.
 **/
+
+#include <string>
+
 class ShaderSnippet
 {
     public:

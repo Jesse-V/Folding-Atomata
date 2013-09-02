@@ -30,9 +30,6 @@
 #include <memory>
 #include <vector>
 
-typedef std::shared_ptr<ShaderSnippet> SnippetPtr;
-typedef std::vector<SnippetPtr> SnippetList;
-
 /**
     A ShaderUntilizer is a purely abstract class that declares two methods
     for fetching GLSL code. Many classes in /Modeling as well as in /World
@@ -43,6 +40,10 @@ typedef std::vector<SnippetPtr> SnippetList;
     vertex and fragment shaders. Subclasses define the implementation of what
     code is returned.
 **/
+
+typedef std::shared_ptr<ShaderSnippet> SnippetPtr;
+typedef std::vector<SnippetPtr> SnippetList;
+
 class ShaderUtilizer
 {
     public:

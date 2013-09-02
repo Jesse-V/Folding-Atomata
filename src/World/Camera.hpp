@@ -28,11 +28,6 @@
 
 #define GLM_SWIZZLE //necessary for certain GLM methods like .xyz()
 
-#include "glm/glm.hpp"
-#include <GL/glew.h>
-#include <memory>
-#include <string>
-
 /**
     Defines the functionality of a fisheye (perspective) camera.
     A Camera is defined by three basic vectors: its position, viewing direction,
@@ -44,6 +39,12 @@
     a camera is nothing more than another matrix that is used to project a
     polygon onto the screen. It defines the "camera space".
 **/
+
+#include "glm/glm.hpp"
+#include <GL/glew.h>
+#include <memory>
+#include <string>
+
 class Camera
 {
     public:

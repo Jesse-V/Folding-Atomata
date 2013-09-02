@@ -68,7 +68,7 @@ void Player::onKeyPress(unsigned char key)
     switch(key)
     {
         case 'w':
-            downKeys_.insert(KeyAction::FORWARDS);
+            downKeys_.insert(KeyAction::FORWARD);
             break;
 
         case 's':
@@ -104,7 +104,7 @@ void Player::onKeyRelease(unsigned char key)
     switch(key)
     {
         case 'w':
-            downKeys_.erase(KeyAction::FORWARDS);
+            downKeys_.erase(KeyAction::FORWARD);
             break;
 
         case 's':
@@ -212,7 +212,29 @@ void Player::onMouseDrag(int x, int y)
 
 void Player::update(int deltaTime)
 {
-    if (downKeys_.count(KeyAction::FORWARDS))
+    applyAcceleration(deltaTime);
+
+    movementDelta_ = glm::clamp(movementDelta_, -MAX_SPEED, MAX_SPEED);
+
+    auto camera = scene_->getCamera();
+    camera->moveForward(movementDelta_.x);
+    camera->moveRight(movementDelta_.y);
+    camera->moveUp(movementDelta_.z);
+
+    if (downKeys_.count(KeyAction::POSITIVE_ROLL))
+        camera->roll(ROLL_SPEED * deltaTime);
+    if (downKeys_.count(KeyAction::NEGATIVE_ROLL))
+        camera->roll(-ROLL_SPEED * deltaTime);
+
+    if (downKeys_.empty())
+        movementDelta_ *= GEOMETRIC_SPEED_DECAY;
+}
+
+
+
+void Player::applyAcceleration(int deltaTime)
+{
+    if (downKeys_.count(KeyAction::FORWARD))
         movementDelta_.x += ACCELERATION * deltaTime;
     if (downKeys_.count(KeyAction::BACKWARD))
         movementDelta_.x -= ACCELERATION * deltaTime;
@@ -226,16 +248,6 @@ void Player::update(int deltaTime)
         movementDelta_.z += ACCELERATION * deltaTime;
     if (downKeys_.count(KeyAction::DOWN))
         movementDelta_.z -= ACCELERATION * deltaTime;
-
-    movementDelta_ = glm::clamp(movementDelta_, -MAX_SPEED, MAX_SPEED);
-
-    auto camera = scene_->getCamera();
-    camera->moveForward(movementDelta_.x);
-    camera->moveRight(movementDelta_.y);
-    camera->moveUp(movementDelta_.z);
-
-    if (downKeys_.empty())
-        movementDelta_ *= GEOMETRIC_SPEED_DECAY;
 }
 
 

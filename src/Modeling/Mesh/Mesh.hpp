@@ -26,10 +26,6 @@
 #ifndef MESH
 #define MESH
 
-#include "Modeling/DataBuffers/IndexBuffer.hpp"
-#include "Modeling/DataBuffers/VertexBuffer.hpp"
-#include "Triangle.struct"
-
 /**
     A Mesh contains the set of simple polygons that comprise a representation
     of a real-world object. A Mesh must contain a VertexBuffer, which defines
@@ -42,13 +38,18 @@
     Alternatively, a Mesh initialized with both a VertexBuffer and an IndexBuffer
     would be {(0, 0), (1, 1), (0, 1), (1, 0)} and {(0, 1, 2), (0, 3, 1)}.
     The memory benefits get more significant with more complex models where
-    a vertex is used to help define more than one triangle. A Mesh can be
+    a vertex is used to help define more than one face. A Mesh can be
     rendered as a cloud of points or a wireframe (depending on the mode passed
     to Mesh::draw) but is most often drawn with GL_TRIANGLES.
     Note that "glEnable(GL_CULL_FACE); glCullFace(GL_BACK);" prevents OpenGL
-    from drawing triangles that are on the backside of objects, (not facing
-    the viewer) a significant rendering optimization.
+    from drawing triangles that are not facing the viewer, a significant
+    rendering optimization.
 **/
+
+#include "Modeling/DataBuffers/IndexBuffer.hpp"
+#include "Modeling/DataBuffers/VertexBuffer.hpp"
+#include "Triangle.struct"
+
 class Mesh : public DataBuffer
 {
     public:

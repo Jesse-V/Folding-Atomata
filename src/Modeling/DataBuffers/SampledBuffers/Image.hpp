@@ -26,6 +26,14 @@
 #ifndef IMAGE
 #define IMAGE
 
+/**
+    An Image holds raw character data that represents a 2D sprite.
+    Images can either be loaded from .bmp or .png files, but the net
+    result is the same. When the image is read from the disk,
+    it's then ready to be given to OpenGL for use. Images are commonly used
+    for texture mapping in 2D or 3D, or for bump mapping a 2D surface.
+**/
+
 #include <string>
 
 class Image

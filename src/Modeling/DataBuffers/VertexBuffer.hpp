@@ -26,10 +26,6 @@
 #ifndef VERTEX_BUFFER
 #define VERTEX_BUFFER
 
-#include "DataBuffer.hpp"
-#include "glm/glm.hpp"
-#include <vector>
-
 /**
     A VertexBuffer contains a set of points in 3D space. These help define
     the shape of a Mesh. A VertexBuffer can be drawn by itself when using an
@@ -38,6 +34,11 @@
     A VertexBuffer has GLSL data GPU-side: each vertex is given a 3D vector that
     defines its position in model-space.
 **/
+
+#include "DataBuffer.hpp"
+#include "glm/glm.hpp"
+#include <vector>
+
 class VertexBuffer : public DataBuffer
 {
     public:

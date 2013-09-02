@@ -26,6 +26,13 @@
 #ifndef FAHCLIENT_IO
 #define FAHCLIENT_IO
 
+/**
+    The FAHClientIO class is designed to handle communication to and from
+    FAHClient. This class acts as an interface between the underlying IO
+    operations and the higher-level code that processes the result. This helps
+    organize and simply requests to FAHClient.
+**/
+
 #include "../Sockets/ClientSocket.hpp"
 #include "../Trajectory/Trajectory.hpp"
 #include <memory>

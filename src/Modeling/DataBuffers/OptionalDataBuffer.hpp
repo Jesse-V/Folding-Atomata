@@ -26,9 +26,15 @@
 #ifndef OPTIONAL_DATA_BUFFER
 #define OPTIONAL_DATA_BUFFER
 
+/**
+	An OptionalDataBuffer is simply categorical, and has no definitions.
+	It is used to distinguish optional Model information from optional
+	or non-essential data that adds specialized properties to the Model.
+**/
+
 #include "DataBuffer.hpp"
 
 class OptionalDataBuffer : public DataBuffer
-{}; //simply categorical
+{};
 
 #endif

@@ -26,6 +26,14 @@
 #ifndef TRAJECTORY_PARSER
 #define TRAJECTORY_PARSER
 
+/**
+    Creates a Trajectory class by analyzing PyON-formatted strings returned
+    from FAHClient. The Trajectory class is a container for other container
+    classes that all have a very structured has-a relationship. This class
+    primarily takes the strings from the FAHClient API and returns
+    a Trajectory class.
+**/
+
 #include "../Trajectory/Trajectory.hpp"
 
 class TrajectoryParser
@@ -42,8 +50,6 @@ class TrajectoryParser
         static std::vector<BondPtr> parseBonds(const std::string& topologyStr);
         static BondPtr parseBond(const std::string& bondStr);
         static glm::vec3 parsePosition(const std::string& positionStr);
-
-        
 };
 
 #endif

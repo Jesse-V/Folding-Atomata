@@ -26,16 +26,18 @@
 #ifndef LIGHT
 #define LIGHT
 
+/**
+    Defines a point-light, that is, a light defined from a point in space.
+    A point-light is simply described as a 3D position, a color, and a power.
+    The power defines the maximum distance that it can illuminate before
+    dissipating completely. The magnitude of the color helps define the decay
+    rate (a extremely high value will appear not to dissipate at all).
+**/
+
 #include "Modeling/Shading/ShaderUtilizer.hpp"
 #include "glm/glm.hpp"
 #include <GL/glew.h>
 
-/**
-    Defines a point-light, that is, a light defined from a point in space.
-    A point-light can be simply defined as it is here: a position, color,
-    and power. The power variable defines its intensity and how far it appears
-    to spread out before it dissipates into negletable levels.
-**/
 class Light : public ShaderUtilizer
 {
     public:
