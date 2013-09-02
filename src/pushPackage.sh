@@ -2,7 +2,7 @@
 
 ./clean.sh
 
-name="folding-atomata_0.5.0.0" #major.minor.patch.build
+name="folding-atomata_0.5.0.1" #major.minor.patch.build
 
 cd ..
 tar -czf ${name}.orig.tar.gz src/ #http://xkcd.com/1168/
@@ -20,7 +20,7 @@ rm -rf debian/
 echo "Successfully made signed Debian package."
 
 cd ..
-dput ppa:jvictors/gitstable ${name}_source.changes
+dput ppa:jvictors/testing ${name}_source.changes
 
 rm -f ${name}.orig.tar.gz ${name}.debian.tar.gz
 rm -f ${name}.dsc ${name}.dsc ${name}_source.changes

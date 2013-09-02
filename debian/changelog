@@ -1,3 +1,9 @@
+folding-atomata (0.5.0.1) quantal; urgency=medium
+  
+  * Minor dependency fix.
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Sun, 1 Sept 2013 10:52:00 -0600
+
 folding-atomata (0.5.0.0) quantal; urgency=medium
   
   * First public release.
