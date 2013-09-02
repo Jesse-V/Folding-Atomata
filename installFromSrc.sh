@@ -1,7 +1,10 @@
 #!/bin/sh
 
 #build
-sudo apt-get install cmake libglew-dev freeglut3-dev build-essential
+sudo apt-get install libglew-dev freeglut3-dev libpng++-dev cmake build-essential
+    #note that this application uses freeglut3, libglew1.8, and libpng12-0
+    #other versions of these libraries might work though
+
 cd src
 cmake .
 cpus=$(grep -c ^processor /proc/cpuinfo)
