@@ -23,6 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
+#define _GLIBCXX_USE_NANOSLEEP
+                         
 #include "Viewer.hpp"
 #include "FAHClientIO.hpp"
 #include "../Sockets/Connection.hpp"

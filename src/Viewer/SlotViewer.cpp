@@ -23,6 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
+#define _GLIBCXX_USE_NANOSLEEP
+                         
 #include "SlotViewer.hpp"
 #include "../Modeling/Shading/ShaderManager.hpp"
 #include "../Modeling/DataBuffers/ColorBuffer.hpp"
