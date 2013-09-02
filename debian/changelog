@@ -1,3 +1,12 @@
+folding-atomata (0.5.1) quantal; urgency=medium
+  
+  * Bug fixes and ticket closures:
+    - Fixed segfault that occurred if slot 0 was unavailable. (#33)
+    - Improvements to the install-from-source script. (#34)
+    - Easier compilation if GCC or Clang are compiled from source. (#35)
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Sun, 2 Sept 2013 13:05:00 -0600
+
 folding-atomata (0.5.0.1) quantal; urgency=medium
   
   * Minor dependency fix.
