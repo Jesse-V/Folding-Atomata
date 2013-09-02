@@ -20,7 +20,7 @@ rm -rf debian/
 echo "Successfully made signed Debian package."
 
 cd ..
-dput ppa:jvictors/testing ${name}_source.changes
+dput ppa:jvictors/gitstable ${name}_source.changes
 
 rm -f ${name}.orig.tar.gz ${name}.debian.tar.gz
 rm -f ${name}.dsc ${name}.dsc ${name}_source.changes
