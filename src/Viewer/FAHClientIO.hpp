@@ -42,7 +42,7 @@ class FAHClientIO
 {
     public:
         FAHClientIO(const std::shared_ptr<ClientSocket> socket);
-        int getSlotCount();
+        std::vector<int> getSlotIDs();
         std::vector<TrajectoryPtr> getTrajectories();
         std::string readResponse();
 

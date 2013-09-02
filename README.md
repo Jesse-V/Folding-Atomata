@@ -5,6 +5,7 @@ View the biological machines that run the body! Folding Atomata is a third-party
 
 ### System requirements
 
+1. The Folding@home software. Atomata will connect to the software and view the running simulations.
 1. OpenGL 2.1, (GLSL 1.20) released in 2006. This is supported by Nouveau drivers.
 2. The Linux operating system. Currently only supporting Mint, *buntu, and Debian.
 
