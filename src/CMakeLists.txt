@@ -70,6 +70,7 @@ include_directories(. glm)
 #organized by importance
 add_executable(FoldingAtomata
     main.cpp
+    Options.cpp
 
     Viewer/Viewer.cpp
     Viewer/SlotViewer.cpp

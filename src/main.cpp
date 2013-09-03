@@ -26,6 +26,7 @@
 #define _GLIBCXX_USE_NANOSLEEP
 
 #include "main.hpp"
+#include "Options.hpp"
 #include "Viewer/Viewer.hpp"
 #include <thread>
 #include <sstream>
@@ -279,9 +280,12 @@ void assignCallbacks()
 
 
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
+    if (!Options::handleFlags(argc, argv))
+        return EXIT_SUCCESS;
+
     initializeGlutWindow(
         glutGet(GLUT_SCREEN_WIDTH),
         glutGet(GLUT_SCREEN_HEIGHT),

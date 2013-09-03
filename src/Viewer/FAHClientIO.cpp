@@ -55,7 +55,7 @@ void FAHClientIO::connectToFAHClient()
 
 std::vector<int> FAHClientIO::getSlotIDs()
 {
-    std::cout << "Determining available slots... ";
+    std::cout << "Determining available slots... found { ";
 
     *socket_ << "slot-info\n";
     const std::string BEGIN = "\"id\":", END = ",\n";
@@ -73,7 +73,10 @@ std::vector<int> FAHClientIO::getSlotIDs()
         slotIDs.push_back(id);
 
         index = slotInfoStr.find(BEGIN, index + 1);
+        std::cout << index << " ";
     }
+
+    std::cout << "}" << std::endl;
 
     return slotIDs;
 }

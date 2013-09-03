@@ -25,6 +25,5 @@ if (make -j $cpus) then
     #clean
     echo "Cleaning up..."
     rm -rf debian/
-    ./clean.sh
     echo "... done. Stop."
 fi

@@ -1,4 +1,4 @@
-folding-atomata (0.5.1) quantal; urgency=medium
+folding-atomata (0.5.1.1) quantal; urgency=medium
   
   * Bug fixes and ticket closures:
     - Fixed segfault that occurred if slot 0 was unavailable. (#33)
