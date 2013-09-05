@@ -2,27 +2,42 @@
 #ifndef OPTIONS
 #define OPTIONS
 
+#include <vector>
 #include <string>
+
+typedef std::vector<std::string> StringList;
 
 class Options
 {
     public:
-        static bool handleFlags(int argc, char** argv);
+
+        static Options& getInstance();
+        static bool handleFlags(int argc, char** argv); //should only call once!
+        
+        bool highVerbosity();
+        std::string getConnectionIP();
+        std::string getConnectionPort();
+        std::string getPassword();
+
+        bool bounceSnapshots();
+        bool cycleSnapshots();
+        //int renderMode();
+        std::string connectionPassword();
 
     private:
-        Options();
-        static bool highVerbosity();
-        static std::string getConnectionIP();
-        static std::string getConnectionPort();
-        static std::string getPassword();
-
-        static bool bounceSnapshots();
-        static bool cycleSnapshots();
-        static int renderMode();
-        static std::string connectionPassword();
+        //Options();
+        int handle(const StringList& options, int index);
+        bool canGrabNextOption(const StringList& options, int index);
+        bool assert(bool condition, const StringList& options, int index);
 
     private:
-        static bool highVerbosity_;
+        static Options* singleton_;
+
+        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_;
+        //int renderMode_;
+        std::string connectionIP_;
+        std::string connectionPort_;
+        std::string authPassword_;
 };
 
 #endif

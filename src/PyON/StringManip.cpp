@@ -94,3 +94,13 @@ Str StringManip::trim(const Str& str, const Str& whitespaces)
         return str.substr(start, end - start + 1);
     return "";
 }
+
+
+
+/*
+    Tests to see if a begins with b
+*/
+bool StringManip::startsWith(const std::string& a, const std::string& b)
+{
+    return a.compare(0, b.length(), b) == 0;
+}

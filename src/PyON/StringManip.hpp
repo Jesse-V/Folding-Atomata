@@ -48,6 +48,7 @@ class StringManip
         );
         static StringVector explode(const Str& str, char delim);
         static Str trim(const Str& str, const Str& whitespaces);
+        static bool startsWith(const std::string& a, const std::string& b);
 };
 
 #endif
