@@ -73,7 +73,7 @@ std::vector<int> FAHClientIO::getSlotIDs()
         slotIDs.push_back(id);
 
         index = slotInfoStr.find(BEGIN, index + 1);
-        std::cout << index << " ";
+        std::cout << id << " ";
     }
 
     std::cout << "}" << std::endl;

@@ -12,8 +12,8 @@ bool Options::handleFlags(int argc, char** argv)
     for (int j = 0; j < argc; j++)
         options.push_back(std::string(argv[j]));
 
-    int index = 0;
-    while (index < argc)
+    std::size_t index = 1; //skips the name-of-program argument
+    while (index < (std::size_t)argc)
     {
         if (options[index] == "--version")
         {
@@ -35,109 +35,30 @@ bool Options::handleFlags(int argc, char** argv)
 
 
 
-int Options::handle(const StringList& options, int index)
+std::size_t Options::handle(const StringList& options, std::size_t index)
 {
-    std::string current = options[index];
+    std::string flag = options[index];
 
-    //test for verbosity flags
-    if (current == "--verbose" || current == "-v")
-    {
-        highVerbosity_ = true;
+    //check for 1-piece flags
+    if (verbose1(flag) || connect1(flag) || bounceSnapshots1(flag) ||
+        cycleSnapshots1(flag) || password1(flag) || slotID1(flag)
+    )
         return 1;
-    }
 
-    //test for connect flag, two-piece format
-    if (current == "--connect" || current == "-v")
+    //check to see if we can grab next flag
+    if (index + 1 >= options.size())
     {
-        if (!canGrabNextOption(options, index))
-            return 1; //at end of list
-        
-        auto tokens = StringManip::explode(options[index + 1], ':');
-        if (!assert(tokens.size() == 2, options, index))
-            return 1;
-
-        connectionIP_   = tokens[0];
-        connectionPort_ = tokens[1];
+        std::cerr << "Unrecognized flag or unavailable argument for " << 
+            flag << ". Ignoring." << std::endl;
         return 2;
     }
 
-    //test for connect flag, one-piece format
-    if (StringManip::startsWith(current, "--connect="))
-    {
-        auto parts = StringManip::explode(options[index], '=');
-        if (!assert(parts.size() == 2, options, index))
-            return 1;
-
-        auto parameters = StringManip::explode(parts[1], ':');
-        if (!assert(parameters.size() == 2, options, index))
-            return 1;
-
-        connectionIP_   = parameters[0];
-        connectionPort_ = parameters[1];
-        return 1;
-    }
-
-    //test for bounce-snapshots flag, two-piece format
-    if (current == "--bounce-snapshots" || current == "-b")
-    {
-        if (!canGrabNextOption(options, index))
-            return 1; //at end of list
-
-        std::string next(options[index + 1]);
-        if (!assert(next == "true" || next == "false", options, index))
-        {
-            bounceSnapshots_ = true; //just the flag was given
-            return 2;
-        }
-        
-        std::istringstream(next) >> bounceSnapshots_;
+    //check for two-piece flags
+    std::string arg(options[index + 1]);
+    if (connect2(flag, arg) || bounceSnapshots2(flag, arg) ||
+        cycleSnapshots2(flag, arg) || password2(flag, arg) || slotID2(flag, arg)
+    )
         return 2;
-    }
-
-    //test for bounce-snapshots flag, once-piece format
-    if (StringManip::startsWith(current, "--bounce-snapshots="))
-    {
-        auto parts = StringManip::explode(options[index], '=');
-        if (!assert(parts.size() == 2, options, index))
-            return 1;
-
-        if (!assert(parts[1] == "true" || parts[1] == "false", options, index))
-            return 1;
-
-        std::istringstream(parts[1]) >> bounceSnapshots_;
-        return 1;
-    }
-
-    //test for cycle-snapshots flag, two-piece format
-    if (current == "--cycle-snapshots" || current == "-b")
-    {
-        if (!canGrabNextOption(options, index))
-            return 1; //at end of list
-
-        std::string next(options[index + 1]);
-        if (!assert(next == "true" || next == "false", options, index))
-        {
-            cycleSnapshots_ = true; //just the flag was given
-            return 2;
-        }
-        
-        std::istringstream(next) >> cycleSnapshots_;
-        return 2;
-    }
-
-    //test for cycle-snapshots flag, once-piece format
-    if (StringManip::startsWith(current, "--cycle-snapshots="))
-    {
-        auto parts = StringManip::explode(options[index], '=');
-        if (!assert(parts.size() == 2, options, index))
-            return 1;
-
-        if (!assert(parts[1] == "true" || parts[1] == "false", options, index))
-            return 1;
-
-        std::istringstream(parts[1]) >> cycleSnapshots_;
-        return 1;
-    }
 
     std::cerr << "Unrecognized flag " << options[index] << ". Ignoring." << std::endl;
     return 1;
@@ -145,12 +66,12 @@ int Options::handle(const StringList& options, int index)
 
 
 
-bool Options::canGrabNextOption(const StringList& options, int index)
+bool Options::verbose1(const std::string& flag)
 {
-    if (index + 1 >= options.size())
+    //test for verbosity flags
+    if (flag == "--verbose" || flag == "-v")
     {
-        std::cerr << "Cannot grab argument for " << options[index] << ". " <<
-            "Ignoring flag." << std::endl;
+        highVerbosity_ = true;
         return true;
     }
 
@@ -158,11 +79,192 @@ bool Options::canGrabNextOption(const StringList& options, int index)
 }
 
 
-bool Options::assert(bool condition, const StringList& options, int index)
+
+bool Options::connect1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--connect="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!assert(parts.size() == 2, flag))
+            return false;
+
+        auto parameters = StringManip::explode(parts[1], ':');
+        if (!assert(parameters.size() == 2, flag))
+            return false;
+
+        connectionIP_   = parameters[0];
+        connectionPort_ = parameters[1];
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::connect2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--connect" || flag == "-v")
+    {
+        auto tokens = StringManip::explode(arg, ':');
+        if (!assert(tokens.size() == 2, flag))
+            return false;
+
+        connectionIP_   = tokens[0];
+        connectionPort_ = tokens[1];
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::bounceSnapshots1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--bounce-snapshots="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!assert(parts.size() == 2, flag))
+            return false;
+
+        if (!assert(parts[1] == "true" || parts[1] == "false", flag))
+            return false;
+
+        std::istringstream(parts[1]) >> bounceSnapshots_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::bounceSnapshots2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--bounce-snapshots" || flag == "-b")
+    {
+        std::string next(arg);
+        if (!assert(next == "true" || next == "false", flag))
+        {
+            bounceSnapshots_ = true; //just the flag was given
+            return true;
+        }
+        
+        std::istringstream(next) >> bounceSnapshots_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::cycleSnapshots1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--cycle-snapshots="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!assert(parts.size() == 2, flag))
+            return false;
+
+        if (!assert(parts[1] == "true" || parts[1] == "false", flag))
+            return false;
+
+        std::istringstream(parts[1]) >> cycleSnapshots_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::cycleSnapshots2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--cycle-snapshots" || flag == "-b")
+    {
+        std::string next(arg);
+        if (!assert(next == "true" || next == "false", flag))
+        {
+            cycleSnapshots_ = true; //just the flag was given
+            return false;
+        }
+        
+        std::istringstream(next) >> cycleSnapshots_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::password1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--password="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!assert(parts.size() == 2, flag))
+            return false;
+
+        authPassword_ = StringManip::trim(parts[1], "\"");
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::password2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--password" || flag == "-p")
+    {
+        authPassword_ = StringManip::trim(arg, "\"");
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::slotID1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--slot="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!assert(parts.size() == 2, flag))
+            return false;
+
+        std::istringstream(parts[1]) >> slotID_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::slotID2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--slot" || flag == "-s")
+    {
+        std::istringstream(arg) >> slotID_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::assert(bool condition, const std::string& flag)
 {
     if (!condition)
     {
-        std::cerr << "Invalid parameters for " << options[index] << std::endl;
+        std::cerr << "Invalid parameters for " << flag << std::endl;
         return false;
     }
     
@@ -170,8 +272,8 @@ bool Options::assert(bool condition, const StringList& options, int index)
 }
 
 
-Options* Options::singleton_ = 0;
 
+Options* Options::singleton_ = 0;
 Options& Options::getInstance()
 {
     if (!singleton_)
@@ -184,7 +286,7 @@ Options& Options::getInstance()
 *--connect < string=127.0.0.1:36330 > An address and port to connect to in the form :
 *--bounce-snapshots < boolean=false > When the last snapshot is reached, should the animation run backwards or not.
 *--cycle-snapshots < boolean=true > Iterate through all available snapshots.
---password < string= > A password for accessing the remote client.
+*--password < string= > A password for accessing the remote client.
 */
 
 /*

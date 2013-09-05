@@ -25,16 +25,25 @@ class Options
         std::string connectionPassword();
 
     private:
-        //Options();
-        int handle(const StringList& options, int index);
-        bool canGrabNextOption(const StringList& options, int index);
-        bool assert(bool condition, const StringList& options, int index);
+        std::size_t handle(const StringList& options, std::size_t index);
+        bool verbose1(const std::string& flag);
+        bool connect1(const std::string& flag);
+        bool connect2(const std::string& flag, const std::string& arg);
+        bool bounceSnapshots1(const std::string& flag);
+        bool bounceSnapshots2(const std::string& flag, const std::string& arg);
+        bool cycleSnapshots1(const std::string& flag);
+        bool cycleSnapshots2(const std::string& flag, const std::string& arg);
+        bool password1(const std::string& flag);
+        bool password2(const std::string& flag, const std::string& arg);
+        bool slotID1(const std::string& flag);
+        bool slotID2(const std::string& flag, const std::string& arg);
+        bool assert(bool condition, const std::string& flag);
 
     private:
         static Options* singleton_;
 
         bool highVerbosity_, bounceSnapshots_, cycleSnapshots_;
-        //int renderMode_;
+        int slotID_; //, renderMode_;
         std::string connectionIP_;
         std::string connectionPort_;
         std::string authPassword_;
