@@ -53,7 +53,7 @@ int Options::handle(const StringList& options, int index)
             return 1; //at end of list
         
         auto tokens = StringManip::explode(options[index + 1], ':');
-        if (!assert(tokens.size() < 2, options, index))
+        if (!assert(tokens.size() == 2, options, index))
             return 1;
 
         connectionIP_   = tokens[0];
@@ -65,11 +65,11 @@ int Options::handle(const StringList& options, int index)
     if (StringManip::startsWith(current, "--connect="))
     {
         auto parts = StringManip::explode(options[index], '=');
-        if (!assert(parts.size() < 2, options, index))
+        if (!assert(parts.size() == 2, options, index))
             return 1;
 
         auto parameters = StringManip::explode(parts[1], ':');
-        if (!assert(parameters.size() < 2, options, index))
+        if (!assert(parameters.size() == 2, options, index))
             return 1;
 
         connectionIP_   = parameters[0];
@@ -77,7 +77,7 @@ int Options::handle(const StringList& options, int index)
         return 1;
     }
 
-    //test for bounce-snapshot flag, two-piece format
+    //test for bounce-snapshots flag, two-piece format
     if (current == "--bounce-snapshots" || current == "-b")
     {
         if (!canGrabNextOption(options, index))
@@ -94,11 +94,11 @@ int Options::handle(const StringList& options, int index)
         return 2;
     }
 
-    //test for bounce-snapshot flag, once-piece format
+    //test for bounce-snapshots flag, once-piece format
     if (StringManip::startsWith(current, "--bounce-snapshots="))
     {
         auto parts = StringManip::explode(options[index], '=');
-        if (!assert(parts.size() < 2, options, index))
+        if (!assert(parts.size() == 2, options, index))
             return 1;
 
         if (!assert(parts[1] == "true" || parts[1] == "false", options, index))
@@ -108,8 +108,8 @@ int Options::handle(const StringList& options, int index)
         return 1;
     }
 
-    //test for cycle-snapshot flag, two-piece format
-    if (current == "--bounce-snapshots" || current == "-b")
+    //test for cycle-snapshots flag, two-piece format
+    if (current == "--cycle-snapshots" || current == "-b")
     {
         if (!canGrabNextOption(options, index))
             return 1; //at end of list
@@ -125,11 +125,11 @@ int Options::handle(const StringList& options, int index)
         return 2;
     }
 
-    //test for cycle-snapshot flag, once-piece format
-    if (StringManip::startsWith(current, "--bounce-snapshots="))
+    //test for cycle-snapshots flag, once-piece format
+    if (StringManip::startsWith(current, "--cycle-snapshots="))
     {
         auto parts = StringManip::explode(options[index], '=');
-        if (!assert(parts.size() < 2, options, index))
+        if (!assert(parts.size() == 2, options, index))
             return 1;
 
         if (!assert(parts[1] == "true" || parts[1] == "false", options, index))
