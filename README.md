@@ -31,16 +31,25 @@ Once you have Folding@home installed and running, you're ready to install Atomat
 
     There's also the option of installing Folding Atomata directly from the source repository. I recommend visiting the [Releases page](https://github.com/Jesse-V/Folding-Atomata/releases) and downloading the .zip source of the latest stable edition. If you really want the cutting-edge and possible unstable edition, download the .zip from the top of the source tree via [this link](https://github.com/Jesse-V/Folding-Atomata/archive/master.zip).
 
-    > 1. Once you have download the source, use **./installFromSrc.sh** to install build, compile, and install the program. You will need the root password for this, because that script installs the libglew-dev, freeglut3-dev, libpng++-dev, and cmake libraries and installs to /usr/share/.
-    > 2. If you don't want to install Atomata from the source, install those libraries via **sudo install libglew-dev freeglut3-dev libpng++-dev cmake build-essential**, navigate into the _src_ directory, and then use **./ClangCompileRun.sh** to compile with the [Clang compiler](https://en.wikipedia.org/wiki/Clang), or alternatively, use **./compileRun.sh** to compile using GCC. I prefer using Clang for development, but it doesn't matter too much if you're installing it from source.
+    > 1. Once you have download the source, you will need the libglew-dev, freeglut3-dev libpng++-dev, cmake, and build-essential libraries.
+    > 2. **cp -rl ../debian/ debian/ && cd debian/extra_includes/ && gzip --best -c manpage > FoldingAtomata.1.gz && cd ../../**
+    > 3. **cd src/ && cmake . && make -j 4** and then as root run **make install**
+
+    You can also use **./ClangCompileRun.sh** in the _src_ directory to compile with the [Clang compiler](https://en.wikipedia.org/wiki/Clang), or alternatively, use **./compileRun.sh** to compile using GCC. I prefer using Clang for development, but it doesn't matter too much if you're installing it from source.
 
 ### Usage
 
-Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata** and it will run with verbose output. **You need to have FAHClient running on your local machine for Atomata to connect. ([#17](https://github.com/Jesse-V/Folding-Atomata/issues/17))** If you need help, type **man FoldingAtomata**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](http://foldingforum.org/), or via email.
+Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata** and it will run with verbose output. **You need to have FAHClient running on your local machine for Atomata to connect. ([#17](https://github.com/Jesse-V/Folding-Atomata/issues/17))** If you need help, type **man FoldingAtomata** or **FoldingAtomata --help**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](http://foldingforum.org/), or via email.
 
 The camera is controlled via the standard game keybindings: W and S go forward and backward respectively, A and D moves left and right, and Q and E moves up and down. You can look around using the mouse. These are ordinary controls used in many games, including Minecraft. Your motion through space is supposed to be fluid and smooth, so enjoy and don't forget to look around as you're moving!
 
 The animation moves from one available snapshot to the other, and then starts over when it reaches the end. This is in contrast to FAHViewer, which runs the animation backwards when it reaches the last snapshot. Currently, Atomata is unable to render new snapshots as they come in, but FAHViewer can. I intend to fix this.
+
+### Security
+
+Computer and network security is becoming increasingly important, and I take it very seriously. I use the 2048-bit RSA key 0xC20BEC80 to digitally sign my files when pushing to Launchpad. A virtual machine then remotely compiles and builds the package from source within a fresh installation of Ubuntu. For a PPA install, the download is verified using a 1024-bit digital signature from Launchpad. For either a PPA or .deb install, the installation uses hash functions to confirm integrity. The code is also open-source, and you are free to email me if you have any questions or concerns regarding any of its contents.
+
+That being said, Folding Atomata has exactly the same weakness that FAHViewer has: the password for remote clients is transmitted in cleartext. There is little that either of these programs can do about it. There's also no authentication or encryption when connecting to remote clients, so that bit requires a bit of trust and responsibility.
 
 ### What does "Folding Atomata" mean?
 
