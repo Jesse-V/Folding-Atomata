@@ -33,21 +33,22 @@
     organize and simply requests to FAHClient.
 **/
 
-#include "../Sockets/ClientSocket.hpp"
-#include "../Trajectory/Trajectory.hpp"
+#include "Sockets/ClientSocket.hpp"
+#include "Trajectory/Trajectory.hpp"
 #include <memory>
 #include <vector>
 
 class FAHClientIO
 {
     public:
-        FAHClientIO(const std::shared_ptr<ClientSocket> socket);
+        FAHClientIO(const std::shared_ptr<ClientSocket>& socket);
         std::vector<int> getSlotIDs();
         std::vector<TrajectoryPtr> getTrajectories();
         std::string readResponse();
 
     private:
         void connectToFAHClient();
+        void authenticate();
 
     private:
         std::shared_ptr<ClientSocket> socket_;

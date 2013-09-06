@@ -6,6 +6,16 @@
 #include <iostream>
 
 
+Options* Options::singleton_ = 0;
+Options& Options::getInstance()
+{
+    if (!singleton_)
+        singleton_ = new Options();
+    return *singleton_;
+}
+
+
+
 bool Options::handleFlags(int argc, char** argv)
 {
     std::vector<std::string> options;
@@ -27,6 +37,8 @@ bool Options::handleFlags(int argc, char** argv)
             return false;
         }
 
+        std::cout << options[index] << std::endl;
+
         index += getInstance().handle(options, index);
     }
     
@@ -41,7 +53,7 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 
     //check for 1-piece flags
     if (verbose1(flag) || connect1(flag) || bounceSnapshots1(flag) ||
-        cycleSnapshots1(flag) || password1(flag) || slotID1(flag)
+        cycleSnapshots1(flag) || password1(flag)// || slotID1(flag)
     )
         return 1;
 
@@ -56,7 +68,7 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     //check for two-piece flags
     std::string arg(options[index + 1]);
     if (connect2(flag, arg) || bounceSnapshots2(flag, arg) ||
-        cycleSnapshots2(flag, arg) || password2(flag, arg) || slotID2(flag, arg)
+        cycleSnapshots2(flag, arg) || password2(flag, arg)// || slotID2(flag, arg)
     )
         return 2;
 
@@ -85,15 +97,15 @@ bool Options::connect1(const std::string& flag)
     if (StringManip::startsWith(flag, "--connect="))
     {
         auto parts = StringManip::explode(flag, '=');
-        if (!assert(parts.size() == 2, flag))
+        if (!confirm(parts.size() == 2, flag))
             return false;
 
         auto parameters = StringManip::explode(parts[1], ':');
-        if (!assert(parameters.size() == 2, flag))
+        if (!confirm(parameters.size() == 2, flag))
             return false;
 
-        connectionIP_   = parameters[0];
-        connectionPort_ = parameters[1];
+        connectionHost_ = parameters[0];
+        std::istringstream(parameters[1]) >> connectionPort_;
         return true;
     }
 
@@ -107,11 +119,11 @@ bool Options::connect2(const std::string& flag, const std::string& arg)
     if (flag == "--connect" || flag == "-v")
     {
         auto tokens = StringManip::explode(arg, ':');
-        if (!assert(tokens.size() == 2, flag))
+        if (!confirm(tokens.size() == 2, flag))
             return false;
 
-        connectionIP_   = tokens[0];
-        connectionPort_ = tokens[1];
+        connectionHost_ = tokens[0];
+        std::istringstream(tokens[1]) >> connectionPort_;
         return true;
     }
 
@@ -125,10 +137,10 @@ bool Options::bounceSnapshots1(const std::string& flag)
     if (StringManip::startsWith(flag, "--bounce-snapshots="))
     {
         auto parts = StringManip::explode(flag, '=');
-        if (!assert(parts.size() == 2, flag))
+        if (!confirm(parts.size() == 2, flag))
             return false;
 
-        if (!assert(parts[1] == "true" || parts[1] == "false", flag))
+        if (!confirm(parts[1] == "true" || parts[1] == "false", flag))
             return false;
 
         std::istringstream(parts[1]) >> bounceSnapshots_;
@@ -145,7 +157,7 @@ bool Options::bounceSnapshots2(const std::string& flag, const std::string& arg)
     if (flag == "--bounce-snapshots" || flag == "-b")
     {
         std::string next(arg);
-        if (!assert(next == "true" || next == "false", flag))
+        if (!confirm(next == "true" || next == "false", flag))
         {
             bounceSnapshots_ = true; //just the flag was given
             return true;
@@ -165,10 +177,10 @@ bool Options::cycleSnapshots1(const std::string& flag)
     if (StringManip::startsWith(flag, "--cycle-snapshots="))
     {
         auto parts = StringManip::explode(flag, '=');
-        if (!assert(parts.size() == 2, flag))
+        if (!confirm(parts.size() == 2, flag))
             return false;
 
-        if (!assert(parts[1] == "true" || parts[1] == "false", flag))
+        if (!confirm(parts[1] == "true" || parts[1] == "false", flag))
             return false;
 
         std::istringstream(parts[1]) >> cycleSnapshots_;
@@ -185,7 +197,7 @@ bool Options::cycleSnapshots2(const std::string& flag, const std::string& arg)
     if (flag == "--cycle-snapshots" || flag == "-b")
     {
         std::string next(arg);
-        if (!assert(next == "true" || next == "false", flag))
+        if (!confirm(next == "true" || next == "false", flag))
         {
             cycleSnapshots_ = true; //just the flag was given
             return false;
@@ -205,10 +217,11 @@ bool Options::password1(const std::string& flag)
     if (StringManip::startsWith(flag, "--password="))
     {
         auto parts = StringManip::explode(flag, '=');
-        if (!assert(parts.size() == 2, flag))
+        if (!confirm(parts.size() == 2, flag))
             return false;
 
         authPassword_ = StringManip::trim(parts[1], "\"");
+        usesPassword_ = true;
         return true;
     }
 
@@ -222,23 +235,25 @@ bool Options::password2(const std::string& flag, const std::string& arg)
     if (flag == "--password" || flag == "-p")
     {
         authPassword_ = StringManip::trim(arg, "\"");
+        usesPassword_ = true;
         return true;
     }
 
     return false;
 }
 
-
+/*
 
 bool Options::slotID1(const std::string& flag)
 {
     if (StringManip::startsWith(flag, "--slot="))
     {
         auto parts = StringManip::explode(flag, '=');
-        if (!assert(parts.size() == 2, flag))
+        if (!confirm(parts.size() == 2, flag))
             return false;
 
         std::istringstream(parts[1]) >> slotID_;
+        slotIDisSet_ = true;
         return true;
     }
 
@@ -252,15 +267,16 @@ bool Options::slotID2(const std::string& flag, const std::string& arg)
     if (flag == "--slot" || flag == "-s")
     {
         std::istringstream(arg) >> slotID_;
+        slotIDisSet_ = true;
         return true;
     }
 
     return false;
 }
 
+*/
 
-
-bool Options::assert(bool condition, const std::string& flag)
+bool Options::confirm(bool condition, const std::string& flag)
 {
     if (!condition)
     {
@@ -273,13 +289,72 @@ bool Options::assert(bool condition, const std::string& flag)
 
 
 
-Options* Options::singleton_ = 0;
-Options& Options::getInstance()
+bool Options::highVerbosity()
 {
-    if (!singleton_)
-        singleton_ = new Options();
-    return *singleton_;
+    return highVerbosity_;
 }
+
+
+
+std::string Options::getHost()
+{
+    if (connectionHost_.length() == 0)
+        return "127.0.0.1";
+    return connectionHost_;
+}
+
+
+
+int Options::getPort()
+{
+    if (connectionPort_ == 0)
+        return 36330;
+    return connectionPort_;
+}
+
+
+
+std::string Options::getPassword()
+{
+    return authPassword_;
+}
+
+
+/*
+bool Options::slotIDisSet()
+{
+    return slotIDisSet_;
+}
+
+
+
+int Options::getSlotID()
+{
+    return slotID_;
+}
+*/
+
+
+bool Options::bounceSnapshots()
+{
+    return bounceSnapshots_;
+}
+
+
+
+bool Options::cycleSnapshots()
+{
+    return cycleSnapshots_;
+}
+
+
+
+bool Options::usesPassword()
+{
+    return usesPassword_;
+}
+
+
 
 /* todo:
 --help [string] Print help screen or help on a particular option and exit.

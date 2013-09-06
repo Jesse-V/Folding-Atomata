@@ -24,18 +24,20 @@
 \******************************************************************************/
 
 #include "FAHClientIO.hpp"
-#include "../PyON/TrajectoryParser.hpp"
-#include "../PyON/StringManip.hpp"
+#include "PyON/TrajectoryParser.hpp"
+#include "PyON/StringManip.hpp"
+#include "Options.hpp"
 #include <sstream>
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
 
 
-FAHClientIO::FAHClientIO(const std::shared_ptr<ClientSocket> socket) :
+FAHClientIO::FAHClientIO(const std::shared_ptr<ClientSocket>& socket) :
     socket_(socket)
 {
     connectToFAHClient();
+    authenticate();
 }
 
 
@@ -49,6 +51,23 @@ void FAHClientIO::connectToFAHClient()
         throw std::runtime_error("Invalid response from FAHClient");
 
     std::cout << "done. Got good response back." << std::endl;
+}
+
+
+
+void FAHClientIO::authenticate()
+{
+    if (!Options::getInstance().usesPassword())
+        return;
+
+    std::cout << "Authenticating to FAHClient... ";
+    *socket_ << "auth " << Options::getInstance().getPassword() << "\n";
+    std::string response = readResponse();
+
+    if (response.find("OK") == std::string::npos)
+        throw std::runtime_error(response);
+
+    std::cout << "success!" << std::endl;
 }
 
 

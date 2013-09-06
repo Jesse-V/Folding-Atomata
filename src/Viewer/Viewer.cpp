@@ -27,10 +27,10 @@
                          
 #include "Viewer.hpp"
 #include "FAHClientIO.hpp"
-#include "../Sockets/Connection.hpp"
-#include "../Sockets/SocketException.hpp"
-#include "../Modeling/DataBuffers/SampledBuffers/CubeTextureMap.hpp"
-#include "../Modeling/Shading/ShaderManager.hpp"
+#include "Sockets/SocketException.hpp"
+#include "Modeling/DataBuffers/SampledBuffers/CubeTextureMap.hpp"
+#include "Modeling/Shading/ShaderManager.hpp"
+#include "Options.hpp"
 #include <thread>
 #include <algorithm>
 #include <iostream>
@@ -168,8 +168,12 @@ void Viewer::addSlotViewers()
 {
     try
     {
-        FAHClientIO io(Connection("localhost", 36330).createClientSocket());
+        auto socket = std::make_shared<ClientSocket>(
+            Options::getInstance().getHost(),
+            Options::getInstance().getPort()
+        );
 
+        FAHClientIO io(socket);
         std::vector<TrajectoryPtr> trajectories = io.getTrajectories();
 
         if (trajectories.size() == 0)

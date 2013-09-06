@@ -34,7 +34,7 @@
     a Trajectory class.
 **/
 
-#include "../Trajectory/Trajectory.hpp"
+#include "Trajectory/Trajectory.hpp"
 
 class TrajectoryParser
 {

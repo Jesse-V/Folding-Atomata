@@ -35,10 +35,10 @@
     which runs the animation backwards.
 */
 
-#include "../Trajectory/Trajectory.hpp"
-#include "../Modeling/Mesh/Mesh.hpp"
-#include "../Modeling/DataBuffers/ColorBuffer.hpp"
-#include "../World/Scene.hpp"
+#include "Trajectory/Trajectory.hpp"
+#include "Modeling/Mesh/Mesh.hpp"
+#include "Modeling/DataBuffers/ColorBuffer.hpp"
+#include "World/Scene.hpp"
 
 typedef std::pair<ProgramPtr, ColorPtr> AtomModelInfo;
 

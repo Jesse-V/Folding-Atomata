@@ -14,15 +14,17 @@ class Options
         static Options& getInstance();
         static bool handleFlags(int argc, char** argv); //should only call once!
         
-        bool highVerbosity();
-        std::string getConnectionIP();
-        std::string getConnectionPort();
+        std::string getHost();
+        int getPort();
         std::string getPassword();
+        //bool slotIDisSet();
+        //int getSlotID();
 
+        bool highVerbosity();
         bool bounceSnapshots();
         bool cycleSnapshots();
+        bool usesPassword();
         //int renderMode();
-        std::string connectionPassword();
 
     private:
         std::size_t handle(const StringList& options, std::size_t index);
@@ -35,17 +37,16 @@ class Options
         bool cycleSnapshots2(const std::string& flag, const std::string& arg);
         bool password1(const std::string& flag);
         bool password2(const std::string& flag, const std::string& arg);
-        bool slotID1(const std::string& flag);
-        bool slotID2(const std::string& flag, const std::string& arg);
-        bool assert(bool condition, const std::string& flag);
+        //bool slotID1(const std::string& flag);
+        //bool slotID2(const std::string& flag, const std::string& arg);
+        bool confirm(bool condition, const std::string& flag);
 
     private:
         static Options* singleton_;
 
-        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_;
-        int slotID_; //, renderMode_;
-        std::string connectionIP_;
-        std::string connectionPort_;
+        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_;//, slotIDisSet_;
+        int connectionPort_, usesPassword_; //slotID_, renderMode_;
+        std::string connectionHost_;
         std::string authPassword_;
 };
 
