@@ -72,7 +72,7 @@ Examples:
 
         if (options[index] == "--version")
         {
-            std::cout << "0.6.0.0" << std::endl;
+            std::cout << "0.6.0.1" << std::endl;
             return false;
         }  
         

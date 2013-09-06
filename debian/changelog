@@ -1,4 +1,4 @@
-folding-atomata (0.6.0.0) quantal; urgency=medium
+folding-atomata (0.6.0.1) quantal; urgency=medium
   
   * Implemented key command-line flags and arguments.
   * Updated manpage.
@@ -6,7 +6,7 @@ folding-atomata (0.6.0.0) quantal; urgency=medium
   * Detection of invalid password for remote FAHClient. (#42)
   * Improved compile-from-source instructions.
 
- -- Jesse Victors <jvictors@jessevictors.com>  Sun, 2 Sept 2013 13:05:00 -0600
+ -- Jesse Victors <jvictors@jessevictors.com>  Sun, 6 Sept 2013 00:08:00 -0600
 
 folding-atomata (0.5.1.1) quantal; urgency=medium
   
