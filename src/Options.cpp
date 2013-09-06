@@ -25,6 +25,27 @@ bool Options::handleFlags(int argc, char** argv)
     std::size_t index = 1; //skips the name-of-program argument
     while (index < (std::size_t)argc)
     {
+        if (options[index] == "--help" || options[index] == "-h")
+        {
+            std::cout <<
+                R".(
+Usage:
+    FAHViewer [OPTION...]
+
+Commands:
+    --help, -h          Show usage and flag options.
+    --connect, -c       Address and port to use to connect to FAHClient.
+    --license           Prints license information.
+    --password, -p      Password for accessing the remote FAHClient.
+    --version, -v       Print version information.
+
+Examples:
+    FoldingAtomata
+    FoldingAtomata --connect=203.0.113.0:36330 --password=example
+).";
+            return false;
+        }
+
         if (options[index] == "--version")
         {
             std::cout << "0.5.1.1" << std::endl;
@@ -116,7 +137,7 @@ bool Options::connect1(const std::string& flag)
 
 bool Options::connect2(const std::string& flag, const std::string& arg)
 {
-    if (flag == "--connect" || flag == "-v")
+    if (flag == "--connect" || flag == "-c")
     {
         auto tokens = StringManip::explode(arg, ':');
         if (!confirm(tokens.size() == 2, flag))
