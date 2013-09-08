@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-void updateCallback();
+void startUpdating();
 void renderCallback();
 void windowReshapeCallback(int width, int height);
 void keyPressCallback(unsigned char key, int x, int y);

@@ -64,7 +64,7 @@ void Player::recenterCursor()
 void Player::onKeyPress(unsigned char key)
 {
     static const auto ESCAPE = (unsigned char)27;
-    
+
     switch(key)
     {
         case 'w':

@@ -33,29 +33,32 @@
 
 static bool readyToUpdate = false;
 
-void updateCallback()
+void startUpdating()
 {
-    try
+    std::thread updater( [&]()
     {
-        if (readyToUpdate)
+        const int UPDATE_DELAY = 18;
+
+        try
         {
-            static int oldTimeSinceStart = glutGet(GLUT_ELAPSED_TIME);
+            while (!readyToUpdate)
+                std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-            int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
-            int deltaTime = timeSinceStart - oldTimeSinceStart;
-            oldTimeSinceStart = timeSinceStart;
-
-            Viewer::getInstance().update(deltaTime);
+            while (true)
+            {
+                Viewer::getInstance().update(UPDATE_DELAY);
+                std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
+            }
         }
-        else
-            std::this_thread::sleep_for(std::chrono::milliseconds(10)); //sleep for a bit
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "Caught " << typeid(e).name() << " during update: " <<
-            e.what() << std::endl;
-        glutDestroyWindow(glutGetWindow());
-    }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught " << typeid(e).name() << " during update: " <<
+                e.what() << std::endl;
+            glutDestroyWindow(glutGetWindow());
+        }
+    });
+
+    updater.detach();
 }
 
 
@@ -264,7 +267,6 @@ void assertSystemRequirements()
 
 void assignCallbacks()
 {
-    glutIdleFunc(updateCallback);
     glutDisplayFunc(renderCallback);
     glutReshapeFunc(windowReshapeCallback);
 
@@ -302,6 +304,7 @@ int main(int argc, char** argv)
         std::cout << "Finished Glut and window initialization." << std::endl;
 
         Viewer::getInstance(); //calls Viewer's constructor, sets up everything...
+        startUpdating();
         glutMainLoop();
     }
     catch (std::exception& e)
