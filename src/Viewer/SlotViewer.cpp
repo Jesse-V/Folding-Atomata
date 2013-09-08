@@ -28,6 +28,7 @@
 #include "SlotViewer.hpp"
 #include "Modeling/Shading/ShaderManager.hpp"
 #include "Modeling/DataBuffers/ColorBuffer.hpp"
+#include "Options.hpp"
 #include <memory>
 #include <algorithm>
 #include <iostream>
@@ -46,8 +47,13 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
         std::cout << "Creating viewer for trajectory with " <<
             trajectory_->countSnapshots() << " snapshots..." << std::endl;
 
-    //addAllAtoms();
-    std::cout << std::endl;
+    const auto RENDER_MODE = Options::getInstance().getRenderMode();
+    if (RENDER_MODE == Options::RenderMode::BALL_N_STICK)
+    {
+        addAllAtoms();
+        std::cout << std::endl;
+    }
+
     addAllBonds();
     std::cout << std::endl;
 
@@ -91,11 +97,11 @@ void SlotViewer::addAllBonds()
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
-        //auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
-        //auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
+        auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
+        auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
 
         auto model = std::make_shared<Model>(getBondMesh(), list);
-        //model->setModelMatrix(generateBondMatrix(positionA, positionB));
+        model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
         addBond(bonds[j], model);
         bondModels_.push_back(model);
@@ -169,8 +175,11 @@ void SlotViewer::update(int deltaTime)
 {
     const int snapshotCount = trajectory_->countSnapshots();
 
-    if (snapshotCount <= 1 || (atomModels_.size() > 0 && bondModels_.size() > 0))
-        return; //can't animate
+    if (snapshotCount <= 1)
+        return; //can't animate with one snapshot
+
+    if (atomModels_.size() == 0 && bondModels_.size() == 0)
+        return; //we have nothing to animate
 
     transitionTime_ += deltaTime;
     int a = transitionTime_ / 2000; //int division on purpose

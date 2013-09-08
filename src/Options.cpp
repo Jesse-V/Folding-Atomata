@@ -82,8 +82,6 @@ Examples:
             return false;
         }
 
-        std::cout << options[index] << std::endl;
-
         index += getInstance().handle(options, index);
     }
 
@@ -98,14 +96,15 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 
     //check for 1-piece flags
     if (verbose1(flag) || connect1(flag) || bounceSnapshots1(flag) ||
-        cycleSnapshots1(flag) || password1(flag)// || slotID1(flag)
+        cycleSnapshots1(flag) || password1(flag) || renderMode1(flag)
+        // || slotID1(flag)
     )
         return 1;
 
     //check to see if we can grab next flag
     if (index + 1 >= options.size())
     {
-        std::cerr << "Unrecognized flag or unavailable argument for " << 
+        std::cerr << "Unrecognized flag or unavailable argument for " <<
             flag << ". Ignoring." << std::endl;
         return 2;
     }
@@ -113,7 +112,9 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     //check for two-piece flags
     std::string arg(options[index + 1]);
     if (connect2(flag, arg) || bounceSnapshots2(flag, arg) ||
-        cycleSnapshots2(flag, arg) || password2(flag, arg)// || slotID2(flag, arg)
+        cycleSnapshots2(flag, arg) || password2(flag, arg) ||
+        renderMode2(flag, arg)
+        // || slotID2(flag, arg)
     )
         return 2;
 
@@ -442,6 +443,12 @@ bool Options::usesPassword()
     return usesPassword_;
 }
 
+
+
+Options::RenderMode Options::getRenderMode()
+{
+    return renderMode_;
+}
 
 
 /* todo:

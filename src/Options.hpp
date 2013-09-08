@@ -37,6 +37,11 @@ class Options
         static Options& getInstance();
         static bool handleFlags(int argc, char** argv); //should only call once!
 
+        enum class RenderMode : short
+        {
+            BALL_N_STICK, STICK
+        };
+
         std::string getHost();
         int getPort();
         std::string getPassword();
@@ -47,12 +52,7 @@ class Options
         bool bounceSnapshots();
         bool cycleSnapshots();
         bool usesPassword();
-        //int renderMode();
-
-        enum class RenderMode : short
-        {
-            BALL_N_STICK, STICK
-        };
+        RenderMode getRenderMode();
 
     private:
         std::size_t handle(const StringList& options, std::size_t index);
