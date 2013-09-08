@@ -74,8 +74,8 @@ Examples:
         {
             std::cout << "0.6.0.1" << std::endl;
             return false;
-        }  
-        
+        }
+
         if (options[index] == "--license")
         {
             std::cout << "GPLv3+" << std::endl;
@@ -86,7 +86,7 @@ Examples:
 
         index += getInstance().handle(options, index);
     }
-    
+
     return true;
 }
 
@@ -207,7 +207,7 @@ bool Options::bounceSnapshots2(const std::string& flag, const std::string& arg)
             bounceSnapshots_ = true; //just the flag was given
             return true;
         }
-        
+
         std::istringstream(next) >> bounceSnapshots_;
         return true;
     }
@@ -247,7 +247,7 @@ bool Options::cycleSnapshots2(const std::string& flag, const std::string& arg)
             cycleSnapshots_ = true; //just the flag was given
             return false;
         }
-        
+
         std::istringstream(next) >> cycleSnapshots_;
         return true;
     }
@@ -286,6 +286,49 @@ bool Options::password2(const std::string& flag, const std::string& arg)
 
     return false;
 }
+
+
+
+bool Options::renderMode1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--mode="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!confirm(parts.size() == 2, flag))
+            return false;
+
+        if (parts[1] == "4")
+            renderMode_ = RenderMode::BALL_N_STICK;
+        else if (parts[1] == "3")
+            renderMode_ = RenderMode::STICK;
+        else
+            renderMode_ = RenderMode::BALL_N_STICK;
+
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::renderMode2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--mode" || flag == "-m")
+    {
+        if (arg == "4")
+            renderMode_ = RenderMode::BALL_N_STICK;
+        else if (arg == "3")
+            renderMode_ = RenderMode::STICK;
+        else
+            renderMode_ = RenderMode::BALL_N_STICK;
+
+        return true;
+    }
+
+    return false;
+}
+
 
 /*
 
@@ -328,8 +371,8 @@ bool Options::confirm(bool condition, const std::string& flag)
         std::cerr << "Invalid parameters for " << flag << std::endl;
         return false;
     }
-    
-    return true; 
+
+    return true;
 }
 
 
@@ -403,20 +446,6 @@ bool Options::usesPassword()
 
 /* todo:
 --help [string] Print help screen or help on a particular option and exit.
-*--connect < string=127.0.0.1:36330 > An address and port to connect to in the form :
-*--bounce-snapshots < boolean=false > When the last snapshot is reached, should the animation run backwards or not.
-*--cycle-snapshots < boolean=true > Iterate through all available snapshots.
-*--password < string= > A password for accessing the remote client.
-*/
-
-/*
-The following options can be specified in a configuration file or on the command
-line using the following syntax:
-    --<option> <value>
-  or:
-    --<option>=<value>
-  or when marking boolean values true:
-    --<option>
 */
 
 /*

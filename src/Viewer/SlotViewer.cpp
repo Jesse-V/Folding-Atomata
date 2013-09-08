@@ -33,7 +33,7 @@
 #include <iostream>
 
 
-SlotViewer::SlotViewer(const TrajectoryPtr& trajectory, 
+SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
                        const std::shared_ptr<Scene>& scene) :
     trajectory_(trajectory), scene_(scene),
     snapshotA_(0), snapshotB_(1)
@@ -46,7 +46,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
         std::cout << "Creating viewer for trajectory with " <<
             trajectory_->countSnapshots() << " snapshots..." << std::endl;
 
-    addAllAtoms();
+    //addAllAtoms();
     std::cout << std::endl;
     addAllBonds();
     std::cout << std::endl;
@@ -91,8 +91,8 @@ void SlotViewer::addAllBonds()
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
     for (std::size_t j = 0; j < bonds.size(); j++)
     {
-        auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
-        auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
+        //auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
+        //auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
 
         auto model = std::make_shared<Model>(getBondMesh(), list);
         //model->setModelMatrix(generateBondMatrix(positionA, positionB));
@@ -169,8 +169,8 @@ void SlotViewer::update(int deltaTime)
 {
     const int snapshotCount = trajectory_->countSnapshots();
 
-    if (snapshotCount <= 1)
-        return; //can't animate as we don't have enough snapshots
+    if (snapshotCount <= 1 || (atomModels_.size() > 0 && bondModels_.size() > 0))
+        return; //can't animate
 
     transitionTime_ += deltaTime;
     int a = transitionTime_ / 2000; //int division on purpose
@@ -196,10 +196,13 @@ void SlotViewer::update(int deltaTime)
         auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
 
         newPositions[j] = position;
-        atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
+
+        if (atomModels_.size() > 0)
+            atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
     }
 
     const auto BONDS = trajectory_->getTopology()->getBonds();
+    if (bondModels_.size() > 0)
     for (std::size_t j = 0; j < BONDS.size(); j++)
     {
         auto positionA = newPositions[(std::size_t)BONDS[j]->getAtomA()];
@@ -316,7 +319,7 @@ std::shared_ptr<Mesh> SlotViewer::getBondMesh()
     };
 
     const glm::vec3 OFFSET = glm::vec3(0.25, sqrt3over4, 0);
-    std::transform(vertices.begin(), vertices.end(), vertices.begin(), 
+    std::transform(vertices.begin(), vertices.end(), vertices.begin(),
         [&](const glm::vec3& vertex)
         {
             return vertex - OFFSET;
@@ -398,7 +401,7 @@ float SlotViewer::getMagnitude(const glm::vec3& vector)
     std::thread snapshotAdder([]() {
         try
         {
-            std::cout << "New thread for " << idStream.str() << 
+            std::cout << "New thread for " << idStream.str() <<
                 ", awaiting incoming snapshots... " << std::endl;
 
             TrajectoryParser parser;

@@ -73,7 +73,7 @@ class SlotViewer
 
         std::shared_ptr<Mesh> getAtomMesh();
         std::shared_ptr<Mesh> getBondMesh();
-        
+
         std::shared_ptr<ColorBuffer> generateColorBuffer(const AtomPtr& atom);
         ModelPtr generateAtomModel(const ColorPtr& cBuffer,
                                    const glm::mat4& matrix
