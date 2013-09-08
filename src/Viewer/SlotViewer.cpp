@@ -24,7 +24,7 @@
 \******************************************************************************/
 
 #define _GLIBCXX_USE_NANOSLEEP
-                         
+
 #include "SlotViewer.hpp"
 #include "Modeling/Shading/ShaderManager.hpp"
 #include "Modeling/DataBuffers/ColorBuffer.hpp"
@@ -61,14 +61,14 @@ void SlotViewer::addAllAtoms()
     auto atoms = trajectory_->getTopology()->getAtoms();
     atomModels_.reserve(atoms.size());
 
-    std::cout << "Trajectory consists of " << atoms.size() 
+    std::cout << "Trajectory consists of " << atoms.size()
         << " atoms." << std::endl;
     std::cout << "Adding Atoms to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
-        auto matrix = generateAtomMatrix(snapshotZero->getPosition((int)j));        
+        auto matrix = generateAtomMatrix(snapshotZero->getPosition((int)j));
         auto atomModel = addAtom(atoms[j], matrix);
         atomModels_.push_back(atomModel);
     }
@@ -83,7 +83,7 @@ void SlotViewer::addAllBonds()
     auto bonds = trajectory_->getTopology()->getBonds();
     bondModels_.reserve(bonds.size());
 
-    std::cout << "Trajectory consists of " << bonds.size() 
+    std::cout << "Trajectory consists of " << bonds.size()
         << " bonds." << std::endl;
     std::cout << "Adding Bonds to Scene..." << std::endl;
 
@@ -95,7 +95,7 @@ void SlotViewer::addAllBonds()
         auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
 
         auto model = std::make_shared<Model>(getBondMesh(), list);
-        model->setModelMatrix(generateBondMatrix(positionA, positionB));
+        //model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
         addBond(bonds[j], model);
         bondModels_.push_back(model);
@@ -123,7 +123,7 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
             scene_->getFragmentShaderGLSL(), scene_->getLights()
         );
 
-        std::cout << "... done generating Program for " << 
+        std::cout << "... done generating Program for " <<
             atom->getElement() << " type." << std::endl;
 
         scene_->addModel(model, program, true); //add to Scene and save
@@ -182,7 +182,7 @@ void SlotViewer::update(int deltaTime)
         snapshotA_ = (snapshotA_ + a) % (snapshotCount - 2);
         snapshotB_ = snapshotA_ + 1;
     }
-    
+
     auto snapA = trajectory_->getSnapshot(snapshotA_);
     auto snapB = trajectory_->getSnapshot(snapshotB_);
 
@@ -194,11 +194,6 @@ void SlotViewer::update(int deltaTime)
         auto startPosition = snapA->getPosition((int)j);
         auto endPosition   = snapB->getPosition((int)j);
         auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
-
-        /*std::cout << j << "," << (b / 2000.0f) << std::endl;
-        std::cout << startPosition.x << "," << startPosition.y << "," << startPosition.z << std::endl;
-        std::cout << endPosition.x << "," << endPosition.y << "," << endPosition.z << std::endl;
-        std::cout << "  " << position.x << "," << position.y << "," << position.z << std::endl;*/
 
         newPositions[j] = position;
         atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
@@ -362,6 +357,9 @@ glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
 )
 {
     float distance = getMagnitude(startPosition - endPosition);
+    if (distance == 0.0f)
+        return glm::scale(glm::mat4(), glm::vec3(glm::vec2(BOND_SCALE), FLT_EPSILON));
+
     auto matrix = alignBetween(startPosition, endPosition);
     return glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
 }
@@ -369,7 +367,7 @@ glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
 
 glm::mat4 SlotViewer::alignBetween(const glm::vec3& ptA, const glm::vec3& ptB)
 { //adapted from http://www.thjsmith.com/40/cylinder-between-two-points-opengl-c
-    
+
     glm::vec3 z(0, 0, 1);
     glm::vec3 p = ptB - ptA;
 
