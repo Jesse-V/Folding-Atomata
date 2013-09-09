@@ -97,7 +97,7 @@ class Camera
         float getNearFieldClip() const;
         float getFarFieldClip() const;
         glm::mat4 getProjectionMatrix() const;
-        
+
         std::string toString() const;
 
     private:

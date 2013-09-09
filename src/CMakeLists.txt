@@ -51,7 +51,7 @@ else()
     message(ERROR " Glew not found!")
 endif()
 
-#find png++
+#find png
 #http://fedetft.wordpress.com/2010/03/07/cmake-part-3-finding-libraries/
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
@@ -65,7 +65,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "-g -O3 --std=c++11 -Wall -Wextra -Wdouble-promotion -Wfloat-equal -Wunsafe-loop-optimizations -Wno-unused-parameter")
 endif()
 
-include_directories(. glm)
+include_directories(. libs)
 
 #organized by importance
 add_executable(FoldingAtomata
@@ -103,7 +103,7 @@ add_executable(FoldingAtomata
     Trajectory/Snapshot.cpp
     Trajectory/Bond.cpp
     Trajectory/Atom.cpp
-    
+
     Sockets/ClientSocket.cpp
     Sockets/Socket.cpp
 )

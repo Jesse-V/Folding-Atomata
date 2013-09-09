@@ -8,10 +8,10 @@
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,7 +30,7 @@
 
 namespace glm
 {
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> translate
 	(
 		detail::tmat4x4<T> const & m,
@@ -41,19 +41,19 @@ namespace glm
 		Result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
 		return Result;
 	}
-		
-	template <typename T> 
+
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> rotate
 	(
 		detail::tmat4x4<T> const & m,
-		T const & angle, 
+		T const & angle,
 		detail::tvec3<T> const & v
 	)
 	{
 #ifdef GLM_FORCE_RADIANS
 		T a = angle;
 #else
-		T a = radians(angle);		
+		T a = radians(angle);
 #endif
 		T c = cos(a);
 		T s = sin(a);
@@ -83,7 +83,7 @@ namespace glm
 		return Result;
 	}
 
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> scale
 	(
 		detail::tmat4x4<T> const & m,
@@ -98,7 +98,7 @@ namespace glm
 		return Result;
 	}
 
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> translate_slow
 	(
 		detail::tmat4x4<T> const & m,
@@ -117,12 +117,12 @@ namespace glm
 		//Result[3][3] = m[0][3] * v[0] + m[1][3] * v[1] + m[2][3] * v[2] + m[3][3];
 		//return Result;
 	}
-		
-	template <typename T> 
+
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> rotate_slow
 	(
 		detail::tmat4x4<T> const & m,
-		T const & angle, 
+		T const & angle,
 		detail::tvec3<T> const & v
 	)
 	{
@@ -156,7 +156,7 @@ namespace glm
 		return m * Result;
 	}
 
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> scale_slow
 	(
 		detail::tmat4x4<T> const & m,
@@ -170,14 +170,14 @@ namespace glm
 		return m * Result;
 	}
 
-	template <typename valType> 
+	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType> ortho
 	(
-		valType const & left, 
-		valType const & right, 
-		valType const & bottom, 
-		valType const & top, 
-		valType const & zNear, 
+		valType const & left,
+		valType const & right,
+		valType const & bottom,
+		valType const & top,
+		valType const & zNear,
 		valType const & zFar
 	)
 	{
@@ -191,11 +191,11 @@ namespace glm
 		return Result;
 	}
 
-	template <typename valType> 
+	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType> ortho(
-		valType const & left, 
-		valType const & right, 
-		valType const & bottom, 
+		valType const & left,
+		valType const & right,
+		valType const & bottom,
 		valType const & top)
 	{
 		detail::tmat4x4<valType> Result(1);
@@ -207,14 +207,14 @@ namespace glm
 		return Result;
 	}
 
-	template <typename valType> 
+	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType> frustum
 	(
-		valType const & left, 
-		valType const & right, 
-		valType const & bottom, 
-		valType const & top, 
-		valType const & nearVal, 
+		valType const & left,
+		valType const & right,
+		valType const & bottom,
+		valType const & top,
+		valType const & nearVal,
 		valType const & farVal
 	)
 	{
@@ -229,12 +229,12 @@ namespace glm
 		return Result;
 	}
 
-	template <typename valType> 
+	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType> perspective
 	(
-		valType const & fovy, 
-		valType const & aspect, 
-		valType const & zNear, 
+		valType const & fovy,
+		valType const & aspect,
+		valType const & zNear,
 		valType const & zFar
 	)
 	{
@@ -256,14 +256,14 @@ namespace glm
 		Result[3][2] = - (valType(2) * zFar * zNear) / (zFar - zNear);
 		return Result;
 	}
-	
+
 	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType> perspectiveFov
 	(
-		valType const & fov, 
-		valType const & width, 
-		valType const & height, 
-		valType const & zNear, 
+		valType const & fov,
+		valType const & width,
+		valType const & height,
+		valType const & zNear,
 		valType const & zFar
 	)
 	{
@@ -284,18 +284,18 @@ namespace glm
 		return Result;
 	}
 
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> infinitePerspective
 	(
-		T fovy, 
-		T aspect, 
+		T fovy,
+		T aspect,
 		T zNear
 	)
 	{
 #ifdef GLM_FORCE_RADIANS
-		T const range = tan(fovy / T(2)) * zNear;	
+		T const range = tan(fovy / T(2)) * zNear;
 #else
-		T const range = tan(radians(fovy / T(2))) * zNear;	
+		T const range = tan(radians(fovy / T(2))) * zNear;
 #endif
 		T left = -range * aspect;
 		T right = range * aspect;
@@ -311,18 +311,18 @@ namespace glm
 		return Result;
 	}
 
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> tweakedInfinitePerspective
 	(
-		T fovy, 
-		T aspect, 
+		T fovy,
+		T aspect,
 		T zNear
 	)
 	{
 #ifdef GLM_FORCE_RADIANS
-		T range = tan(fovy / T(2)) * zNear;	
+		T range = tan(fovy / T(2)) * zNear;
 #else
-		T range = tan(radians(fovy / T(2))) * zNear;	
+		T range = tan(radians(fovy / T(2))) * zNear;
 #endif
 		T left = -range * aspect;
 		T right = range * aspect;
@@ -341,9 +341,9 @@ namespace glm
 	template <typename T, typename U>
 	GLM_FUNC_QUALIFIER detail::tvec3<T> project
 	(
-		detail::tvec3<T> const & obj, 
-		detail::tmat4x4<T> const & model, 
-		detail::tmat4x4<T> const & proj, 
+		detail::tvec3<T> const & obj,
+		detail::tmat4x4<T> const & model,
+		detail::tmat4x4<T> const & proj,
 		detail::tvec4<U> const & viewport
 	)
 	{
@@ -362,9 +362,9 @@ namespace glm
 	template <typename T, typename U>
 	GLM_FUNC_QUALIFIER detail::tvec3<T> unProject
 	(
-		detail::tvec3<T> const & win, 
-		detail::tmat4x4<T> const & model, 
-		detail::tmat4x4<T> const & proj, 
+		detail::tvec3<T> const & win,
+		detail::tmat4x4<T> const & model,
+		detail::tmat4x4<T> const & proj,
 		detail::tvec4<U> const & viewport
 	)
 	{
@@ -381,18 +381,18 @@ namespace glm
 		return detail::tvec3<T>(obj);
 	}
 
-	template <typename T, typename U> 
+	template <typename T, typename U>
 	detail::tmat4x4<T> pickMatrix
 	(
-		detail::tvec2<T> const & center, 
-		detail::tvec2<T> const & delta, 
+		detail::tvec2<T> const & center,
+		detail::tvec2<T> const & delta,
 		detail::tvec4<U> const & viewport
 	)
 	{
 		assert(delta.x > T(0) && delta.y > T(0));
 		detail::tmat4x4<T> Result(1.0f);
 
-		if(!(delta.x > T(0) && delta.y > T(0))) 
+		if(!(delta.x > T(0) && delta.y > T(0)))
 			return Result; // Error
 
 		detail::tvec3<T> Temp(
@@ -405,7 +405,7 @@ namespace glm
 		return scale(Result, detail::tvec3<T>(T(viewport[2]) / delta.x, T(viewport[3]) / delta.y, T(1)));
 	}
 
-	template <typename T> 
+	template <typename T>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T> lookAt
 	(
 		detail::tvec3<T> const & eye,
@@ -434,3 +434,5 @@ namespace glm
 		return Result;
 	}
 }//namespace glm
+
+#pragma GCC diagnostic pop
