@@ -46,7 +46,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     else
         std::cout << "Creating viewer for trajectory with " <<
             trajectory_->countSnapshots() << " snapshots..." << std::endl;
-    /*
+
     const auto RENDER_MODE = Options::getInstance().getRenderMode();
     if (RENDER_MODE == Options::RenderMode::BALL_N_STICK)
     {
@@ -55,9 +55,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     }
 
     addAllBonds();
-    std::cout << std::endl;*/
-
-    addAllTracers();
+    std::cout << std::endl;
 
     std::cout << "... done creating SlotViewer." << std::endl;
 }
@@ -110,37 +108,6 @@ void SlotViewer::addAllBonds()
     }
 
     std::cout << "... done adding bonds for that trajectory." << std::endl;
-}
-
-
-
-void SlotViewer::addAllTracers()
-{
-    auto atoms = trajectory_->getTopology()->getAtoms();
-    tracerModels_.reserve(atoms.size() * trajectory_->countSnapshots());
-
-    std::cout << "Adding Tracers to Scene..." << std::endl;
-
-    BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
-    for (std::size_t j = 0; j < trajectory_->countSnapshots() - 1; j++)
-    {
-        auto currentSnapshot = trajectory_->getSnapshot(j);
-        auto nextSnapshot = trajectory_->getSnapshot(j + 1);
-        for (int k = 0; k < atoms.size(); k++)
-        {
-            auto positionA = currentSnapshot->getPosition(k);
-            auto positionB = nextSnapshot->getPosition(k);
-
-            auto model = std::make_shared<Model>(getBondMesh(), list);
-            model->setModelMatrix(generateBondMatrix(positionA, positionB));
-
-            addBond(std::make_shared<Bond>(0, 0), model);
-            tracerModels_.push_back(model);
-        }
-
-    }
-
-    std::cout << "... done adding tracers for that trajectory." << std::endl;
 }
 
 
@@ -205,7 +172,7 @@ void SlotViewer::addBond(const BondPtr& bond, const ModelPtr& model)
 
 
 void SlotViewer::update(int deltaTime)
-{/*
+{
     const int snapshotCount = trajectory_->countSnapshots();
 
     if (snapshotCount <= 1)
@@ -250,7 +217,7 @@ void SlotViewer::update(int deltaTime)
         auto positionA = newPositions[(std::size_t)BONDS[j]->getAtomA()];
         auto positionB = newPositions[(std::size_t)BONDS[j]->getAtomB()];
         bondModels_[j]->setModelMatrix(generateBondMatrix(positionA, positionB));
-    }*/
+    }
 }
 
 
@@ -406,7 +373,7 @@ glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
         return glm::scale(glm::mat4(), glm::vec3(glm::vec2(BOND_SCALE), FLT_EPSILON));
 
     auto matrix = alignBetween(startPosition, endPosition);
-    return glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE / 8), distance));
+    return glm::scale(matrix, glm::vec3(glm::vec2(BOND_SCALE), distance));
 }
 
 

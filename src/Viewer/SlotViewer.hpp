@@ -67,7 +67,6 @@ class SlotViewer
     private:
         void addAllAtoms();
         void addAllBonds();
-        void addAllTracers();
 
         ModelPtr addAtom(const AtomPtr& atom, const glm::mat4& matrix);
         void addBond(const BondPtr& bond, const ModelPtr& model);
@@ -93,7 +92,6 @@ class SlotViewer
         std::shared_ptr<Scene> scene_;
         std::vector<ModelPtr> atomModels_;
         std::vector<ModelPtr> bondModels_;
-        std::vector<ModelPtr> tracerModels_;
 
         int transitionTime_; //how much elapsed time between each snapshot
         int snapshotA_, snapshotB_; //used to interpolate between during animation
