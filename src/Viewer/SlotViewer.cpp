@@ -28,16 +28,11 @@
 #include "SlotViewer.hpp"
 #include "Modeling/Shading/ShaderManager.hpp"
 #include "Modeling/DataBuffers/ColorBuffer.hpp"
+#include "Trajectory/ProteinAnalysis.hpp"
 #include "Options.hpp"
 #include <algorithm>
 #include <thread>
 #include <iostream>
-
-#include <utility>
-#include <thread>
-#include <chrono>
-#include <functional>
-#include <atomic>
 
 
 SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
@@ -64,8 +59,11 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     addAllBonds();
     std::cout << std::endl;*/
 
-    std::thread splitJoiner(fixProteinSplits, std::ref(trajectory_));
-    splitJoiner.detach();
+    std::thread thread( [&] {
+        ProteinAnalysis proteinAnalysis(trajectory_);
+        proteinAnalysis.fixProteinSplits();
+    });
+    thread.detach();
 
     std::cout << "... done creating SlotViewer." << std::endl;
 }
@@ -228,89 +226,6 @@ void SlotViewer::update(int deltaTime)
         auto positionB = newPositions[(std::size_t)BONDS[j]->getAtomB()];
         bondModels_[j]->setModelMatrix(generateBondMatrix(positionA, positionB));
     }
-}
-
-
-
-void SlotViewer::fixProteinSplits(const TrajectoryPtr& trajectory)
-{
-    const float BOND_LENGTH = 2;
-
-    std::cout << "[concurrent] Analyzing protein for splits..." << std::endl;
-
-    struct Bucket
-    {
-        int x, y, z;
-
-        bool operator() (const Bucket& b) const { return isEqualTo(b); }
-        bool operator==(const Bucket& b) const  { return isEqualTo(b); }
-
-        bool isEqualTo(const Bucket& other) const
-        {
-            return x == other.x && y == other.y && z == other.z;
-        }
-    };
-
-    typedef std::unordered_multimap<Bucket, AtomPtr, Bucket> BucketMap;
-    BucketMap bucketMap;
-
-    auto atoms = trajectory->getTopology()->getAtoms();
-    auto snapshotZero = trajectory->getSnapshot(0);
-
-    //hash each atom into some bucket according to its position
-    for (std::size_t j = 0; j < atoms.size(); j++)
-    {
-        auto pos = snapshotZero->getPosition((int)j);
-        Bucket b;
-        b.x = (int)(pos.x / BOND_LENGTH);
-        b.y = (int)(pos.y / BOND_LENGTH);
-        b.z = (int)(pos.z / BOND_LENGTH);
-
-        bucketMap.insert(BucketMap::value_type(b, atoms[j]));
-    }
-
-    typedef std::unordered_multimap<AtomPtr, AtomPtr> NeighborList;
-    NeighborList neighborList;
-
-    for_each (bucketMap.begin(), bucketMap.end(),
-        [&](const std::pair<Bucket, AtomPtr>& current)
-    {
-        auto bucket = current.first;
-        auto atom = current.second;
-        //auto atomPosition = snapshotZero->getPosition(5);
-
-        //scan surrounding 27 buckets
-        for (int x = -1; x <= 1; x++)
-        {
-            for (int y = -1; y <= 1; y++)
-            {
-                for (int z = -1; z <= 1; z++)
-                {
-                    Bucket neighborBucket;
-                    neighborBucket.x = bucket.x + x;
-                    neighborBucket.y = bucket.y + y;
-                    neighborBucket.z = bucket.z + z;
-
-                    auto contents = bucketMap.equal_range(neighborBucket);
-                    for_each (contents.first, contents.second,
-                        [&] (const std::pair<Bucket, AtomPtr>& near)
-                    {
-                        auto nearbyAtom = near.second;
-                        //auto
-
-                        //if (snapshotZero)
-
-                        //auto dist =
-                        //if (isWithinBondDistance())
-                        {
-                            auto pair = NeighborList::value_type(atom, nearbyAtom);
-                            neighborList.insert(pair);
-                        }
-                    });
-                }
-            }
-        }
-    });
 }
 
 

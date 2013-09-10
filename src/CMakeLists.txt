@@ -98,6 +98,7 @@ add_executable(FoldingAtomata
     Modeling/Shading/Program.cpp
     Modeling/Shading/Shader.cpp
 
+    Trajectory/ProteinAnalysis.cpp
     Trajectory/Trajectory.cpp
     Trajectory/Topology.cpp
     Trajectory/Snapshot.cpp

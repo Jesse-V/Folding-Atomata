@@ -49,7 +49,6 @@ class SlotViewer
                    const std::shared_ptr<Scene>& scene
         );
         void update(int deltaTime);
-        static void fixProteinSplits(const TrajectoryPtr& trajectory);
 
     public:
         const float ATOM_SCALE = 0.20f;
