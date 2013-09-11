@@ -47,7 +47,7 @@ TrajectoryPtr TrajectoryParser::parse(const std::string& trajStr)
     }
 
     std::cout << "done." << std::endl;
-    
+
     return trajectory;
 }
 
@@ -93,7 +93,7 @@ TopologyPtr TrajectoryParser::parseTopology(const std::string& topStr)
     10.253361
   ]
 */
-SnapshotPtr TrajectoryParser::parseSnapshot(const std::string& snapshotStr)
+PositionMap TrajectoryParser::parseSnapshot(const std::string& snapshotStr)
 {
     SnapshotPtr snapshot = std::make_shared<Snapshot>();
 
@@ -152,12 +152,12 @@ AtomPtr TrajectoryParser::parseAtom(const std::string& atomStr)
 
 
 
-std::vector<BondPtr> TrajectoryParser::parseBonds(const std::string& topStr)
+BondList TrajectoryParser::parseBonds(const std::string& topStr)
 {
     auto bondStr = StringManip::between(topStr, "\"bonds\": [\n", "]\n");
     std::stringstream bondsStream(bondStr);
-    
-    std::vector<BondPtr> bonds;
+
+    BondList bonds;
     std::string line;
     while (std::getline(bondsStream, line))
         bonds.push_back(parseBond(line));
@@ -170,7 +170,7 @@ std::vector<BondPtr> TrajectoryParser::parseBonds(const std::string& topStr)
 /* Given:
     [2356, 2358],
 */
-BondPtr TrajectoryParser::parseBond(const std::string& bondStr)
+Bond TrajectoryParser::parseBond(const std::string& bondStr)
 {
     auto isolated = StringManip::between(bondStr, "[", "]");
     auto tokens = StringManip::explodeAndTrim(isolated, ',', " ");

@@ -101,8 +101,6 @@ add_executable(FoldingAtomata
     Trajectory/ProteinAnalysis.cpp
     Trajectory/Trajectory.cpp
     Trajectory/Topology.cpp
-    Trajectory/Snapshot.cpp
-    Trajectory/Bond.cpp
     Trajectory/Atom.cpp
 
     Sockets/ClientSocket.cpp

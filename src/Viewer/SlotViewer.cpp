@@ -80,12 +80,14 @@ void SlotViewer::addAllAtoms()
     std::cout << "Adding Atoms to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
-    for (std::size_t j = 0; j < atoms.size(); j++)
-    {
-        auto matrix = generateAtomMatrix(snapshotZero->getPosition((int)j));
-        auto atomModel = addAtom(atoms[j], matrix);
-        atomModels_.push_back(atomModel);
-    }
+    for_each (atoms.begin(), atoms.end(),
+        [&](const AtomPtr& atom)
+        {
+            auto matrix = generateAtomMatrix(snapshotZero[atom]);
+            auto atomModel = addAtom(atom, matrix);
+            atomModels_.push_back(atomModel);
+        }
+    );
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
 }
@@ -103,17 +105,19 @@ void SlotViewer::addAllBonds()
 
     auto snapshotZero = trajectory_->getSnapshot(0);
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
-    for (std::size_t j = 0; j < bonds.size(); j++)
-    {
-        auto positionA = snapshotZero->getPosition(bonds[j]->getAtomA());
-        auto positionB = snapshotZero->getPosition(bonds[j]->getAtomB());
+    for_each (bonds.begin(), bonds.end(),
+        [&] (const Bond& bond)
+        {
+            auto positionA = snapshotZero[bond.first];
+            auto positionB = snapshotZero[bond.second];
 
-        auto model = std::make_shared<Model>(getBondMesh(), list);
-        model->setModelMatrix(generateBondMatrix(positionA, positionB));
+            auto model = std::make_shared<Model>(getBondMesh(), list);
+            model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
-        addBond(bonds[j], model);
-        bondModels_.push_back(model);
-    }
+            addBond(bond, model);
+            bondModels_.push_back(model);
+        }
+    );
 
     std::cout << "... done adding bonds for that trajectory." << std::endl;
 }
@@ -156,7 +160,7 @@ ModelPtr SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
 
 
 
-void SlotViewer::addBond(const BondPtr& bond, const ModelPtr& model)
+void SlotViewer::addBond(const Bond& bond, const ModelPtr& model)
 {
     static ProgramPtr bondProgram = nullptr;
 
@@ -203,29 +207,31 @@ void SlotViewer::update(int deltaTime)
     auto snapA = trajectory_->getSnapshot(snapshotA_);
     auto snapB = trajectory_->getSnapshot(snapshotB_);
 
-    const std::size_t ATOM_COUNT = trajectory_->getTopology()->getAtoms().size();
-    std::vector<glm::vec3> newPositions(ATOM_COUNT, glm::vec3());
+    PositionMap newPositions;
+    const auto ATOMS = trajectory_->getTopology()->getAtoms();
+    for_each (ATOMS.begin(), ATOMS.end(),
+        [&] (const AtomPtr& atom)
+        {
+            auto startPosition = snapA[atom];
+            auto endPosition   = snapB[atom];
+            auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
 
-    for (std::size_t j = 0; j < ATOM_COUNT; j++)
-    {
-        auto startPosition = snapA->getPosition((int)j);
-        auto endPosition   = snapB->getPosition((int)j);
-        auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
+            newPositions[atom] = position;
 
-        newPositions[j] = position;
-
-        if (atomModels_.size() > 0)
-            atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
-    }
+            if (atomModels_.size() > 0)
+                atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
+        }
+    );
 
     const auto BONDS = trajectory_->getTopology()->getBonds();
-    if (bondModels_.size() > 0)
-    for (std::size_t j = 0; j < BONDS.size(); j++)
-    {
-        auto positionA = newPositions[(std::size_t)BONDS[j]->getAtomA()];
-        auto positionB = newPositions[(std::size_t)BONDS[j]->getAtomB()];
-        bondModels_[j]->setModelMatrix(generateBondMatrix(positionA, positionB));
-    }
+    for_each (BONDS.begin(), BONDS.end(),
+        [&] (const std::pair<AtomPtr, AtomPtr>& bond)
+        {
+            auto positionA = newPositions[bond.first];
+            auto positionB = newPositions[bond.second];
+            bondModels_[j]->setModelMatrix(generateBondMatrix(positionA, positionB));
+        }
+    );
 }
 
 

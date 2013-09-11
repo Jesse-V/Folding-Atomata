@@ -13,6 +13,9 @@ ProteinAnalysis::ProteinAnalysis(const TrajectoryPtr& trajectory) :
     trajectory_(trajectory)
 {
     //fetch an unordered_map of atoms to their position in snapshot zero
+
+    std::unordered_map<AtomPtr, AtomPtr> mapA;
+    std::unordered_map<AtomPtr, glm::vec3> mapB;
 }
 
 
@@ -40,7 +43,7 @@ BucketMap ProteinAnalysis::getBucketMap()
     //hash each atom into some bucket according to its position
     for (std::size_t j = 0; j < atoms.size(); j++)
     {
-        auto pos = snapshotZero->getPosition((int)j);
+        auto pos = snapshotZero->getPosition((int)j); //j only used here
         Bucket b;
         b.x = (int)(pos.x / BOND_LENGTH);
         b.y = (int)(pos.y / BOND_LENGTH);

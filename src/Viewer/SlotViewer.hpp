@@ -69,7 +69,7 @@ class SlotViewer
         void addAllBonds();
 
         ModelPtr addAtom(const AtomPtr& atom, const glm::mat4& matrix);
-        void addBond(const BondPtr& bond, const ModelPtr& model);
+        void addBond(const Bond& bond, const ModelPtr& model);
 
         std::shared_ptr<Mesh> getAtomMesh();
         std::shared_ptr<Mesh> getBondMesh();

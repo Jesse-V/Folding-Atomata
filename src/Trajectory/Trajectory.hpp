@@ -27,7 +27,9 @@
 #define TRAJECTORY
 
 #include "Topology.hpp"
-#include "Snapshot.hpp"
+#include <unordered_map>
+
+typedef std::unordered_map<AtomPtr, glm::vec3> PositionMap;
 
 class Trajectory
 {
@@ -35,13 +37,13 @@ class Trajectory
         Trajectory(const std::shared_ptr<Topology> topology);
         std::shared_ptr<Topology> getTopology();
 
-        void addSnapshot(const SnapshotPtr& newSnapshot);
-        SnapshotPtr getSnapshot(int index);
+        void addSnapshot(const PositionMap& newSnapshot);
+        PositionMap getSnapshot(int index);
         int countSnapshots();
-    
+
     private:
         std::shared_ptr<Topology> topology_;
-        std::vector<SnapshotPtr> snapshots_;
+        std::vector<PositionMap> snapshots_;
 };
 
 typedef std::shared_ptr<Trajectory> TrajectoryPtr;
