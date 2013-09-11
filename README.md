@@ -36,7 +36,7 @@ Once you have Folding@home installed and running, you're ready to install Atomat
 
     There's also the option of installing Folding Atomata directly from the source repository. I recommend visiting the [Releases page](https://github.com/Jesse-V/Folding-Atomata/releases) and downloading the .zip source of the latest stable edition. If you really want the cutting-edge and possible unstable edition, download the .zip from the top of the source tree via [this link](https://github.com/Jesse-V/Folding-Atomata/archive/master.zip).
 
-    > 1. Once you have download the source, you will need the libglew-dev, freeglut3-dev libpng++-dev, cmake, and build-essential libraries.
+    > 1. Once you have download the source, you will need the libglew-dev, freeglut3-dev, cmake, and build-essential libraries.
     > 2. **cp -rl ../debian/ debian/ && cd debian/extra_includes/ && gzip --best -c manpage > FoldingAtomata.1.gz && cd ../../**
     > 3. **cd src/ && cmake . && make -j 4** and then as root run **make install**
 
