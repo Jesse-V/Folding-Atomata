@@ -79,14 +79,14 @@ std::vector<int> FAHClientIO::getSlotIDs()
     *socket_ << "slot-info\n";
     const std::string BEGIN = "\"id\":", END = ",\n";
     std::string slotInfoStr = readResponse();
-    
+
     std::vector<int> slotIDs;
     std::size_t index = slotInfoStr.find(BEGIN, 0);
     while (index != std::string::npos)
     {
         auto value = StringManip::between(slotInfoStr, BEGIN, END, index);
         value = StringManip::trim(value, " \"");
-        
+
         int id;
         std::istringstream(value) >> id;
         slotIDs.push_back(id);
@@ -106,11 +106,11 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
 {
     std::vector<TrajectoryPtr> trajectories;
     auto slotIDs = getSlotIDs();
-
-    for_each (slotIDs.begin(), slotIDs.end(), 
+    for_each (slotIDs.begin(), slotIDs.end(),
         [&](int id)
         {
             std::cout << "Downloading trajectory for slot " << id << "... ";
+            std::cout.flush();
 
             std::stringstream trajectoryRequest("");
             trajectoryRequest << "trajectory " << id << std::endl;
@@ -119,12 +119,14 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
             std::string trajectoryStr = readResponse();
             std::cout << "done." << std::endl;
 
-            if (trajectoryStr.find("\"atoms\": []") == std::string::npos)
+            if (trajectoryStr != "> " &&
+                trajectoryStr.find("\"atoms\": []") == std::string::npos
+            )
                 trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
         }
     );
 
-    std::cout << "Filtered out FahCore 17 slots, left with " << 
+    std::cout << "Filtered out FahCore 17 slots, left with " <<
                            trajectories.size() << " trajectories." << std::endl;
 
     return trajectories;
@@ -143,7 +145,8 @@ std::string FAHClientIO::readResponse()
         pyon += buffer;
 
         if (buffer.find("\n> ")      != std::string::npos ||
-           (buffer.find("---")       != std::string::npos && 
+            pyon == "> "                                  ||
+           (buffer.find("---")       != std::string::npos &&
             buffer.find("---\nPyON") == std::string::npos)
         )
             break; //reached end of message
