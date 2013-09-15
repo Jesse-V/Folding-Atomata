@@ -26,6 +26,14 @@
 #ifndef TOPOLOGY
 #define TOPOLOGY
 
+/**
+    The Topology class holds a list of atoms and the bonds between them.
+    An Atom is simply an instance of the Atom class, whereas a Bond is a
+    std::pair of shared pointers to two of those instances. This allows
+    an algorithm to quickly gain information about the two connected atoms
+    without having to look them up in a list by their indexes.
+**/
+
 #include "Atom.hpp"
 #include <memory>
 #include <unordered_map>

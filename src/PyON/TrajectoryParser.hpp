@@ -36,19 +36,25 @@
 
 #include "Trajectory/Trajectory.hpp"
 
+typedef std::pair<std::size_t, std::size_t> BondIndexes;
+
 class TrajectoryParser
 {
     public:
         static TrajectoryPtr parse(const std::string& trajectoryStr);
-        static PositionMap parseSnapshot(const std::string& snapshotStr);
+        static PositionMap parseSnapshot(const std::string& snapshotStr,
+                                         const TopologyPtr& topology
+        );
 
     private:
         TrajectoryParser() {} //prevents instantiation
         static TopologyPtr parseTopology(const std::string& topologyStr);
         static std::vector<AtomPtr> parseAtoms(const std::string& topologyStr);
         static AtomPtr parseAtom(const std::string& atomStr);
-        static BondList parseBonds(const std::string& topologyStr);
-        static Bond parseBond(const std::string& bondStr);
+        static BondList parseBonds(const std::string& topologyStr,
+                                   const std::vector<AtomPtr>& atoms
+        );
+        static BondIndexes parseBond(const std::string& bondStr);
         static glm::vec3 parsePosition(const std::string& positionStr);
 };
 

@@ -26,6 +26,17 @@
 #ifndef TRAJECTORY
 #define TRAJECTORY
 
+/**
+    A Trajectory holds all the atoms, their atomic properties, and where they
+    all are for each available snapshot. The Topology class is primarily
+    responsible for holding all of the atomic and bond information, whereas
+    this class provides access to a Topology instance as well as access to
+    a list of PositionMaps. PositionMaps are a mapping (using a hashtable) of
+    atoms to their positions. This allows for direct and efficient lookup
+    of an atom's position without needing to know the atom's index, which can
+    be useful for certain algorithms such as the ones in ProteinAnalysis.cpp.
+**/
+
 #include "Topology.hpp"
 #include <unordered_map>
 
@@ -49,14 +60,3 @@ class Trajectory
 typedef std::shared_ptr<Trajectory> TrajectoryPtr;
 
 #endif
-
-/*
-    Trajectory
-        has topology
-            has list of atoms
-                each has symbol, charge, radius, mass, and atomic number
-            has list of bond
-                each has pair of indexes, referring to connected atoms
-        has list of snapshots
-            each has list of xyz coordinates for each atom
-*/

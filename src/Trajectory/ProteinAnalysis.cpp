@@ -37,20 +37,22 @@ BucketMap ProteinAnalysis::getBucketMap()
     std::cout << "[concurrent] hashing atoms into cube buckets... ";
     BucketMap bucketMap;
 
-    auto atoms = trajectory_->getTopology()->getAtoms();
-    auto snapshotZero = trajectory_->getSnapshot(0);
+    const auto ATOMS = trajectory_->getTopology()->getAtoms();
+    auto SNAPSHOT_ZERO = trajectory_->getSnapshot(0);
 
     //hash each atom into some bucket according to its position
-    for (std::size_t j = 0; j < atoms.size(); j++)
-    {
-        auto pos = snapshotZero->getPosition((int)j); //j only used here
-        Bucket b;
-        b.x = (int)(pos.x / BOND_LENGTH);
-        b.y = (int)(pos.y / BOND_LENGTH);
-        b.z = (int)(pos.z / BOND_LENGTH);
+    for_each (ATOMS.begin(), ATOMS.end(),
+        [&](const AtomPtr& atom)
+        {
+            auto pos = SNAPSHOT_ZERO[atom];
+            Bucket b;
+            b.x = (int)(pos.x / BOND_LENGTH);
+            b.y = (int)(pos.y / BOND_LENGTH);
+            b.z = (int)(pos.z / BOND_LENGTH);
 
-        bucketMap.insert(BucketMap::value_type(b, atoms[j]));
-    }
+            bucketMap.insert(BucketMap::value_type(b, atom));
+        }
+    );
 
     std::cout << "done." << std::endl;
     return bucketMap;

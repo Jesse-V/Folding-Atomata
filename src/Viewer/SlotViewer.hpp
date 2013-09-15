@@ -40,7 +40,34 @@
 #include "Modeling/DataBuffers/ColorBuffer.hpp"
 #include "World/Scene.hpp"
 
+
 typedef std::pair<ProgramPtr, ColorPtr> AtomModelInfo;
+
+
+template <class T>
+inline void hash_combine(std::size_t & seed, const T & v)
+{
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+
+
+namespace std
+{
+    template<typename S, typename T> struct hash<pair<S, T>>
+    {
+        inline size_t operator()(const pair<S, T> & v) const
+        {
+            size_t seed = 0;
+            ::hash_combine(seed, v.first);
+            ::hash_combine(seed, v.second);
+            return seed;
+        }
+    };
+}
+
+
 
 class SlotViewer
 {
@@ -88,10 +115,12 @@ class SlotViewer
         float getMagnitude(const glm::vec3& vector);
 
     private:
+
+
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;
-        std::vector<ModelPtr> atomModels_;
-        std::vector<ModelPtr> bondModels_;
+        std::unordered_map<Bond,    ModelPtr, std::hash<Bond>> bondModels_;
+        std::unordered_map<AtomPtr, ModelPtr> atomModels_;
 
         int transitionTime_; //how much elapsed time between each snapshot
         int snapshotA_, snapshotB_; //used to interpolate between during animation

@@ -40,7 +40,6 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     trajectory_(trajectory), scene_(scene),
     snapshotA_(0), snapshotB_(1)
 {
-    /*
     std::cout << std::endl;
 
     if (trajectory_->countSnapshots() == 0)
@@ -57,13 +56,13 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     }
 
     addAllBonds();
-    std::cout << std::endl;*/
-
+    std::cout << std::endl;
+/*
     std::thread thread( [&] {
         ProteinAnalysis proteinAnalysis(trajectory_);
         proteinAnalysis.fixProteinSplits();
     });
-    thread.detach();
+    thread.detach();*/
 
     std::cout << "... done creating SlotViewer." << std::endl;
 }
@@ -72,20 +71,19 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
 
 void SlotViewer::addAllAtoms()
 {
-    auto atoms = trajectory_->getTopology()->getAtoms();
-    atomModels_.reserve(atoms.size());
+    const auto ATOMS = trajectory_->getTopology()->getAtoms();
 
-    std::cout << "Trajectory consists of " << atoms.size()
+    std::cout << "Trajectory consists of " << ATOMS.size()
         << " atoms." << std::endl;
     std::cout << "Adding Atoms to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
-    for_each (atoms.begin(), atoms.end(),
+    for_each (ATOMS.begin(), ATOMS.end(),
         [&](const AtomPtr& atom)
         {
             auto matrix = generateAtomMatrix(snapshotZero[atom]);
             auto atomModel = addAtom(atom, matrix);
-            atomModels_.push_back(atomModel);
+            atomModels_[atom] = atomModel;
         }
     );
 
@@ -96,16 +94,15 @@ void SlotViewer::addAllAtoms()
 
 void SlotViewer::addAllBonds()
 {
-    auto bonds = trajectory_->getTopology()->getBonds();
-    bondModels_.reserve(bonds.size());
+    const auto BONDS = trajectory_->getTopology()->getBonds();
 
-    std::cout << "Trajectory consists of " << bonds.size()
+    std::cout << "Trajectory consists of " << BONDS.size()
         << " bonds." << std::endl;
     std::cout << "Adding Bonds to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
-    for_each (bonds.begin(), bonds.end(),
+    for_each (BONDS.begin(), BONDS.end(),
         [&] (const Bond& bond)
         {
             auto positionA = snapshotZero[bond.first];
@@ -115,7 +112,7 @@ void SlotViewer::addAllBonds()
             model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
             addBond(bond, model);
-            bondModels_.push_back(model);
+            bondModels_[bond] = model;
         }
     );
 
@@ -219,7 +216,7 @@ void SlotViewer::update(int deltaTime)
             newPositions[atom] = position;
 
             if (atomModels_.size() > 0)
-                atomModels_[j]->setModelMatrix(generateAtomMatrix(position));
+                atomModels_[atom]->setModelMatrix(generateAtomMatrix(position));
         }
     );
 
@@ -229,7 +226,7 @@ void SlotViewer::update(int deltaTime)
         {
             auto positionA = newPositions[bond.first];
             auto positionB = newPositions[bond.second];
-            bondModels_[j]->setModelMatrix(generateBondMatrix(positionA, positionB));
+            bondModels_[bond]->setModelMatrix(generateBondMatrix(positionA, positionB));
         }
     );
 }
