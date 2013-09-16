@@ -52,31 +52,15 @@ class ProteinAnalysis
 
         struct Bucket
         {
-            int x, y, z;
-
-            bool operator() (const Bucket& b) const { return isEqualTo(b); }
-            bool operator==(const Bucket& b) const  { return isEqualTo(b); }
-
-            bool isEqualTo(const Bucket& other) const
-            {
-                return x == other.x && y == other.y && z == other.z;
-            }
+            std::vector<AtomPtr> atoms;
         };
 
-        typedef std::unordered_multimap<Bucket, AtomPtr, Bucket> BucketMap;
-        typedef std::unordered_multimap<AtomPtr, AtomPtr> NeighborList;
-        typedef std::unordered_set<AtomPtr> AtomGroup;
+        typedef std::vector<std::vector<std::vector<Bucket>>> BucketMap;
 
     public:
         ProteinAnalysis(const TrajectoryPtr& trajectory);
         void fixProteinSplits();
         BucketMap getBucketMap();
-        NeighborList getNeighborList(const BucketMap& bucketMap);
-        AtomGroup getGroupFrom(const AtomPtr& startAtom,
-                               const NeighborList& neighborList);
-        void recurseThroughGroup(const AtomPtr& atom,
-                    const NeighborList& neighborList, AtomGroup& visitedAtoms);
-        bool isWithinBondDistance(const AtomPtr& a, const AtomPtr& b);
 
     private:
         TrajectoryPtr trajectory_;
