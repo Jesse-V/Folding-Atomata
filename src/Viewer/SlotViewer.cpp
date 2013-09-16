@@ -40,7 +40,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     trajectory_(trajectory), scene_(scene),
     snapshotA_(0), snapshotB_(1)
 {
-    std::cout << std::endl;
+    /*std::cout << std::endl;
 
     if (trajectory_->countSnapshots() == 0)
         throw std::runtime_error("No snapshots to work with!");
@@ -56,15 +56,15 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     }
 
     addAllBonds();
-    std::cout << std::endl;
-/*
+    std::cout << std::endl;*/
+
     std::thread thread( [&] {
         ProteinAnalysis proteinAnalysis(trajectory_);
         proteinAnalysis.fixProteinSplits();
     });
-    thread.detach();*/
+    thread.detach();
 
-    std::cout << "... done creating SlotViewer." << std::endl;
+    //std::cout << "... done creating SlotViewer." << std::endl;
 }
 
 

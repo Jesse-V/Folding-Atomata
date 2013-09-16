@@ -43,6 +43,7 @@
 
 #include "Trajectory.hpp"
 #include <unordered_map>
+#include <unordered_set>
 
 class ProteinAnalysis
 {
@@ -64,12 +65,17 @@ class ProteinAnalysis
 
         typedef std::unordered_multimap<Bucket, AtomPtr, Bucket> BucketMap;
         typedef std::unordered_multimap<AtomPtr, AtomPtr> NeighborList;
+        typedef std::unordered_set<AtomPtr> AtomGroup;
 
     public:
         ProteinAnalysis(const TrajectoryPtr& trajectory);
         void fixProteinSplits();
         BucketMap getBucketMap();
         NeighborList getNeighborList(const BucketMap& bucketMap);
+        AtomGroup getGroupFrom(const AtomPtr& startAtom,
+                               const NeighborList& neighborList);
+        void recurseThroughGroup(const AtomPtr& atom,
+                    const NeighborList& neighborList, AtomGroup& visitedAtoms);
         bool isWithinBondDistance(const AtomPtr& a, const AtomPtr& b);
 
     private:

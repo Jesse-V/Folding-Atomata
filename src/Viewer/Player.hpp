@@ -67,13 +67,13 @@ class Player
         void onMouseClick(int button, int state, int x, int y);
         void onMouseMotion(int x, int y);
         void onMouseDrag(int x, int y);
-        
+
     private:
         enum class KeyAction : short
         {
             FORWARD, BACKWARD,
             RIGHT, LEFT,
-            UP, DOWN, 
+            UP, DOWN,
             POSITIVE_ROLL, NEGATIVE_ROLL
         };
 
@@ -88,10 +88,9 @@ class Player
         std::shared_ptr<Scene> scene_;
         bool mouseControlsCamera_;
         int windowCenterX_, windowCenterY_;
-        
+
         glm::vec3 movementDelta_;
         std::unordered_set<KeyAction, KeyHash> downKeys_;
-        //std::hash_map<char, CameraKey> keyBindings;
 };
 
 #endif

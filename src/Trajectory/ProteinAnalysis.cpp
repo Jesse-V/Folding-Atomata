@@ -1,5 +1,6 @@
 
 #include "ProteinAnalysis.hpp"
+#include "Viewer/SlotViewer.hpp"
 #include <algorithm>
 #include <thread>
 #include <iostream>
@@ -7,16 +8,11 @@
 typedef std::unordered_multimap<ProteinAnalysis::Bucket, AtomPtr,
     ProteinAnalysis::Bucket> BucketMap;
 typedef std::unordered_multimap<AtomPtr, AtomPtr> NeighborList;
-
+typedef std::unordered_set<AtomPtr> AtomGroup;
 
 ProteinAnalysis::ProteinAnalysis(const TrajectoryPtr& trajectory) :
     trajectory_(trajectory)
-{
-    //fetch an unordered_map of atoms to their position in snapshot zero
-
-    std::unordered_map<AtomPtr, AtomPtr> mapA;
-    std::unordered_map<AtomPtr, glm::vec3> mapB;
-}
+{}
 
 
 
@@ -27,7 +23,8 @@ void ProteinAnalysis::fixProteinSplits()
     BucketMap bucketMap = getBucketMap();
     NeighborList neighborList = getNeighborList(bucketMap);
 
-
+    auto firstAtom = trajectory_->getTopology()->getAtoms()[0];
+    auto group = getGroupFrom(firstAtom, neighborList);
 }
 
 
@@ -38,13 +35,13 @@ BucketMap ProteinAnalysis::getBucketMap()
     BucketMap bucketMap;
 
     const auto ATOMS = trajectory_->getTopology()->getAtoms();
-    auto SNAPSHOT_ZERO = trajectory_->getSnapshot(0);
+    auto snapshotZero = trajectory_->getSnapshot(0);
 
     //hash each atom into some bucket according to its position
     for_each (ATOMS.begin(), ATOMS.end(),
         [&](const AtomPtr& atom)
         {
-            auto pos = SNAPSHOT_ZERO[atom];
+            auto pos = snapshotZero[atom];
             Bucket b;
             b.x = (int)(pos.x / BOND_LENGTH);
             b.y = (int)(pos.y / BOND_LENGTH);
@@ -65,11 +62,15 @@ NeighborList ProteinAnalysis::getNeighborList(const BucketMap& bucketMap)
     std::cout << "[concurrent] Computing neighbor list for each atom... ";
     NeighborList neighborList;
 
+    int index = 0;
     for_each (bucketMap.begin(), bucketMap.end(),
         [&](const std::pair<Bucket, AtomPtr>& current)
     {
         auto bucket = current.first;
         auto atom = current.second;
+
+        std::cout << index << std::endl;
+        index++;
 
         //scan surrounding 27 buckets
         for (int x = -1; x <= 1; x++)
@@ -106,9 +107,46 @@ NeighborList ProteinAnalysis::getNeighborList(const BucketMap& bucketMap)
 
 
 
+AtomGroup ProteinAnalysis::getGroupFrom(const AtomPtr& startAtom,
+                                        const NeighborList& neighborList
+)
+{
+    std::cout << "[concurrent] Recursing through atom group... ";
+
+    AtomGroup group;
+    recurseThroughGroup(startAtom, neighborList, group);
+
+    std::cout << " done." << std::endl;
+    return group;
+}
+
+
+
+void ProteinAnalysis::recurseThroughGroup(const AtomPtr& atom,
+    const NeighborList& neighborList, AtomGroup& visitedAtoms
+)
+{
+    auto neighbors = neighborList.equal_range(atom);
+    for_each (neighbors.first, neighbors.second,
+        [&](const NeighborList::value_type& x)
+        {
+            if (visitedAtoms.count(atom) == 0)
+            {
+                visitedAtoms.insert(atom);
+                recurseThroughGroup(x.second, neighborList, visitedAtoms);
+            }
+        }
+    );
+}
+
+
+
 bool ProteinAnalysis::isWithinBondDistance(const AtomPtr& a, const AtomPtr& b)
 {
-    //auto atomPosition = snapshotZero->getPosition(5);
+    auto snapshotZero = trajectory_->getSnapshot(0);
+    auto positionA = snapshotZero[a];
+    auto positionB = snapshotZero[b];
 
-    return true; //temp
+    float dist = SlotViewer::getDotProduct(positionA, positionB);
+    return dist >= (2 * 2);
 }

@@ -76,6 +76,9 @@ class SlotViewer
                    const std::shared_ptr<Scene>& scene
         );
         void update(int deltaTime);
+        static glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
+        static float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
+        static float getMagnitude(const glm::vec3& vector);
 
     public:
         const float ATOM_SCALE = 0.20f;
@@ -110,13 +113,7 @@ class SlotViewer
                                      const glm::vec3& endPosition
         );
 
-        glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
-        float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
-        float getMagnitude(const glm::vec3& vector);
-
     private:
-
-
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;
         std::unordered_map<Bond,    ModelPtr, std::hash<Bond>> bondModels_;
