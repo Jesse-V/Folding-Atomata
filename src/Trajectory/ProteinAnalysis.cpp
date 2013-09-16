@@ -3,6 +3,7 @@
 #include "Viewer/SlotViewer.hpp"
 #include <algorithm>
 #include <thread>
+#include <iterator>
 #include <iostream>
 
 typedef std::unordered_multimap<ProteinAnalysis::Bucket, AtomPtr,
@@ -22,9 +23,9 @@ void ProteinAnalysis::fixProteinSplits()
 
     BucketMap bucketMap = getBucketMap();
     NeighborList neighborList = getNeighborList(bucketMap);
-
+/*
     auto firstAtom = trajectory_->getTopology()->getAtoms()[0];
-    auto group = getGroupFrom(firstAtom, neighborList);
+    auto group = getGroupFrom(firstAtom, neighborList);*/
 }
 
 
@@ -62,6 +63,80 @@ NeighborList ProteinAnalysis::getNeighborList(const BucketMap& bucketMap)
     std::cout << "[concurrent] Computing neighbor list for each atom... ";
     NeighborList neighborList;
 
+    //iterate through each bucket
+        //calculate the 27 buckets
+        //then iterate through the atoms in that bucket
+
+    int count = 0;
+    //iterate through buckets
+    auto bucketIterator = bucketMap.begin();
+    while (bucketIterator != bucketMap.end())
+    {
+        auto currentBucket = bucketIterator->first;
+        auto currBucketRange = bucketMap.equal_range(currentBucket);
+
+        //collect a list of iterators to surrounding buckets
+        typedef BucketMap::const_iterator Iterator;
+        std::vector<std::pair<Iterator, Iterator>> neighboringBuckets;
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                for (int z = -1; z <= 1; z++)
+                {
+                    Bucket neighbor;
+                    neighbor.x = currentBucket.x + x;
+                    neighbor.y = currentBucket.y + y;
+                    neighbor.z = currentBucket.z + z;
+                    neighboringBuckets.push_back(bucketMap.equal_range(neighbor));
+                }
+            }
+        }
+
+        //loop through all atoms in current bucket
+        for_each (currBucketRange.first, currBucketRange.second,
+            [&](const std::pair<Bucket, AtomPtr>& currAtomPair)
+        {
+            auto currentAtom = currAtomPair.second;
+            count++;
+            std::cout << count << std::endl;
+            //iterate through surrounding buckets
+            for_each (neighboringBuckets.begin(), neighboringBuckets.end(),
+                [&](const std::pair<Iterator, Iterator>& neighborBucket)
+            {
+                //iterate through atoms in that neighboring bucket
+                for_each (neighborBucket.first, neighborBucket.second,
+                    [&](const std::pair<Bucket, AtomPtr>& near)
+                {
+                    //test the nearby atom
+                    auto nearbyAtom = near.second;
+                    if (isWithinBondDistance(currentAtom, nearbyAtom))
+                    {
+                        //if it is within range, add it
+                        auto pair = NeighborList::value_type(currentAtom, nearbyAtom);
+                        neighborList.insert(pair);
+                    }
+                });
+            });
+        });
+
+        bucketIterator = currBucketRange.second;
+    }
+/*
+        for_each (neighboringBuckets.begin(), neighboringBuckets.end(),
+            [&](int iterators)
+            {
+                auto nearbyAtom = near.second;
+
+                if (isWithinBondDistance(atom, nearbyAtom))
+                {
+                    auto pair = NeighborList::value_type(atom, nearbyAtom);
+                    neighborList.insert(pair);
+                }
+            }
+        );*
+    }
+/*
     int index = 0;
     for_each (bucketMap.begin(), bucketMap.end(),
         [&](const std::pair<Bucket, AtomPtr>& current)
@@ -100,7 +175,7 @@ NeighborList ProteinAnalysis::getNeighborList(const BucketMap& bucketMap)
             }
         }
     });
-
+*/
     std::cout << " done." << std::endl;
     return neighborList;
 }
