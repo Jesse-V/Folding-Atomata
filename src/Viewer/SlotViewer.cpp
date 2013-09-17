@@ -37,6 +37,8 @@
 
 SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
                        const std::shared_ptr<Scene>& scene) :
+    ATOM_STACKS(Options::getInstance().getAtomStacks()),
+    ATOM_SLICES(Options::getInstance().getAtomSlices()),
     trajectory_(trajectory), scene_(scene),
     snapshotA_(0), snapshotB_(1)
 {

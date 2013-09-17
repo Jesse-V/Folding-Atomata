@@ -44,6 +44,7 @@
 typedef std::pair<ProgramPtr, ColorPtr> AtomModelInfo;
 
 
+// http://stackoverflow.com/questions/7222143/unordered-map-hash-function-c
 template <class T>
 inline void hash_combine(std::size_t & seed, const T & v)
 {
@@ -52,7 +53,7 @@ inline void hash_combine(std::size_t & seed, const T & v)
 }
 
 
-
+//http://stackoverflow.com/questions/7222143/unordered-map-hash-function-c
 namespace std
 {
     template<typename S, typename T> struct hash<pair<S, T>>
@@ -66,7 +67,6 @@ namespace std
         }
     };
 }
-
 
 
 class SlotViewer
@@ -84,8 +84,7 @@ class SlotViewer
         const float ATOM_SCALE = 0.20f;
         const float BOND_SCALE = 0.10f;
 
-        const unsigned int ATOM_STACKS = 8;
-        const unsigned int ATOM_SLICES = 16;
+        const unsigned int ATOM_STACKS, ATOM_SLICES;
 
         const glm::vec3 ATOM_LIGHT_POSITION = glm::vec3(-1.5);
         const float ATOM_LIGHT_POWER = 2.0f;

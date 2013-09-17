@@ -24,7 +24,7 @@
 \******************************************************************************/
 
 #define _GLIBCXX_USE_NANOSLEEP
-                         
+
 #include "Viewer.hpp"
 #include "FAHClientIO.hpp"
 #include "Sockets/SocketException.hpp"
@@ -57,7 +57,7 @@ Viewer::Viewer() :
 
     addLight();
     addModels();
-    
+
     player_->grabPointer();
     reportFPS();
 }
@@ -73,9 +73,9 @@ void Viewer::reportFPS()
 
             float msPerFrame = timeSpentRendering_ / frameCount_;
             std::cout << frameCount_ << " FPS, spent " <<
-                timeSpentRendering_ << " ms rendering, avg " << 
+                timeSpentRendering_ << " ms rendering, avg " <<
                 msPerFrame << " ms/frame, avg " <<
-                (int)(scene_->getModelCount() * 1000 / msPerFrame) << 
+                (int)(scene_->getModelCount() * 1000 / msPerFrame) <<
                 " Models/sec" << std::endl;
 
             frameCount_ = 0;
@@ -225,7 +225,7 @@ std::shared_ptr<Camera> Viewer::createCamera()
 void Viewer::update(int deltaTime)
 {
     player_->update(deltaTime);
-    
+
     for_each (slotViewers_.begin(), slotViewers_.end(),
         [&](const std::shared_ptr<SlotViewer>& viewer)
         {
@@ -253,7 +253,7 @@ void Viewer::handleWindowReshape(int newWidth, int newHeight)
     scene_->getCamera()->setAspectRatio(newWidth / (float)newHeight);
     player_->setWindowOffset(glutGet(GLUT_WINDOW_X), glutGet(GLUT_WINDOW_Y));
 
-    std::cout << "Windows updated to " << newWidth << " by " << newHeight << 
+    std::cout << "Windows updated to " << newWidth << " by " << newHeight <<
         ", a ratio of " << (newWidth / (float)newHeight) << std::endl;
 }
 

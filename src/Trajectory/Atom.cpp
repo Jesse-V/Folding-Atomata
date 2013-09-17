@@ -26,9 +26,10 @@
 #include "Atom.hpp"
 
 
-Atom::Atom(const std::string& symbol, int atomicNumber, float charge, 
-            float radius, float mass) : 
-    symbol_(symbol), atomicNumber_(atomicNumber), charge_(charge), radius_(radius), mass_(mass)
+Atom::Atom(const std::string& symbol, int atomicNumber, float charge,
+            float radius, float mass) :
+    symbol_(symbol), atomicNumber_(atomicNumber),
+    charge_(charge), radius_(radius), mass_(mass)
 {}
 
 
@@ -42,7 +43,7 @@ glm::vec3 Atom::getColor()
         carbon == dark gray
         nitrogen == blue
     */
-        
+
     switch (getElement())
     {
         case 'H' : //hydrogen

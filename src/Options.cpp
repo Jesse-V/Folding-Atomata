@@ -40,6 +40,13 @@ Options& Options::getInstance()
 
 
 
+Options::Options() :
+    connectionHost_("127.0.0.1"), connectionPort_(36330), usesPassword_(false),
+    atomStacks_(8), atomSlices_(16)
+{}
+
+
+
 bool Options::handleFlags(int argc, char** argv)
 {
     std::vector<std::string> options;
@@ -61,6 +68,8 @@ Commands:
     --connect, -c       Address and port to use to connect to FAHClient.
     --license           Prints license information.
     --password, -p      Password for accessing the remote FAHClient.
+    --slices, -sl       Slices to use for the atom mesh. Default is 8.
+    --stacks, -st       Stacks to use for the atom mesh. Default is 16.
     --verbose, -v       Verbose printing to stdout.
     --version           Print version information.
 
@@ -97,7 +106,8 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 
     //check for 1-piece flags
     if (verbose1(flag) || connect1(flag) || bounceSnapshots1(flag) ||
-        cycleSnapshots1(flag) || password1(flag) || renderMode1(flag)
+        cycleSnapshots1(flag) || password1(flag) || renderMode1(flag) ||
+        atomStacks1(flag) || atomSlices1(flag)
         // || slotID1(flag)
     )
         return 1;
@@ -114,7 +124,7 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     std::string arg(options[index + 1]);
     if (connect2(flag, arg) || bounceSnapshots2(flag, arg) ||
         cycleSnapshots2(flag, arg) || password2(flag, arg) ||
-        renderMode2(flag, arg)
+        renderMode2(flag, arg) || atomStacks2(flag, arg) || atomSlices2(flag, arg)
         // || slotID2(flag, arg)
     )
         return 2;
@@ -366,6 +376,68 @@ bool Options::slotID2(const std::string& flag, const std::string& arg)
 
 */
 
+
+
+bool Options::atomStacks1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--stacks="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!confirm(parts.size() == 2, flag))
+            return false;
+
+        std::istringstream(parts[1]) >> atomStacks_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::atomStacks2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--stacks" || flag == "-st")
+    {
+        std::istringstream(arg) >> atomStacks_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::atomSlices1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--slices="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!confirm(parts.size() == 2, flag))
+            return false;
+
+        std::istringstream(parts[1]) >> atomSlices_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::atomSlices2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--slices" || flag == "-sl")
+    {
+        std::istringstream(arg) >> atomSlices_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
 bool Options::confirm(bool condition, const std::string& flag)
 {
     if (!condition)
@@ -388,8 +460,6 @@ bool Options::highVerbosity()
 
 std::string Options::getHost()
 {
-    if (connectionHost_.length() == 0)
-        return "127.0.0.1";
     return connectionHost_;
 }
 
@@ -397,8 +467,6 @@ std::string Options::getHost()
 
 int Options::getPort()
 {
-    if (connectionPort_ == 0)
-        return 36330;
     return connectionPort_;
 }
 
@@ -423,6 +491,21 @@ int Options::getSlotID()
     return slotID_;
 }
 */
+
+
+
+unsigned int Options::getAtomStacks()
+{
+    return atomStacks_;
+}
+
+
+
+unsigned int Options::getAtomSlices()
+{
+    return atomSlices_;
+}
+
 
 
 bool Options::bounceSnapshots()

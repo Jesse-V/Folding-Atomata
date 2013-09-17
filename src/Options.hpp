@@ -42,9 +42,12 @@ class Options
             BALL_N_STICK, STICK
         };
 
+        Options();
         std::string getHost();
         int getPort();
         std::string getPassword();
+        unsigned int getAtomStacks();
+        unsigned int getAtomSlices();
         //bool slotIDisSet();
         //int getSlotID();
 
@@ -69,16 +72,23 @@ class Options
         bool renderMode2(const std::string& flag, const std::string& arg);
         //bool slotID1(const std::string& flag);
         //bool slotID2(const std::string& flag, const std::string& arg);
+        bool atomStacks1(const std::string& flag);
+        bool atomStacks2(const std::string& flag, const std::string& arg);
+        bool atomSlices1(const std::string& flag);
+        bool atomSlices2(const std::string& flag, const std::string& arg);
         bool confirm(bool condition, const std::string& flag);
 
     private:
         static Options* singleton_;
 
-        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_;//, slotIDisSet_;
-        int connectionPort_, usesPassword_; //slotID_, ;
-        RenderMode renderMode_ = RenderMode::BALL_N_STICK;
         std::string connectionHost_;
+        int connectionPort_; //slotID_, ;
         std::string authPassword_;
+
+        RenderMode renderMode_ = RenderMode::BALL_N_STICK;
+        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_, usesPassword_;
+        //, slotIDisSet_;
+        unsigned int atomStacks_, atomSlices_;
 };
 
 #endif

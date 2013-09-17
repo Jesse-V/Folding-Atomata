@@ -41,6 +41,14 @@ The following options can be specified on the command line using the following s
         A password for accessing the remote client. Note that this is sent in plaintext.
         Examples: --password=myPassword or -p myPassword
 
+\fB --slices \fR or \fB -sl \fR
+        Number of slices to use for generating the atom mesh. Default is 8.
+        Increasing this number results in higher rendering demand, but increases the approximation to a sphere and improves its overall appearance.
+
+\fB --stacks \fR or \fB -st \fR
+        Number of stacks to use for generating the atom mesh. Default is 16.
+        Increasing this number results in higher rendering demand, but increases the approximation to a sphere and improves its overall appearance.
+
 \fB --verbose \fR or \fB -v \fR
         Verbose printing to stdout.
 

@@ -2,5 +2,5 @@
 cmake .
 cpus=$(grep -c ^processor /proc/cpuinfo)
 if (make -j $cpus) then
-    ./FoldingAtomata
+    ./FoldingAtomata -v
 fi
