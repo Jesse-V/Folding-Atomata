@@ -7,6 +7,8 @@
 #include <iostream>
 
 typedef std::vector<std::vector<std::vector<ProteinAnalysis::Bucket>>> BucketMap;
+typedef std::vector<std::vector<AtomPtr>> AtomGroups;
+
 
 ProteinAnalysis::ProteinAnalysis(const TrajectoryPtr& trajectory) :
     trajectory_(trajectory)
@@ -20,14 +22,18 @@ void ProteinAnalysis::fixProteinSplits()
 
     BucketMap bucketMap = getBucketMap();
     assignGroups(bucketMap);
+    auto groups = getGroups(bucketMap);
+    fixGroups(groups);
+
+    std::cout << "[concurrent] ...done analyzing protein." << std::endl;
 }
 
 
 
 BucketMap ProteinAnalysis::getBucketMap()
 {
-    std::cout << "[concurrent] Hashing atoms into cube buckets... ";
-    BucketMap bucketMap;
+    std::cout << "[concurrent] Hashing atoms into buckets of size " <<
+        BOND_LENGTH << "... " << std::endl;
 
     const auto ATOMS = trajectory_->getTopology()->getAtoms();
     auto snapshotZero = trajectory_->getSnapshot(0);
@@ -49,6 +55,7 @@ BucketMap ProteinAnalysis::getBucketMap()
         }
     );
 
+    BucketMap bucketMap;
     for_each (ATOMS.begin(), ATOMS.end(),
         [&](const AtomPtr& atom)
         {
@@ -69,7 +76,8 @@ BucketMap ProteinAnalysis::getBucketMap()
     );
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
-    std::cout << "done. Took " << (diff / 1000.0f) << "ms" << std::endl;
+    std::cout << "[concurrent] ...done hashing into buckets. Took " <<
+        (diff / 1000.0f) << "ms" << std::endl;
 
     return bucketMap;
 }
@@ -90,14 +98,15 @@ void ProteinAnalysis::assignGroups(BucketMap& bucketMap)
         if (pos.size() < 3)
             break;
 
-        std::cout << "[concurrent] Identifying group " << groupID << "... ";
+        std::cout << "[concurrent] Assigning " << groupID << "... " << std::endl;
         assignGroup(bucketMap, pos[0], pos[1], pos[2], groupID);
         groupID++;
-        std::cout << "done." << std::endl;
+        std::cout << "[concurrent] ...done assigning group." << std::endl;
     }
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
-    std::cout << "done identifying groups. Took " << (diff / 1000.0f) << "ms" << std::endl;
+    std::cout << "[concurrent] ...done identifying groups. Took " <<
+        (diff / 1000.0f) << "ms" << std::endl;
 }
 
 
@@ -119,6 +128,41 @@ void ProteinAnalysis::assignGroup(BucketMap& map, int x, int y, int z, int id)
         for (int b = -1; b <= 1; b++)
             for (int c = -1; c <= 1; c++)
                 assignGroup(map, x + a, y + b, z + c, id);
+}
+
+
+
+AtomGroups ProteinAnalysis::getGroups(const BucketMap& bucketMap)
+{
+    AtomGroups groups;
+    std::cout << "[concurrent] Assembling groups... " << std::endl;
+
+    for (std::size_t x = 0; x < bucketMap.size(); x++)
+    {
+        for (std::size_t y = 0; y < bucketMap[x].size(); y++)
+        {
+            for (std::size_t z = 0; z < bucketMap[x][y].size(); z++)
+            {
+                auto bucket = bucketMap[x][y][z];
+                if (groups.size() <= bucket.groupID)
+                    groups.resize(bucket.groupID + 1);
+
+                auto group = groups[bucket.groupID];
+                group.insert(group.end(), bucket.atoms.begin(), bucket.atoms.end());
+            }
+        }
+    }
+
+    std::cout << "[concurrent] ...done assembling groups." << std::endl;
+
+    return groups;
+}
+
+
+
+void ProteinAnalysis::fixGroups(const AtomGroups& groups)
+{
+    //todo: needs implementation
 }
 
 

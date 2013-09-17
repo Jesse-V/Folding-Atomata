@@ -57,6 +57,7 @@ class ProteinAnalysis
         };
 
         typedef std::vector<std::vector<std::vector<Bucket>>> BucketMap;
+        typedef std::vector<std::vector<AtomPtr>> AtomGroups;
 
     public:
         ProteinAnalysis(const TrajectoryPtr& trajectory);
@@ -64,6 +65,8 @@ class ProteinAnalysis
         BucketMap getBucketMap();
         void assignGroups(BucketMap& bucketMap);
         void assignGroup(BucketMap& map, int x, int y, int z, int id);
+        AtomGroups getGroups(const BucketMap& map);
+        void fixGroups(const AtomGroups& groups);
         std::vector<int> getUnassignedBucket(const BucketMap& map);
 
     private:
