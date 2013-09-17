@@ -52,6 +52,7 @@ class ProteinAnalysis
 
         struct Bucket
         {
+            int groupID = -1;
             std::vector<AtomPtr> atoms;
         };
 
@@ -61,6 +62,9 @@ class ProteinAnalysis
         ProteinAnalysis(const TrajectoryPtr& trajectory);
         void fixProteinSplits();
         BucketMap getBucketMap();
+        void assignGroups(BucketMap& bucketMap);
+        void assignGroup(BucketMap& map, int x, int y, int z, int id);
+        std::vector<int> getUnassignedBucket(const BucketMap& map);
 
     private:
         TrajectoryPtr trajectory_;
