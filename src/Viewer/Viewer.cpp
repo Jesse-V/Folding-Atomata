@@ -30,6 +30,7 @@
 #include "Sockets/SocketException.hpp"
 #include "Modeling/DataBuffers/SampledBuffers/CubeTextureMap.hpp"
 #include "Modeling/Shading/ShaderManager.hpp"
+#include "PyON/TrajectoryParser.hpp"
 #include "Options.hpp"
 #include <thread>
 #include <algorithm>
@@ -166,6 +167,8 @@ std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
 
 void Viewer::addSlotViewers()
 {
+    std::vector<TrajectoryPtr> trajectories;
+
     try
     {
         auto socket = std::make_shared<ClientSocket>(
@@ -174,18 +177,36 @@ void Viewer::addSlotViewers()
         );
 
         FAHClientIO io(socket);
-        std::vector<TrajectoryPtr> trajectories = io.getTrajectories();
+        trajectories = io.getTrajectories();
 
-        if (trajectories.size() == 0)
-            throw std::runtime_error("Not enough slots to work with.");
-
-        auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
-        slotViewers_.push_back(slot0Viewer);
+        if (trajectories.empty())
+            std::cerr << "Not enough slots to work with. " <<
+                "Using demo protein." << std::endl;
     }
     catch (SocketException&)
     {
-        throw std::runtime_error("Error connecting to FAHClient!");
+        std::cerr << "Error connection to FAHClient (SocketException). " <<
+                "Using demo protein." << std::endl;
     }
+
+    if (trajectories.empty())
+    {
+        std::ifstream fin("/usr/share/FoldingAtomata/demoProtein", std::ios::in);
+        if (!fin.is_open())
+            throw std::runtime_error("Unable to demo protein!");
+
+        std::string proteinStr;
+        fin.seekg(0, std::ios::end);
+        proteinStr.resize((unsigned long)fin.tellg()); //allocate enough space
+        fin.seekg(0, std::ios::beg);
+        fin.read(&proteinStr[0], (long)proteinStr.size()); //read entire file
+        fin.close();
+
+        trajectories.push_back(TrajectoryParser::parse(proteinStr));
+    }
+
+    auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
+    slotViewers_.push_back(slot0Viewer);
 }
 
 
