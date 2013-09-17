@@ -303,6 +303,12 @@ int main(int argc, char** argv)
 
         std::cout << "Finished Glut and window initialization." << std::endl;
 
+        if (!Options::getInstance().highVerbosity())
+        { //https://bbs.archlinux.org/viewtopic.php?id=79378
+            std::ofstream nullOut("/dev/null");
+            std::cout.rdbuf(nullOut.rdbuf());
+        }
+
         Viewer::getInstance(); //calls Viewer's constructor, sets up everything...
         startUpdating();
         glutMainLoop();

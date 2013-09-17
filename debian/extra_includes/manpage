@@ -41,12 +41,14 @@ The following options can be specified on the command line using the following s
         A password for accessing the remote client. Note that this is sent in plaintext.
         Examples: --password=myPassword or -p myPassword
 
+\fB --verbose \fR or \fB -v \fR
+        Verbose printing to stdout.
+
 \fB --version \fR
         Print version and quit.
 
-
 .\"  .SH SEE ALSO
-    
+
 .SH BUGS
 Please visit https://github.com/Jesse-V/Folding-Atomata/issues for the list
 of known bugs. Github users are welcome to report bugs there.

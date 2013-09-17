@@ -61,7 +61,8 @@ Commands:
     --connect, -c       Address and port to use to connect to FAHClient.
     --license           Prints license information.
     --password, -p      Password for accessing the remote FAHClient.
-    --version, -v       Print version information.
+    --verbose, -v       Verbose printing to stdout.
+    --version           Print version information.
 
 Examples:
     FoldingAtomata
