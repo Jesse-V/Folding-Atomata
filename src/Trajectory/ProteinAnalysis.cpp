@@ -53,9 +53,9 @@ BucketMap ProteinAnalysis::getBucketMap()
         [&](const AtomPtr& atom)
         {
             auto position = snapshotZero[atom];
-            int x = (int)((position.x - smallestX) / BOND_LENGTH);
-            int y = (int)((position.y - smallestY) / BOND_LENGTH);
-            int z = (int)((position.z - smallestZ) / BOND_LENGTH);
+            auto x = (std::size_t)((position.x - smallestX) / BOND_LENGTH);
+            auto y = (std::size_t)((position.y - smallestY) / BOND_LENGTH);
+            auto z = (std::size_t)((position.z - smallestZ) / BOND_LENGTH);
 
             if (bucketMap.size() <= x)
                 bucketMap.resize(x + 1);
@@ -125,10 +125,10 @@ void ProteinAnalysis::assignGroup(BucketMap& map, int x, int y, int z, int id)
 
 std::vector<int> ProteinAnalysis::getUnassignedBucket(const BucketMap& map)
 {
-    for (int x = 0; x < map.size(); x++)
-        for (int y = 0; y < map[x].size(); y++)
-            for (int z = 0; z < map[x][y].size(); z++)
+    for (std::size_t x = 0; x < map.size(); x++)
+        for (std::size_t y = 0; y < map[x].size(); y++)
+            for (std::size_t z = 0; z < map[x][y].size(); z++)
                 if (map[x][y][z].groupID < 0)
-                    return {x, y, z};
+                    return {(int)x, (int)y, (int)z};
     return {};
 }
