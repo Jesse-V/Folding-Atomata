@@ -41,13 +41,10 @@ typedef std::pair<std::size_t, std::size_t> BondIndexes;
 class TrajectoryParser
 {
     public:
-        static TrajectoryPtr parse(const std::string& trajectoryStr);
+        static TrajectoryPtr parse(std::string trajectoryStr);
         static PositionMap parseSnapshot(const std::string& snapshotStr,
                                          const TopologyPtr& topology
         );
-
-    private:
-        TrajectoryParser() {} //prevents instantiation
         static TopologyPtr parseTopology(const std::string& topologyStr);
         static std::vector<AtomPtr> parseAtoms(const std::string& topologyStr);
         static AtomPtr parseAtom(const std::string& atomStr);
@@ -56,6 +53,9 @@ class TrajectoryParser
         );
         static BondIndexes parseBond(const std::string& bondStr);
         static glm::vec3 parsePosition(const std::string& positionStr);
+
+    private:
+        TrajectoryParser() {} //prevents instantiation
 };
 
 #endif
