@@ -35,27 +35,29 @@
 **/
 
 #include "Trajectory/Trajectory.hpp"
-
-typedef std::pair<std::size_t, std::size_t> BondIndexes;
+#include "PyON/StringManip.hpp"
 
 class TrajectoryParser
 {
     public:
-        static TrajectoryPtr parse(std::string trajectoryStr);
-        static PositionMap parseSnapshot(const std::string& snapshotStr,
-                                         const TopologyPtr& topology
-        );
-        static TopologyPtr parseTopology(const std::string& topologyStr);
-        static std::vector<AtomPtr> parseAtoms(const std::string& topologyStr);
-        static AtomPtr parseAtom(const std::string& atomStr);
-        static BondList parseBonds(const std::string& topologyStr,
-                                   const std::vector<AtomPtr>& atoms
-        );
-        static BondIndexes parseBond(const std::string& bondStr);
-        static glm::vec3 parsePosition(const std::string& positionStr);
+        TrajectoryParser(const std::string& pyon, bool removeSpaces = true);
+        TrajectoryPtr parse(bool filter = true);
 
     private:
-        TrajectoryParser() {} //prevents instantiation
+        TopologyPtr parseTopology();
+        std::vector<AtomPtr> parseAtoms(const Indexes& topologySubStr);
+        AtomPtr parseAtom(const Indexes& atomSpan);
+        BondList parseBonds(const Indexes& topologySpan,
+                            const std::vector<AtomPtr>& atoms
+        );
+        Indexes parseBond(const Indexes& bondline);
+        void parsePositions(const TrajectoryPtr& trajectory);
+        PositionMap parseSnapshot(const Indexes& snapshotRange,
+                                  const TopologyPtr& topology
+        );
+
+    private:
+         std::string pyon_;
 };
 
 #endif

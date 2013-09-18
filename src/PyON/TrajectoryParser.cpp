@@ -27,31 +27,32 @@
 #include "StringManip.hpp"
 #include <algorithm>
 #include <sstream>
+#include <cstdlib>
 #include <iostream>
 
 
-TrajectoryPtr TrajectoryParser::parse(std::string trajStr)
+TrajectoryParser::TrajectoryParser(const std::string& pyon, bool removeSpaces) :
+    pyon_(pyon)
 {
-    std::cout << "Parsing trajectory PyON... ";
+    if (removeSpaces)
+    {
+        char space[] = " ";
+        pyon_.erase(std::remove(pyon_.begin(), pyon_.end(), space[0]), pyon_.end());
+    }
+}
 
-    //remove all spaces
-    char space[] = " ";
-    trajStr.erase(std::remove(trajStr.begin(), trajStr.end(), space[0]), trajStr.end());
 
-    const std::string topBegin = "PyON1topology\n{\n", topEnd = "\n}\n---";
-    auto top = parseTopology(StringManip::between(trajStr, topBegin, topEnd));
+
+TrajectoryPtr TrajectoryParser::parse(bool filter)
+{
+    std::cout << "Parsing trajectory PyON... " << std::endl;
+    std::cout.flush();
+    auto top = parseTopology();
     TrajectoryPtr trajectory = std::make_shared<Trajectory>(top);
 
-    const std::string snapBegin = "PyON1positions\n[", snapEnd = "]\n---";
-    std::size_t index = trajStr.find(snapBegin, 0);
-    while (index != std::string::npos)
-    {
-        auto snapStr = StringManip::between(trajStr, snapBegin, snapEnd, index);
-        trajectory->addSnapshot(parseSnapshot(snapStr, top));
-        index = trajStr.find(snapBegin, index + 1);
-    }
+    parsePositions(trajectory);
 
-    std::cout << "done." << std::endl;
+    std::cout << "... done parsing trajectory." << std::endl;
 
     return trajectory;
 }
@@ -71,14 +72,120 @@ TrajectoryPtr TrajectoryParser::parse(std::string trajStr)
 [2181, 2182]
 ]
 */
-TopologyPtr TrajectoryParser::parseTopology(const std::string& topStr)
+TopologyPtr TrajectoryParser::parseTopology()
 {
-    auto atoms = parseAtoms(topStr);
-    auto bonds = parseBonds(topStr, atoms);
+    const std::string BEGIN = "PyON1topology\n{\n", END = "\n}\n---";
+    const auto FULL = std::make_pair(0, pyon_.size());
+    const auto TOPOLOGY_SPAN = StringManip::between(pyon_, FULL, BEGIN, END);
+
+    auto atoms = parseAtoms(TOPOLOGY_SPAN);
+    auto bonds = parseBonds(TOPOLOGY_SPAN, atoms);
 
     return std::make_shared<Topology>(atoms, bonds);
 }
 
+
+
+std::vector<AtomPtr> TrajectoryParser::parseAtoms(const Indexes& topologySpan)
+{
+    const std::string BEGIN = "\"atoms\":[\n", END = "]\n],\n";
+    const auto SPAN = StringManip::between(pyon_, topologySpan, BEGIN, END);
+
+    std::vector<AtomPtr> atoms;
+    std::size_t lineStart = SPAN.first;
+    while (lineStart < SPAN.second)
+    {
+        std::size_t lineEnd = pyon_.find('\n', lineStart);
+        atoms.push_back(parseAtom(std::make_pair(lineStart, lineEnd)));
+        lineStart = lineEnd + 1;
+    }
+
+    return atoms;
+}
+
+
+
+/* Given:
+["N", -0.96, 1.7063, 14.007, 7],
+*/
+AtomPtr TrajectoryParser::parseAtom(const Indexes& atomSpan)
+{
+    auto range = StringManip::between(pyon_, atomSpan, "[", "]");
+    auto isolated = pyon_.substr(range.first, range.second - range.first);
+    auto tokens = StringManip::explodeAndTrim(isolated, ',', " \"");
+
+    int number;
+    float charge, radius, mass;
+
+    std::istringstream(tokens[1]) >> number;
+    std::istringstream(tokens[2]) >> charge;
+    std::istringstream(tokens[3]) >> radius;
+    std::istringstream(tokens[4]) >> mass;
+
+    return std::make_shared<Atom>(tokens[0], number, charge, radius, mass);
+}
+
+
+
+BondList TrajectoryParser::parseBonds(const Indexes& topologySpan,
+                                      const std::vector<AtomPtr>& atoms
+)
+{
+    const auto BEGIN = "\"bonds\":[\n", END = "]\n";
+    auto bondDataRange = StringManip::between(pyon_, topologySpan, BEGIN, END);
+
+    BondList bonds;
+    std::size_t lineStart = bondDataRange.first;
+    while (lineStart < bondDataRange.second)
+    {
+        std::size_t lineEnd = pyon_.find("\n", lineStart);
+        auto bond = parseBond(std::make_pair(lineStart, lineEnd));
+        bonds.push_back(std::make_pair(atoms[bond.first], atoms[bond.second]));
+        lineStart = lineEnd + 1;
+    }
+
+    return bonds;
+}
+
+
+
+/* Given:
+[2356, 2358],
+*/
+Indexes TrajectoryParser::parseBond(const Indexes& bondline)
+{
+    auto range = StringManip::between(pyon_, bondline, "[", "]");
+    auto isolated = pyon_.substr(range.first, range.second - range.first);
+    auto tokens = StringManip::explodeAndTrim(isolated, ',', " ");
+
+    std::size_t atomIndexA, atomIndexB;
+    std::istringstream(tokens[0]) >> atomIndexA;
+    std::istringstream(tokens[1]) >> atomIndexB;
+
+    return std::make_pair(atomIndexA, atomIndexB);
+}
+
+
+
+void TrajectoryParser::parsePositions(const TrajectoryPtr& trajectory)
+{
+    std::cout << "Parsing all snapshots... " << std::endl;
+    std::cout.flush();
+
+    const std::string BEGIN = "PyON1positions\n[", END = "]\n---";
+    std::size_t index = pyon_.find(BEGIN, 0);
+    while (index != std::string::npos)
+    {
+        auto range = std::make_pair(index, pyon_.size());
+        auto snapshotRange = StringManip::between(pyon_, range, BEGIN, END);
+        auto snap = parseSnapshot(snapshotRange, trajectory->getTopology());
+        trajectory->addSnapshot(snap);
+        index = pyon_.find(BEGIN, index + 1);
+    }
+
+    std::cout << "... done parsing snapshots." << std::endl;
+    std::cout.flush();
+}
 
 
 /* Given:
@@ -98,100 +205,38 @@ TopologyPtr TrajectoryParser::parseTopology(const std::string& topStr)
 10.253361
 ]
 */
-PositionMap TrajectoryParser::parseSnapshot(const std::string& snapshotStr,
+PositionMap TrajectoryParser::parseSnapshot(const Indexes& snapshotRange,
                                             const TopologyPtr& topology
 )
 {
     PositionMap snapshot;
-
-    std::size_t index = snapshotStr.find("[");
+std::cout << "A" << std::endl;
+std::cout.flush();
+    std::size_t index = pyon_.find("[", snapshotRange.first);
     std::size_t count = 0;
-    while (index != std::string::npos)
+    while (index <= snapshotRange.second)
     {
-        auto positionStr = StringManip::between(snapshotStr, "[", "]", index);
+        auto range = std::make_pair(index, snapshotRange.second);
+        auto pos = StringManip::between(pyon_, range, "[", "]");
+        auto positionStr = pyon_.substr(pos.first, pos.second - pos.first + 1);
         auto tokens = StringManip::explodeAndTrim(positionStr, ',', " \n");
+        //std::cout << positionStr << std::endl;
 
-        float x, y, z;
-        std::istringstream(tokens[0]) >> x;
-        std::istringstream(tokens[1]) >> y;
-        std::istringstream(tokens[2]) >> z;
+        //float x, y, z;
+        float x = ::atof(tokens[0].c_str());
+        float y = ::atof(tokens[1].c_str());
+        float z = ::atof(tokens[2].c_str());
+        //std::istringstream(tokens[0]) >> x;
+        //std::istringstream(tokens[1]) >> y;
+        //std::istringstream(tokens[2]) >> z;
 
         snapshot[topology->getAtoms()[count]] = glm::vec3(x, y, z);
-        index = snapshotStr.find("[", index + 1);
+        index = pyon_.find("[", index + 1);
         count++;
     }
-
+std::cout << "B" << std::endl;
+std::cout.flush();
     return snapshot;
 }
 
 
-
-std::vector<AtomPtr> TrajectoryParser::parseAtoms(const std::string& topStr)
-{
-    std::vector<AtomPtr> atoms;
-    auto str = StringManip::between(topStr, "\"atoms\":[\n", "]\n],\n");
-    std::stringstream atomsStream(str);
-    std::string line;
-    while (std::getline(atomsStream, line))
-        atoms.push_back(parseAtom(line));
-
-    return atoms;
-}
-
-
-
-/* Given:
-["N", -0.96, 1.7063, 14.007, 7],
-*/
-AtomPtr TrajectoryParser::parseAtom(const std::string& atomStr)
-{
-    auto isolated = StringManip::between(atomStr, "[", "]"); //removes brackets
-    auto tokens = StringManip::explodeAndTrim(isolated, ',', " \"");
-
-    int number;
-    float charge, radius, mass;
-
-    std::istringstream(tokens[1]) >> number;
-    std::istringstream(tokens[2]) >> charge;
-    std::istringstream(tokens[3]) >> radius;
-    std::istringstream(tokens[4]) >> mass;
-
-    return std::make_shared<Atom>(tokens[0], number, charge, radius, mass);
-}
-
-
-
-BondList TrajectoryParser::parseBonds(const std::string& topStr,
-                                      const std::vector<AtomPtr>& atoms
-)
-{
-    auto bondStr = StringManip::between(topStr, "\"bonds\":[\n", "]\n");
-    std::stringstream bondsStream(bondStr);
-
-    BondList bonds;
-    std::string line;
-    while (std::getline(bondsStream, line))
-    {
-        auto bond = parseBond(line);
-        bonds.push_back(std::make_pair(atoms[bond.first], atoms[bond.second]));
-    }
-
-    return bonds;
-}
-
-
-
-/* Given:
-[2356, 2358],
-*/
-BondIndexes TrajectoryParser::parseBond(const std::string& bondStr)
-{
-    auto isolated = StringManip::between(bondStr, "[", "]");
-    auto tokens = StringManip::explodeAndTrim(isolated, ',', " ");
-
-    std::size_t atomIndexA, atomIndexB;
-    std::istringstream(tokens[0]) >> atomIndexA;
-    std::istringstream(tokens[1]) >> atomIndexB;
-
-    return std::make_pair(atomIndexA, atomIndexB);
-}

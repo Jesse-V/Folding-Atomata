@@ -34,21 +34,28 @@
 #include <string>
 #include <vector>
 
-typedef std::string Str;
-typedef std::vector<Str> StringVector;
+typedef const std::string& StrRef;
+typedef std::pair<std::size_t, std::size_t> Indexes;
+typedef const Indexes& IndexesRef;
+typedef std::vector<Indexes> IndexesVector;
 
 class StringManip
 {
     public:
-        static Str between(const Str& str, const Str& header, 
-                           const Str& footer, std::size_t start = 0
+        static std::string between(StrRef str, StrRef header, StrRef footer,
+                                   std::size_t start = 0
         );
-        static StringVector explodeAndTrim(const Str& str, char delim, 
-                                           const Str& whitespaces
+        static Indexes between(StrRef str, IndexesRef indexes,
+                               StrRef header, StrRef footer
         );
-        static StringVector explode(const Str& str, char delim);
-        static Str trim(const Str& str, const Str& whitespaces);
-        static bool startsWith(const std::string& a, const std::string& b);
+        static std::vector<std::string> explodeAndTrim(StrRef str,
+                                            char delim, StrRef whitespaces
+        );
+        static std::vector<std::string> explode(StrRef str, char delim);
+        static IndexesVector explode(StrRef, IndexesRef indexes, char delim);
+        static std::string trim(StrRef str, StrRef whitespaces);
+        static Indexes trim(StrRef str, IndexesRef indexes, StrRef whitespaces);
+        static bool startsWith(StrRef a, StrRef b);
 };
 
 #endif

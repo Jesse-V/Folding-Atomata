@@ -191,7 +191,8 @@ void Viewer::addSlotViewers()
 
     if (trajectories.empty())
     {
-        std::ifstream fin("/usr/share/FoldingAtomata/demoProtein", std::ios::in);
+        const std::string FILENAME = "/usr/share/FoldingAtomata/demoProtein";
+        std::ifstream fin(FILENAME, std::ios::in | std::ios::binary);
         if (!fin.is_open())
             throw std::runtime_error("Unable to demo protein!");
 
@@ -202,7 +203,8 @@ void Viewer::addSlotViewers()
         fin.read(&proteinStr[0], (long)proteinStr.size()); //read entire file
         fin.close();
 
-        trajectories.push_back(TrajectoryParser::parse(proteinStr));
+        TrajectoryParser parser(proteinStr, false);
+        trajectories.push_back(parser.parse());
     }
 
     auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);

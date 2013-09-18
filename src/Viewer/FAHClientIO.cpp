@@ -122,7 +122,10 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
             if (trajectoryStr != "> " &&
                 trajectoryStr.find("\"atoms\": []") == std::string::npos
             )
-                trajectories.push_back(TrajectoryParser::parse(trajectoryStr));
+            {
+                TrajectoryParser trajectoryParser(trajectoryStr);
+                trajectories.push_back(trajectoryParser.parse());
+            }
         }
     );
 

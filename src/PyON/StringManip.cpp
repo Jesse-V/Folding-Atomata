@@ -26,19 +26,30 @@
 #include "StringManip.hpp"
 #include <algorithm>
 #include <sstream>
-
+#include <iostream>
 
 /*
     Returns the contents of the string between the header and the footer,
     excluding both
 */
-Str StringManip::between(const Str& str, const Str& header,
-                         const Str& footer, std::size_t start
+std::string StringManip::between(StrRef str, StrRef header, StrRef footer,
+                                 std::size_t start
 )
 {
-    std::size_t head = str.find(header, start);
+    auto index = between(str, std::make_pair(start, str.size() - 1), header, footer);
+    return str.substr(index.first, index.second - index.first);
+}
+
+
+
+Indexes StringManip::between(StrRef str, IndexesRef indexes,
+                             StrRef header, StrRef footer
+)
+{
+    std::size_t head = str.find(header, indexes.first);
     std::size_t foot = str.find(footer, head);
-    return str.substr(head + header.length(), foot - head - header.length());
+    std::size_t startIndex = head + header.length();
+    return std::make_pair(startIndex, foot);
 }
 
 
@@ -47,12 +58,14 @@ Str StringManip::between(const Str& str, const Str& header,
     Explodes the string around the given delimiter, then trims away
     any of the given whitespace characters from sides of the tokens.
 */
-StringVector StringManip::explodeAndTrim(const Str& str, char delim, 
-                                         const Str& whitespaces
+std::vector<std::string> StringManip::explodeAndTrim(StrRef str, char delim,
+                                                     StrRef whitespaces
 )
 {
     auto tokens = explode(str, delim);
-    std::transform(tokens.begin(), tokens.end(), tokens.begin(), 
+    //std::cout << "explodeTrim: " << tokens[0] << "," << tokens[1] << std::endl;
+
+    std::transform(tokens.begin(), tokens.end(), tokens.begin(),
         [&](const std::string& token)
         {
             return trim(token, whitespaces);
@@ -68,31 +81,69 @@ StringVector StringManip::explodeAndTrim(const Str& str, char delim,
     Explodes the string around the given delimiter.
     (Reproduction of PHP's explode)
 */
-StringVector StringManip::explode(const Str& str, char delim)
+std::vector<std::string> StringManip::explode(StrRef str, char delim)
 {
+    auto indexes = explode(str, std::make_pair(0, str.size()), delim);
     std::vector<std::string> tokens;
-    std::stringstream stream(str);
-    std::string item;
-    while (std::getline(stream, item, delim))
-        tokens.push_back(item);        
+    for_each (indexes.begin(), indexes.end(),
+        [&](const Indexes& pair)
+    {
+        tokens.push_back(str.substr(pair.first, pair.second - pair.first + 1));
+    });
 
     return tokens;
 }
 
 
 
+IndexesVector StringManip::explode(StrRef str, IndexesRef indexes, char delim)
+{
+    IndexesVector indexesVector;
+    std::size_t startIndex = indexes.first;
+    while (startIndex < indexes.second)
+    {
+        std::size_t lastIndex = str.find(delim, startIndex);
+        if (lastIndex == std::string::npos)
+        {
+            indexesVector.push_back(std::make_pair(startIndex, indexes.second - 1));
+            break;
+        }
+
+        indexesVector.push_back(std::make_pair(startIndex, lastIndex - 1));
+        startIndex = lastIndex + 1;
+    }
+
+    return indexesVector;
+}
+
+
+
 /*
-    Trims any of the given whitespace characters off of 
+    Trims any of the given whitespace characters off of
     both sides of the given string.
 */
-Str StringManip::trim(const Str& str, const Str& whitespaces)
+std::string StringManip::trim(StrRef str, StrRef whitespaces)
 {
-    std::size_t start = str.find_first_not_of(whitespaces);
-    std::size_t end = str.find_last_not_of(whitespaces);
+    //std::cout << "asked to trim: " << str << std::endl;
+    auto index = trim(str, std::make_pair(0, str.size() - 1), whitespaces);
+    //std::cout << "trimIs: " << index.first << "()" << index.second << std::endl;
+    //std::cout << "Tresult: " << str.substr(index.first, index.second - index.first + 1) << std::endl;
+    return str.substr(index.first, index.second - index.first + 1);
+}
+
+
+
+Indexes StringManip::trim(StrRef str, IndexesRef indexes, StrRef whitespaces)
+{
+    std::size_t start = str.find_first_not_of(whitespaces, indexes.first);
+    std::size_t end = str.find_last_not_of(whitespaces, indexes.second);
+
+    //std::cout << "trim: " << start << "," << end << std::endl;
 
     if (start != std::string::npos)
-        return str.substr(start, end - start + 1);
-    return "";
+        return std::make_pair(start, end);
+    //std::cout << "returned blank" << std::endl;
+    return std::make_pair(indexes.first, indexes.first - 1);
 }
 
 
@@ -100,7 +151,7 @@ Str StringManip::trim(const Str& str, const Str& whitespaces)
 /*
     Tests to see if a begins with b
 */
-bool StringManip::startsWith(const std::string& a, const std::string& b)
+bool StringManip::startsWith(StrRef a, StrRef b)
 {
     return a.compare(0, b.length(), b) == 0;
 }
