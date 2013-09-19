@@ -9,8 +9,8 @@ This screenshot shows a ball-and-stick rendering of a protein from F@h. Atomata 
 ### System requirements
 
 1. The Folding@home software. Atomata will connect to the software and view the running simulations.
-1. OpenGL 2.1 (GLSL 1.20)
 2. The Linux operating system.
+3. OpenGL 2.1 (GLSL 1.20)
 
 OpenGL 2.1 was released in 2006 and is supported by the default open-source Nouveau drivers, but proprietary vendor-specific drivers should also work as well. I provide packages for Mint, Ubuntu, and Debian, so installation and management is easiest for them. For all other Linux distributions, Atomata can be installed from the source through my instructions below. All of these options should be straightforward.
 
@@ -36,9 +36,10 @@ Once you have Folding@home installed and running, you're ready to install Atomat
 
     There's also the option of installing Folding Atomata directly from the source repository. I recommend visiting the [Releases page](https://github.com/Jesse-V/Folding-Atomata/releases) and downloading the .zip source of the latest stable edition. If you really want the cutting-edge and possible unstable edition, download the .zip from the top of the source tree via [this link](https://github.com/Jesse-V/Folding-Atomata/archive/master.zip).
 
-    > 1. Once you have download the source, you will need the libglew-dev, freeglut3-dev, cmake, and build-essential libraries.
-    > 2. **cp -rl ../debian/ debian/ && cd debian/extra_includes/ && gzip --best -c manpage > FoldingAtomata.1.gz && cd ../../**
-    > 3. **cd src/ && cmake . && make -j 4** and then as root run **make install**
+    > 1. Once you have download the source, you will need the libglew-dev, freeglut3-dev, libpng-dev, cmake, and build-essential libraries.
+    > 2. Navigate into the _src_ directory, and then run the following:
+    > 3. **cp -rl ../debian/ debian/ && cd debian/extra_includes/ && gzip --best -c manpage > FoldingAtomata.1.gz && cd ../../**
+    > 4. **cd src/ && cmake . && make -j 4** and then as root run **make install**
 
     You can also use **./ClangCompileRun.sh** in the _src_ directory to compile with the [Clang compiler](https://en.wikipedia.org/wiki/Clang), or alternatively, use **./compileRun.sh** to compile using GCC. I prefer using Clang for development, but it doesn't matter too much if you're installing it from source.
 

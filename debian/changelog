@@ -1,4 +1,4 @@
-folding-atomata (0.6.7.0) quantal; urgency=medium
+folding-atomata (0.6.7.2) quantal; urgency=medium
 
   * Added stick rendering mode, (--mode, -m) compatible with FAHControl. (#7)
   * Added detailed demo protein. (#17)
