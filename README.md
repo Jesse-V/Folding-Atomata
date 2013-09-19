@@ -3,7 +3,7 @@
 
 View the biological machines that run the body! Folding Atomata is a third-party simulation and protein viewer for [Folding@home](http://folding.stanford.edu/home/), a distributed computing project from Stanford University. Atomata aims to be a drop-in replacement for FAHViewer, the official viewer for F@h.
 
-![Example screenshot of Atomata displaying a colorful ball-and-stick model of an protein.](https://f.cloud.github.com/assets/2314417/1065363/47e3636e-1388-11e3-9f4c-c714ce512267.png "Recent example of Atomata rendering a ball-and-stick model of a protein.")
+![Example screenshot of Atomata displaying a colorful ball-and-stick model of an protein.](https://f.cloud.github.com/assets/2314417/1175541/c972bf80-215a-11e3-8e6c-ac802f04afb1.png "Recent example of Atomata rendering a ball-and-stick model of a protein.")
 This screenshot shows a ball-and-stick rendering of a protein from F@h. Atomata animates the protein using available checkpoints, allowing you to see an approximation of how the protein move and morphs within the timeframe of your workunit. Unlike FAHViewer, with Folding Atomata you have ability to fly all around the protein. Back off for the bigger picture, or get in close for a more detailed look.
 
 ### System requirements
