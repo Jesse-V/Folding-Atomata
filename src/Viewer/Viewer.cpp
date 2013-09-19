@@ -248,13 +248,8 @@ std::shared_ptr<Camera> Viewer::createCamera()
 void Viewer::update(int deltaTime)
 {
     player_->update(deltaTime);
-
-    for_each (slotViewers_.begin(), slotViewers_.end(),
-        [&](const std::shared_ptr<SlotViewer>& viewer)
-        {
-            viewer->update(deltaTime);
-        }
-    );
+    for (auto viewer : slotViewers_)
+        viewer->update(deltaTime);
 }
 
 

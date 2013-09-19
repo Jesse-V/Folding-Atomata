@@ -38,6 +38,7 @@ cs5400::Program::Program(
 
 cs5400::Program::~Program()
 {
+    std::cout << "Program " << getHandle() << " deallocating!" << std::endl;
     glDeleteProgram(handle_);
 }
 

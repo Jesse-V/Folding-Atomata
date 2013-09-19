@@ -28,7 +28,7 @@
 
 /**
     A Scene is basically a high-level container for Models, Lights, and a Camera.
-    This allows for an application to use multiple Scenes for different 
+    This allows for an application to use multiple Scenes for different
     environments or locations. Scene::render() will handle the management of
     rendering all Models with all the Lights, as seen by the given Camera. A
     Scene uses a multimap to create a 1-to-many mapping between Programs and
@@ -50,19 +50,18 @@
 #include <vector>
 
 typedef std::shared_ptr<Model> ModelPtr;
-typedef std::unordered_multimap<ProgramPtr, ModelPtr> ProgramModelMultimap;
 
 class Scene
 {
     public:
         Scene(const std::shared_ptr<Camera>& camera);
         void addModel(const ModelPtr& model);
-        void addModel(const ModelPtr& model, const ProgramPtr& program, 
+        void addModel(const ModelPtr& model, const ProgramPtr& program,
                                                               bool save = true);
         void addLight(const std::shared_ptr<Light>& light);
         void setCamera(const std::shared_ptr<Camera>& camera);
         void setAmbientLight(const glm::vec3& rgb);
-        void sync();
+        void update();
         float render();
 
         std::shared_ptr<Camera> getCamera();
@@ -77,7 +76,8 @@ class Scene
         void syncLighting(GLuint handle);
 
     private:
-        ProgramModelMultimap map_; //1-to-many map between Programs and Models
+        std::vector<ProgramPtr> programs_;
+        std::vector<std::pair<std::size_t, ModelPtr>> models_;
         LightList lights_;
         std::shared_ptr<Camera> camera_;
         glm::vec3 ambientLight_;

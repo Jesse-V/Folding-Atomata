@@ -31,12 +31,8 @@ NormalBuffer::NormalBuffer(const std::vector<glm::vec3>& normals):
     normals_(normals)
 {
     /*
-    for_each (normals_.begin(), normals_.end(),
-        [&](const glm::vec3& norm)
-        {
-            std::cout << norm.x << ", " << norm.y << ", " << norm.z << std::endl;
-        }
-    );
+    for (auto normal : normals_)
+        std::cout << norm.x << ", " << norm.y << ", " << norm.z << std::endl;
     */
 }
 

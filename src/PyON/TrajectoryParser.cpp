@@ -210,32 +210,24 @@ PositionMap TrajectoryParser::parseSnapshot(const Indexes& snapshotRange,
 )
 {
     PositionMap snapshot;
-std::cout << "A" << std::endl;
-std::cout.flush();
-    std::size_t index = pyon_.find("[", snapshotRange.first);
-    std::size_t count = 0;
-    while (index <= snapshotRange.second)
-    {
-        auto range = std::make_pair(index, snapshotRange.second);
-        auto pos = StringManip::between(pyon_, range, "[", "]");
-        auto positionStr = pyon_.substr(pos.first, pos.second - pos.first + 1);
-        auto tokens = StringManip::explodeAndTrim(positionStr, ',', " \n");
-        //std::cout << positionStr << std::endl;
+    std::cout << "Parsing snapshot... ";
 
-        //float x, y, z;
-        float x = ::atof(tokens[0].c_str());
-        float y = ::atof(tokens[1].c_str());
-        float z = ::atof(tokens[2].c_str());
-        //std::istringstream(tokens[0]) >> x;
-        //std::istringstream(tokens[1]) >> y;
-        //std::istringstream(tokens[2]) >> z;
+    std::size_t index = pyon_.find("[\n", snapshotRange.first);
+    std::size_t count = 0;
+    while (index < snapshotRange.second)
+    {
+        float x = (float)::atof(pyon_.c_str() + index + 2);
+        index = pyon_.find(",\n", index) + 2;
+        float y = (float)::atof(pyon_.c_str() + index);
+        index = pyon_.find(",\n", index) + 2;
+        float z = (float)::atof(pyon_.c_str() + index);
+        index = pyon_.find("[\n", index);
 
         snapshot[topology->getAtoms()[count]] = glm::vec3(x, y, z);
-        index = pyon_.find("[", index + 1);
         count++;
     }
-std::cout << "B" << std::endl;
-std::cout.flush();
+
+    std::cout << "done." << std::endl;
     return snapshot;
 }
 

@@ -29,11 +29,9 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <algorithm>
 #include <chrono>
+                         #include <thread>
 #include <sstream>
 #include <iostream>
-
-
-typedef std::unordered_multimap<char, int> MyMap;
 
 
 Scene::Scene(const std::shared_ptr<Camera>& camera):
@@ -45,7 +43,7 @@ Scene::Scene(const std::shared_ptr<Camera>& camera):
 void Scene::addModel(const ModelPtr& model)
 {
     addModel(model, ShaderManager::createProgram(model,
-        getVertexShaderGLSL(), getFragmentShaderGLSL(), lights_)
+        getVertexShaderGLSL(), getFragmentShaderGLSL(), lights_), true
     );
 }
 
@@ -55,8 +53,18 @@ void Scene::addModel(const ModelPtr& model, const ProgramPtr& program, bool save
 {
     if (save)
         model->saveAs(program->getHandle());
-        
-    map_.insert(ProgramModelMultimap::value_type(program, model));
+
+    auto programIt = std::find(programs_.begin(), programs_.end(), program);
+    int index = 0;
+    if (programIt == programs_.end())
+    {
+        index = programs_.size();
+        programs_.push_back(program);
+    }
+    else
+        index = std::distance(programs_.begin(), programIt);
+
+    models_.push_back(std::make_pair((std::size_t)index, model));
 }
 
 
@@ -84,13 +92,11 @@ void Scene::setAmbientLight(const glm::vec3& rgb)
 
 
 
-void Scene::sync()
+void Scene::update()
 {
-    for (auto keyIterator = map_.begin(); keyIterator != map_.end(); 
-        keyIterator = map_.equal_range(keyIterator->first).second)
+    for (auto program : programs_)
     {
-        GLuint handle = keyIterator->first->getHandle();
-
+        GLuint handle = program->getHandle();
         glUseProgram(handle);
         camera_->sync(handle);
         syncLighting(handle);
@@ -101,20 +107,16 @@ void Scene::sync()
 
 float Scene::render()
 {
+    update();
+
     using namespace std::chrono;
     auto start = steady_clock::now();
-
-    sync();
-
-    for_each (map_.begin(), map_.end(),
-        [&](const std::pair<ProgramPtr, ModelPtr>& pair)
-        {
-            auto programHandle = pair.first->getHandle();
-            auto model = pair.second;
-
-            model->render(programHandle);
-        }
-    );
+    for (auto pair : models_)
+    {
+        auto programHandle = programs_[pair.first]->getHandle();
+        auto model = pair.second;
+        model->render(programHandle);
+    }
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
     return diff / 1000.0f;
@@ -131,7 +133,7 @@ std::shared_ptr<Camera> Scene::getCamera()
 
 int Scene::getModelCount()
 {
-    return (int)map_.size();
+    return (int)models_.size();
 }
 
 

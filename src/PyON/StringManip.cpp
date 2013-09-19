@@ -85,12 +85,8 @@ std::vector<std::string> StringManip::explode(StrRef str, char delim)
 {
     auto indexes = explode(str, std::make_pair(0, str.size()), delim);
     std::vector<std::string> tokens;
-    for_each (indexes.begin(), indexes.end(),
-        [&](const Indexes& pair)
-    {
+    for (auto pair : indexes)
         tokens.push_back(str.substr(pair.first, pair.second - pair.first + 1));
-    });
-
     return tokens;
 }
 

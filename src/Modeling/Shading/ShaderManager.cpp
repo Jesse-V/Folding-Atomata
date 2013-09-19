@@ -26,7 +26,6 @@
 #include "ShaderManager.hpp"
 #include "Program.hpp"
 #include <sstream>
-#include <algorithm>
 #include <thread>
 #include <iostream>
 
@@ -107,12 +106,8 @@ std::vector<SnippetPtr> ShaderManager::assembleVertexSnippets(
     vertexSnippets.reserve(1 + buffers.size() + lights.size());
     vertexSnippets.push_back(sceneVertexShader);
 
-    for_each (buffers.begin(), buffers.end(),
-        [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
-        {
-            vertexSnippets.push_back(buffer->getVertexShaderGLSL());
-        }
-    );
+    for (auto buffer : buffers)
+        vertexSnippets.push_back(buffer->getVertexShaderGLSL());
 
     if (lights.size() > 0) //only need one instance of light code
         vertexSnippets.push_back(lights[0]->getVertexShaderGLSL());
@@ -131,12 +126,8 @@ std::vector<SnippetPtr> ShaderManager::assembleFragmentSnippets(
     fragmentSnippets.reserve(1 + buffers.size() + lights.size());
     fragmentSnippets.push_back(sceneFragmentShader);
 
-    for_each (buffers.begin(), buffers.end(),
-        [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
-        {
-            fragmentSnippets.push_back(buffer->getFragmentShaderGLSL());
-        }
-    );
+    for (auto buffer : buffers)
+        fragmentSnippets.push_back(buffer->getFragmentShaderGLSL());
 
     if (lights.size() > 0) //only need one instance of light code
         fragmentSnippets.push_back(lights[0]->getFragmentShaderGLSL());
@@ -149,14 +140,8 @@ std::vector<SnippetPtr> ShaderManager::assembleFragmentSnippets(
 std::string ShaderManager::assembleFields(const SnippetList& snippets)
 {
     std::stringstream stream("");
-
-    for_each (snippets.begin(), snippets.end(),
-        [&](const SnippetPtr& snippet)
-        {
-            stream << snippet->getFields();
-        }
-    );
-
+    for (auto snippet : snippets)
+        stream << snippet->getFields();
     return stream.str();
 }
 
@@ -165,14 +150,8 @@ std::string ShaderManager::assembleFields(const SnippetList& snippets)
 std::string ShaderManager::assembleMethods(const SnippetList& snippets)
 {
     std::stringstream stream("");
-
-    for_each (snippets.begin(), snippets.end(),
-        [&](const SnippetPtr& snippet)
-        {
-            stream << snippet->getMethods();
-        }
-    );
-
+    for (auto snippet : snippets)
+        stream << snippet->getMethods();
     return stream.str();
 }
 
@@ -181,14 +160,8 @@ std::string ShaderManager::assembleMethods(const SnippetList& snippets)
 std::string ShaderManager::assembleMainBodyCode(const SnippetList& snippets)
 {
     std::stringstream stream("");
-
-    for_each (snippets.begin(), snippets.end(),
-        [&](const SnippetPtr& snippet)
-        {
-            stream << snippet->getMainBodyCode();
-        }
-    );
-
+    for (auto snippet : snippets)
+        stream << snippet->getMainBodyCode();
     return stream.str();
 }
 

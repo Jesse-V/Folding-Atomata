@@ -28,7 +28,6 @@
 #include "PyON/StringManip.hpp"
 #include "Options.hpp"
 #include <sstream>
-#include <algorithm>
 #include <stdexcept>
 #include <iostream>
 
@@ -106,28 +105,26 @@ std::vector<TrajectoryPtr> FAHClientIO::getTrajectories()
 {
     std::vector<TrajectoryPtr> trajectories;
     auto slotIDs = getSlotIDs();
-    for_each (slotIDs.begin(), slotIDs.end(),
-        [&](int id)
+    for (int id : slotIDs)
+    {
+        std::cout << "Downloading trajectory for slot " << id << "... ";
+        std::cout.flush();
+
+        std::stringstream trajectoryRequest("");
+        trajectoryRequest << "trajectory " << id << std::endl;
+        *socket_ << trajectoryRequest.str();
+
+        std::string trajectoryStr = readResponse();
+        std::cout << "done." << std::endl;
+
+        if (trajectoryStr != "> " &&
+            trajectoryStr.find("\"atoms\": []") == std::string::npos
+        )
         {
-            std::cout << "Downloading trajectory for slot " << id << "... ";
-            std::cout.flush();
-
-            std::stringstream trajectoryRequest("");
-            trajectoryRequest << "trajectory " << id << std::endl;
-            *socket_ << trajectoryRequest.str();
-
-            std::string trajectoryStr = readResponse();
-            std::cout << "done." << std::endl;
-
-            if (trajectoryStr != "> " &&
-                trajectoryStr.find("\"atoms\": []") == std::string::npos
-            )
-            {
-                TrajectoryParser trajectoryParser(trajectoryStr);
-                trajectories.push_back(trajectoryParser.parse());
-            }
+            TrajectoryParser trajectoryParser(trajectoryStr);
+            trajectories.push_back(trajectoryParser.parse());
         }
-    );
+    }
 
     std::cout << "Filtered out FahCore 17 slots, left with " <<
                            trajectories.size() << " trajectories." << std::endl;

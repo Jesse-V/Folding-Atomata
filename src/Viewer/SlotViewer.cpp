@@ -80,14 +80,12 @@ void SlotViewer::addAllAtoms()
     std::cout << "Adding Atoms to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
-    for_each (ATOMS.begin(), ATOMS.end(),
-        [&](const AtomPtr& atom)
-        {
-            auto matrix = generateAtomMatrix(snapshotZero[atom]);
-            auto atomModel = addAtom(atom, matrix);
-            atomModels_[atom] = atomModel;
-        }
-    );
+    for (const auto atom : ATOMS)
+    {
+        auto matrix = generateAtomMatrix(snapshotZero[atom]);
+        auto atomModel = addAtom(atom, matrix);
+        atomModels_[atom] = atomModel;
+    }
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
 }
@@ -104,19 +102,17 @@ void SlotViewer::addAllBonds()
 
     auto snapshotZero = trajectory_->getSnapshot(0);
     BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
-    for_each (BONDS.begin(), BONDS.end(),
-        [&] (const Bond& bond)
-        {
-            auto positionA = snapshotZero[bond.first];
-            auto positionB = snapshotZero[bond.second];
+    for (auto bond : BONDS)
+    {
+        auto positionA = snapshotZero[bond.first];
+        auto positionB = snapshotZero[bond.second];
 
-            auto model = std::make_shared<Model>(getBondMesh(), list);
-            model->setModelMatrix(generateBondMatrix(positionA, positionB));
+        auto model = std::make_shared<Model>(getBondMesh(), list);
+        model->setModelMatrix(generateBondMatrix(positionA, positionB));
 
-            addBond(bond, model);
-            bondModels_[bond] = model;
-        }
-    );
+        addBond(bond, model);
+        bondModels_[bond] = model;
+    }
 
     std::cout << "... done adding bonds for that trajectory." << std::endl;
 }
@@ -208,29 +204,25 @@ void SlotViewer::update(int deltaTime)
 
     PositionMap newPositions;
     const auto ATOMS = trajectory_->getTopology()->getAtoms();
-    for_each (ATOMS.begin(), ATOMS.end(),
-        [&] (const AtomPtr& atom)
-        {
-            auto startPosition = snapA[atom];
-            auto endPosition   = snapB[atom];
-            auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
+    for (auto atom : ATOMS)
+    {
+        auto startPosition = snapA[atom];
+        auto endPosition   = snapB[atom];
+        auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
 
-            newPositions[atom] = position;
+        newPositions[atom] = position;
 
-            if (atomModels_.size() > 0)
-                atomModels_[atom]->setModelMatrix(generateAtomMatrix(position));
-        }
-    );
+        if (atomModels_.size() > 0)
+            atomModels_[atom]->setModelMatrix(generateAtomMatrix(position));
+    }
 
     const auto BONDS = trajectory_->getTopology()->getBonds();
-    for_each (BONDS.begin(), BONDS.end(),
-        [&] (const std::pair<AtomPtr, AtomPtr>& bond)
-        {
-            auto positionA = newPositions[bond.first];
-            auto positionB = newPositions[bond.second];
-            bondModels_[bond]->setModelMatrix(generateBondMatrix(positionA, positionB));
-        }
-    );
+    for (auto bond : BONDS)
+    {
+        auto positionA = newPositions[bond.first];
+        auto positionB = newPositions[bond.second];
+        bondModels_[bond]->setModelMatrix(generateBondMatrix(positionA, positionB));
+    }
 }
 
 

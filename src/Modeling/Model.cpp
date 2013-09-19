@@ -27,7 +27,6 @@
 #include "Modeling/Shading/Program.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include <algorithm>
 #include <iostream>
 
 
@@ -41,16 +40,11 @@ Model::Model(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs) :
     Model(mesh)
 {
     optionalDBs_ = optionalDBs;
-    
+
     /*
     std::cout << "Created a Model with { ";
-    for_each (optionalDBs_.begin(), optionalDBs_.end(),
-        [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
-        {
-            std::cout << typeid(*buffer).name() << " ";
-        }
-    );
-
+    for (auto buffer : optionalDBs_)
+        std::cout << typeid(*buffer).name() << " ";
     std::cout << "} OptionalDataBuffers." << std::endl;
     */
 }
@@ -66,14 +60,13 @@ void Model::saveAs(GLuint programHandle)
 
     std::cout << typeid(*mesh_).name() << " ";
 
-    for_each (optionalDBs_.begin(), optionalDBs_.end(),
-        [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
-        {
-            buffer->initialize(programHandle);
-            buffer->store();
+    for (auto buffer : optionalDBs_)
+    {
+        buffer->initialize(programHandle);
+        buffer->store();
 
-            std::cout << typeid(*buffer).name() << " ";
-        });
+        std::cout << typeid(*buffer).name() << " ";
+    }
 
     std::cout << "}" << std::endl;
     checkGlError();
@@ -111,13 +104,13 @@ void Model::render(GLuint programHandle)
 
     if (isVisible_)
     {
-        glUniformMatrix4fv(matrixUniform_, 1, GL_FALSE, 
+        glUniformMatrix4fv(matrixUniform_, 1, GL_FALSE,
             glm::value_ptr(modelMatrix_)
         ); //necessary when multiple Models share a Program
 
         enableDataBuffers();
         mesh_->draw();
-        disableDataBuffers();
+        //disableDataBuffers();
     }
 }
 
@@ -127,11 +120,8 @@ void Model::enableDataBuffers()
 {
     mesh_->enable();
 
-    for_each (optionalDBs_.begin(), optionalDBs_.end(),
-        [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
-        {
-            buffer->enable();
-        });
+    for (auto buffer : optionalDBs_)
+        buffer->enable();
 }
 
 
@@ -140,9 +130,6 @@ void Model::disableDataBuffers()
 {
     mesh_->disable();
 
-    for_each (optionalDBs_.begin(), optionalDBs_.end(),
-        [&](const std::shared_ptr<OptionalDataBuffer>& buffer)
-        {
-            buffer->disable();
-        });
+    for (auto buffer : optionalDBs_)
+        buffer->disable();
 }

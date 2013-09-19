@@ -25,7 +25,6 @@
 
 #include "ProteinAnalysis.hpp"
 #include "Viewer/SlotViewer.hpp"
-#include <algorithm>
 #include <thread>
 #include <iterator>
 #include <iostream>
@@ -66,38 +65,34 @@ BucketMap ProteinAnalysis::getBucketMap()
     auto start = steady_clock::now();
 
     float smallestX = 0, smallestY = 0, smallestZ = 0;
-    for_each (ATOMS.begin(), ATOMS.end(),
-        [&](const AtomPtr& atom)
-        {
-            auto position = snapshotZero[atom];
-            if (position.x < smallestX)
-                smallestX = position.x;
-            if (position.y < smallestY)
-                smallestY = position.y;
-            if (position.z < smallestZ)
-                smallestZ = position.z;
-        }
-    );
+    for (auto atom : ATOMS)
+    {
+        auto position = snapshotZero[atom];
+        if (position.x < smallestX)
+            smallestX = position.x;
+        if (position.y < smallestY)
+            smallestY = position.y;
+        if (position.z < smallestZ)
+            smallestZ = position.z;
+    }
 
     BucketMap bucketMap;
-    for_each (ATOMS.begin(), ATOMS.end(),
-        [&](const AtomPtr& atom)
-        {
-            auto position = snapshotZero[atom];
-            auto x = (std::size_t)((position.x - smallestX) / BOND_LENGTH);
-            auto y = (std::size_t)((position.y - smallestY) / BOND_LENGTH);
-            auto z = (std::size_t)((position.z - smallestZ) / BOND_LENGTH);
+    for (auto atom : ATOMS)
+    {
+        auto position = snapshotZero[atom];
+        auto x = (std::size_t)((position.x - smallestX) / BOND_LENGTH);
+        auto y = (std::size_t)((position.y - smallestY) / BOND_LENGTH);
+        auto z = (std::size_t)((position.z - smallestZ) / BOND_LENGTH);
 
-            if (bucketMap.size() <= x)
-                bucketMap.resize(x + 1);
-            if (bucketMap[x].size() <= y)
-                bucketMap[x].resize(y + 1);
-            if (bucketMap[x][y].size() <= z)
-                bucketMap[x][y].resize(z + 1);
+        if (bucketMap.size() <= x)
+            bucketMap.resize(x + 1);
+        if (bucketMap[x].size() <= y)
+            bucketMap[x].resize(y + 1);
+        if (bucketMap[x][y].size() <= z)
+            bucketMap[x][y].resize(z + 1);
 
-            bucketMap[x][y][z].atoms.push_back(atom);
-        }
-    );
+        bucketMap[x][y][z].atoms.push_back(atom);
+    }
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
     std::cout << "[concurrent] ...done hashing into buckets. Took " <<
