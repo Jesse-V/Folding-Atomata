@@ -1,3 +1,11 @@
+folding-atomata (0.6.8.0) quantal; urgency=medium
+
+  * Slight reduction in camera control acceleration.
+  * Atoms are drawn in proportion to their electron shell count.
+  * Fixed camera not being centered on protein at startup.
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Sun, 19 Sept 2013 13:20:00 -0600
+
 folding-atomata (0.6.7.2) quantal; urgency=medium
 
   * Added stick rendering mode, (--mode, -m) compatible with FAHControl. (#7)
