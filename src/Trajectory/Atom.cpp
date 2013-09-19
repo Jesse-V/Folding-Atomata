@@ -107,3 +107,29 @@ float Atom::getMass()
 {
     return mass_;
 }
+
+
+
+float Atom::getElectronShellCount()
+{
+    switch (getElement())
+    {
+        case 'H' :
+            return 1;
+
+        case 'C' :
+            return 2;
+
+        case 'N' :
+            return 2;
+
+        case 'O' :
+            return 2;
+
+        case 'S' :
+            return 3;
+
+        default :
+            return 4;
+    }
+}

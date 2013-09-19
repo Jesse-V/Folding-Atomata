@@ -81,8 +81,8 @@ class SlotViewer
         static float getMagnitude(const glm::vec3& vector);
 
     public:
-        const float ATOM_SCALE = 0.20f;
-        const float BOND_SCALE = 0.10f;
+        const float ATOM_SCALE = 0.15f; //0.04 is good for getMass
+        const float BOND_SCALE = 0.06f;
 
         const unsigned int ATOM_STACKS, ATOM_SLICES;
 
@@ -107,7 +107,7 @@ class SlotViewer
         ModelPtr generateAtomModel(const ColorPtr& cBuffer,
                                    const glm::mat4& matrix
         );
-        glm::mat4 generateAtomMatrix(const glm::vec3& position);
+        glm::mat4 generateAtomMatrix(const glm::vec3& position, const AtomPtr& atom);
         glm::mat4 generateBondMatrix(const glm::vec3& startPosition,
                                      const glm::vec3& endPosition
         );

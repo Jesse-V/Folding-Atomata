@@ -82,7 +82,7 @@ void SlotViewer::addAllAtoms()
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (const auto atom : ATOMS)
     {
-        auto matrix = generateAtomMatrix(snapshotZero[atom]);
+        auto matrix = generateAtomMatrix(snapshotZero[atom], atom);
         auto atomModel = addAtom(atom, matrix);
         atomModels_[atom] = atomModel;
     }
@@ -213,7 +213,7 @@ void SlotViewer::update(int deltaTime)
         newPositions[atom] = position;
 
         if (atomModels_.size() > 0)
-            atomModels_[atom]->setModelMatrix(generateAtomMatrix(position));
+            atomModels_[atom]->setModelMatrix(generateAtomMatrix(position, atom));
     }
 
     const auto BONDS = trajectory_->getTopology()->getBonds();
@@ -361,10 +361,11 @@ ModelPtr SlotViewer::generateAtomModel(const ColorPtr& cBuffer,
 
 
 
-glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position)
+glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position, const AtomPtr& atom)
 {
     auto matrix = glm::translate(glm::mat4(), position);
-    return glm::scale(matrix, glm::vec3(ATOM_SCALE));
+    auto shellCount = glm::vec3(atom->getElectronShellCount());
+    return glm::scale(matrix, glm::vec3(ATOM_SCALE) * shellCount);
 }
 
 

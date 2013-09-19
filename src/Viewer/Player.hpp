@@ -43,7 +43,7 @@
 class Player
 {
     public:
-        const float ACCELERATION = 0.0009f;
+        const float ACCELERATION = 0.0007f;
         const float GEOMETRIC_SPEED_DECAY = 0.96f;
         const float MAX_SPEED = 1.5f;
 

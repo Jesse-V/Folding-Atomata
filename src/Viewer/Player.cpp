@@ -29,7 +29,7 @@
 #include <iostream>
 
 
-Player::Player(std::shared_ptr<Scene> scene) : 
+Player::Player(std::shared_ptr<Scene> scene) :
     scene_(scene), mouseControlsCamera_(true),
     windowCenterX_(glutGet(GLUT_WINDOW_WIDTH)  / 2),
     windowCenterY_(glutGet(GLUT_WINDOW_HEIGHT) / 2)
@@ -178,7 +178,7 @@ void Player::onMouseClick(int button, int state, int x, int y)
 
 void Player::onMouseMotion(int x, int y)
 {
-    static int lastX, lastY;
+    static int lastX = windowCenterX_, lastY = windowCenterY_;
     static bool determinedLastPosition;
 
     if (!mouseControlsCamera_)
@@ -254,7 +254,7 @@ void Player::applyAcceleration(int deltaTime)
 
 void Player::setWindowOffset(int x, int y)
 {
-    //there's something upstream in Linux or the drivers going on here: 
+    //there's something upstream in Linux or the drivers going on here:
     //this code alone shouldn't fix #30, yet it does for some reason
 
     windowCenterX_ = glutGet(GLUT_WINDOW_WIDTH)  / 2;

@@ -45,6 +45,7 @@ class Atom
         float getCharge();
         float getRadius();
         float getMass();
+        float getElectronShellCount();
 
     private:
         std::string symbol_;
