@@ -67,6 +67,7 @@ Commands:
     --help, -h          Show usage and flag options.
     --connect, -c       Address and port to use to connect to FAHClient.
     --license           Prints license information.
+    --mode, -m          Rendering mode. 3 is stick, everything is ball-n-stick.
     --password, -p      Password for accessing the remote FAHClient.
     --slices, -sl       Slices to use for the atom mesh. Default is 8.
     --stacks, -st       Stacks to use for the atom mesh. Default is 16.
@@ -82,7 +83,7 @@ Examples:
 
         if (options[index] == "--version")
         {
-            std::cout << "0.6.0.1" << std::endl;
+            std::cout << "0.6.7.0" << std::endl;
             return false;
         }
 

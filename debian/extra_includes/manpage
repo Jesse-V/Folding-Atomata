@@ -30,6 +30,8 @@ The following options can be specified on the command line using the following s
 \fB --connect \fR or \fB -c \fR
         An address/host and port to connect to. By default Atomata connects to 127.0.0.1:36330.
         Examples: --connect=127.0.0.1:36330 or -c 127.0.0.1:36330
+        Note that this flag is compatible with FAHControl, as this is one of
+        the flags that it sends to FAHViewer.
 
 \fB --help \fR or \fB -h \fR
         Prints usage format and available flags, and then quits.
@@ -37,9 +39,16 @@ The following options can be specified on the command line using the following s
 \fB --license \fR
         Prints license information and quit.
 
+\fB --mode or \fR or \fB -m \fR
+        Selects the rending mode. 3 is stick, everything is ball-and-stick.
+        Note that this flag is compatible with FAHControl, as this is one of
+        the flags that it sends to FAHViewer.
+
 \fB --password \fR or \fB -p \fR
         A password for accessing the remote client. Note that this is sent in plaintext.
         Examples: --password=myPassword or -p myPassword
+        Note that this flag is compatible with FAHControl, as this is one of
+        the flags that it sends to FAHViewer.
 
 \fB --slices \fR or \fB -sl \fR
         Number of slices to use for generating the atom mesh. Default is 8.

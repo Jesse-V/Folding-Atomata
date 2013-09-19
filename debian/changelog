@@ -1,5 +1,17 @@
+folding-atomata (0.6.7.0) quantal; urgency=medium
+
+  * Added stick rendering mode, (--mode, -m) compatible with FAHControl. (#7)
+  * Added detailed demo protein. (#17)
+  * Reduced dependencies; glm and png++ are now included. (#36)
+  * Fixed run-time crash during animation. (#43)
+  * Added flags for increasing resolution of atom spheres. (#45)
+  * Changed underlying data structures for atoms, bonds, and snapshots.
+  * Efficient identification of split proteins -- preparation for an fix.
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Sun, 18 Sept 2013 23:05:00 -0600
+
 folding-atomata (0.6.0.1) quantal; urgency=medium
-  
+
   * Implemented key command-line flags and arguments.
   * Updated manpage.
   * Added ability to connect to remote FAHClient with password. (#37)
@@ -9,7 +21,7 @@ folding-atomata (0.6.0.1) quantal; urgency=medium
  -- Jesse Victors <jvictors@jessevictors.com>  Sun, 6 Sept 2013 00:08:00 -0600
 
 folding-atomata (0.5.1.1) quantal; urgency=medium
-  
+
   * Bug fixes and ticket closures:
     - Fixed segfault that occurred if slot 0 was unavailable. (#33)
     - Improvements to the install-from-source script. (#34)
@@ -18,13 +30,13 @@ folding-atomata (0.5.1.1) quantal; urgency=medium
  -- Jesse Victors <jvictors@jessevictors.com>  Sun, 2 Sept 2013 13:05:00 -0600
 
 folding-atomata (0.5.0.1) quantal; urgency=medium
-  
+
   * Minor dependency fix.
 
  -- Jesse Victors <jvictors@jessevictors.com>  Sun, 1 Sept 2013 10:52:00 -0600
 
 folding-atomata (0.5.0.0) quantal; urgency=medium
-  
+
   * First public release.
 
   * Features:
