@@ -1,6 +1,6 @@
 .\" Manpage for Folding Atomata
 .\" Visit github.com/Jesse-V/Folding-Atomata to report bugs, errors, or typos.
-.TH man 8 "5 September 2013" "0.6.0.1" "FoldingAtomata man page"
+.TH man 8 "5 September 2013" "0.6.7.1" "FoldingAtomata man page"
 
 .SH NAME
 FoldingAtomata \- third-party 3D simulation viewer for Folding@home
