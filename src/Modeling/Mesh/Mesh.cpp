@@ -42,20 +42,11 @@ Mesh::Mesh(const std::shared_ptr<VertexBuffer>& vertexBuffer,
 
 
 
-void Mesh::initialize(GLuint programHandle)
+void Mesh::store(GLuint programHandle)
 {
-    vertexBuffer_->initialize(programHandle);
+    vertexBuffer_->store(programHandle);
     if (indexBuffer_)
-        indexBuffer_->initialize(programHandle);
-}
-
-
-
-void Mesh::store()
-{
-    vertexBuffer_->store();
-    if (indexBuffer_)
-        indexBuffer_->store();
+        indexBuffer_->store(programHandle);
 }
 
 

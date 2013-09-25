@@ -43,7 +43,7 @@ CubeTextureMap::CubeTextureMap(
 
 
 
-void CubeTextureMap::initialize(GLuint programHandle)
+void CubeTextureMap::store(GLuint programHandle)
 {
     std::cout << "In initialize1:" << std::endl;
     std::cout.flush();
@@ -53,7 +53,7 @@ void CubeTextureMap::initialize(GLuint programHandle)
     glGenBuffers(1, &tex_);
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex_);
 
-    
+
 
     //texMapLocation_ = glGetUniformLocation(programHandle, "texMap");
     //glUniform1i(texMapLocation_, 1); //corresponds to unit 1
@@ -61,12 +61,7 @@ void CubeTextureMap::initialize(GLuint programHandle)
     std::cout << "In initialize2:" << std::endl;
     std::cout.flush();
     checkGlError();
-}
 
-
-
-void CubeTextureMap::store()
-{
     std::cout << "In store0:" << std::endl;
     std::cout.flush();
     checkGlError();

@@ -32,7 +32,7 @@
     the set of points in space the make up the Mesh. A Mesh can optionally have
     an IndexBuffer, which construct a set of simple polygons from these points.
     For example, if GL_TRIANGLES is the rendering mode passed to Mesh::draw,
-    a Mesh could define a square by just a VertexBuffer of 
+    a Mesh could define a square by just a VertexBuffer of
     {(0, 0), (1, 1), (0, 1), (0, 0), (1, 0), (1, 1)} which would tell OpenGL
     to render the two triangles defined by the three sets of points.
     Alternatively, a Mesh initialized with both a VertexBuffer and an IndexBuffer
@@ -61,8 +61,7 @@ class Mesh : public DataBuffer
              GLenum mode = GL_TRIANGLES
         );
 
-        virtual void initialize(GLuint programHandle);
-        virtual void store();
+        virtual void store(GLuint programHandle);
         virtual void enable();
         virtual void disable();
         virtual void draw();

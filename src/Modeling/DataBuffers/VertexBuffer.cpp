@@ -32,17 +32,12 @@ VertexBuffer::VertexBuffer(const std::vector<glm::vec3>& vertices):
 
 
 
-void VertexBuffer::initialize(GLuint programHandle)
+// Store the vertices in a GPU buffer
+void VertexBuffer::store(GLuint programHandle)
 {
     glGenBuffers(1, &vertexBuffer_);
     vertexAttrib_ = glGetAttribLocation(programHandle, "vertex");
-}
 
-
-
-// Store the vertices in a GPU buffer
-void VertexBuffer::store()
-{
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
     glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(glm::vec3),
         vertices_.data(), GL_STATIC_DRAW);

@@ -40,8 +40,7 @@
 class DataBuffer : public ShaderUtilizer
 {
     public:
-        virtual void initialize(GLuint programHandle) = 0;
-        virtual void store() = 0;
+        virtual void store(GLuint programHandle) = 0;
         virtual void enable() = 0;
         virtual void disable() = 0;
 };

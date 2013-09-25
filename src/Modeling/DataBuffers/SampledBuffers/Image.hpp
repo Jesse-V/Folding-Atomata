@@ -42,7 +42,7 @@ class Image
         Image(const std::string& imagePath);
         int getWidth();
         int getHeight();
-        unsigned char* getImageData();        
+        unsigned char* getImageData();
 
     protected:
         void loadBMP(const std::string& imagePath);

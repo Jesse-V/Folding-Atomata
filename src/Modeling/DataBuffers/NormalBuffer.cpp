@@ -38,17 +38,12 @@ NormalBuffer::NormalBuffer(const std::vector<glm::vec3>& normals):
 
 
 
-void NormalBuffer::initialize(GLuint programHandle)
+// Store the normals in a GPU buffer
+void NormalBuffer::store(GLuint programHandle)
 {
     glGenBuffers(1, &normalBuffer_);
     normalAttrib_ = glGetAttribLocation(programHandle, "vertexNormal");
-}
 
-
-
-// Store the normals in a GPU buffer
-void NormalBuffer::store()
-{
     glBindBuffer(GL_ARRAY_BUFFER, normalBuffer_);
     glBufferData(GL_ARRAY_BUFFER, normals_.size() * sizeof(glm::vec3),
         normals_.data(), GL_STATIC_DRAW);

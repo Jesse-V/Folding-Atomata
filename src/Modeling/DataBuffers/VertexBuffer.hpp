@@ -43,8 +43,7 @@ class VertexBuffer : public DataBuffer
 {
     public:
         VertexBuffer(const std::vector<glm::vec3>& vertices);
-        virtual void initialize(GLuint programHandle);
-        virtual void store();
+        virtual void store(GLuint programHandle);
         virtual void enable();
         virtual void disable();
         void draw(GLenum mode);

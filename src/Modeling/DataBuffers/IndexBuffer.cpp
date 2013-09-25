@@ -44,15 +44,10 @@ IndexBuffer::IndexBuffer(const std::vector<GLuint>& indices, GLenum type) :
 
 
 
-void IndexBuffer::initialize(GLuint)
+void IndexBuffer::store(GLuint)
 {
     glGenBuffers(1, &indexBuffer_);
-}
 
-
-
-void IndexBuffer::store()
-{
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_.size() * sizeof(GLuint),
         indices_.data(), GL_STATIC_DRAW);

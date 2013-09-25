@@ -45,10 +45,9 @@ class ColorBuffer : public OptionalDataBuffer
         ColorBuffer(const std::vector<glm::vec3>& colors);
         std::vector<glm::vec3> getColors();
 
-        virtual void initialize(GLuint programHandle);
+        virtual void store(GLuint programHandle);
         virtual void enable();
         virtual void disable();
-        virtual void store();
 
         virtual SnippetPtr getVertexShaderGLSL();
         virtual SnippetPtr getFragmentShaderGLSL();

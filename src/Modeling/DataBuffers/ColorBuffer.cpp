@@ -49,17 +49,12 @@ std::vector<glm::vec3> ColorBuffer::getColors()
 
 
 
-void ColorBuffer::initialize(GLuint programHandle)
+// Store the normals in a GPU buffer
+void ColorBuffer::store(GLuint programHandle)
 {
     glGenBuffers(1, &colorBuffer_);
     colorAttrib_ = glGetAttribLocation(programHandle, "vertexColor");
-}
 
-
-
-// Store the normals in a GPU buffer
-void ColorBuffer::store()
-{
     glBindBuffer(GL_ARRAY_BUFFER, colorBuffer_);
     glBufferData(GL_ARRAY_BUFFER, colors_.size() * sizeof(glm::vec3),
         colors_.data(), GL_STATIC_DRAW);

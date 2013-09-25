@@ -51,8 +51,7 @@ class IndexBuffer : public DataBuffer
         std::vector<Quad> reinterpretAsQuads();
         std::vector<Triangle> castToTriangles();
 
-        virtual void initialize(GLuint programHandle);
-        virtual void store();
+        virtual void store(GLuint programHandle);
         virtual void enable();
         virtual void disable();
 

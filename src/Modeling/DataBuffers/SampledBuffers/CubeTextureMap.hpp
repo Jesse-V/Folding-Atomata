@@ -44,8 +44,7 @@ class CubeTextureMap : public OptionalDataBuffer
         );
         void mapToFace(GLenum target, const std::shared_ptr<Image>& img);
 
-        virtual void initialize(GLuint programHandle);
-        virtual void store();
+        virtual void store(GLuint programHandle);
         virtual void enable();
         virtual void disable();
 

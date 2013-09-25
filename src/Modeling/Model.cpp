@@ -55,16 +55,12 @@ void Model::saveAs(GLuint programHandle)
 {
     std::cout << "Storing Model under Program " << programHandle << ": { ";
 
-    mesh_->initialize(programHandle);
-    mesh_->store();
-
+    mesh_->store(programHandle);
     std::cout << typeid(*mesh_).name() << " ";
 
     for (auto buffer : optionalDBs_)
     {
-        buffer->initialize(programHandle);
-        buffer->store();
-
+        buffer->store(programHandle);
         std::cout << typeid(*buffer).name() << " ";
     }
 
