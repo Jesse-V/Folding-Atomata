@@ -28,7 +28,6 @@
 #include "Viewer.hpp"
 #include "FAHClientIO.hpp"
 #include "Sockets/SocketException.hpp"
-#include "Modeling/DataBuffers/SampledBuffers/CubeTextureMap.hpp"
 #include "Modeling/Shading/ShaderManager.hpp"
 #include "PyON/TrajectoryParser.hpp"
 #include "Options.hpp"
@@ -92,14 +91,21 @@ void Viewer::reportFPS()
 void Viewer::addModels()
 {
     //addSkybox();
-    addSlotViewers();
+    //addSlotViewers();
+
+    auto model = std::make_shared<Model>(getSkyboxMesh());
+    auto program = ShaderManager::createProgram(model,
+        scene_->getVertexShaderGLSL(),
+        scene_->getFragmentShaderGLSL(), scene_->getLights()
+    );
+    scene_->addModel(model, program, true);
 }
 
 
 
 void Viewer::addSkybox()
 {
-    std::cout << "Creating skybox..." << std::endl;
+    /*std::cout << "Creating skybox..." << std::endl;
 
     const std::string IMAGES_DIR("/usr/share/FoldingAtomata/images/");
     auto msmImage      = std::make_shared<Image>(IMAGES_DIR + "MSM.png");
@@ -124,7 +130,7 @@ void Viewer::addSkybox()
 
     scene_->addModel(model, program, true); //add to Scene and save
 
-    std::cout << "... done creating skybox." << std::endl;
+    std::cout << "... done creating skybox." << std::endl;*/
 }
 
 

@@ -84,15 +84,11 @@ add_executable(FoldingAtomata
     PyON/TrajectoryParser.cpp
     PyON/StringManip.cpp
 
-    Modeling/Object.cpp
     Modeling/Model.cpp
     Modeling/Mesh/Mesh.cpp
 
     Modeling/DataBuffers/VertexBuffer.cpp
     Modeling/DataBuffers/IndexBuffer.cpp
-    Modeling/DataBuffers/ColorBuffer.cpp
-    Modeling/DataBuffers/SampledBuffers/CubeTextureMap.cpp
-    Modeling/DataBuffers/SampledBuffers/Image.cpp
 
     Modeling/Shading/ShaderManager.cpp
     Modeling/Shading/ShaderSnippet.cpp

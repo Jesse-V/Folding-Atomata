@@ -37,11 +37,7 @@
 
 #include "Trajectory/Trajectory.hpp"
 #include "Modeling/Mesh/Mesh.hpp"
-#include "Modeling/DataBuffers/ColorBuffer.hpp"
 #include "World/Scene.hpp"
-
-
-typedef std::pair<ProgramPtr, ColorPtr> AtomModelInfo;
 
 
 // http://stackoverflow.com/questions/7222143/unordered-map-hash-function-c
@@ -94,19 +90,9 @@ class SlotViewer
         const float PI = 3.141592653589f;
 
     private:
-        void addAllAtoms();
-        void addAllBonds();
-
-        ModelPtr addAtom(const AtomPtr& atom, const glm::mat4& matrix);
-        void addBond(const Bond& bond, const ModelPtr& model);
-
         std::shared_ptr<Mesh> getAtomMesh();
         std::shared_ptr<Mesh> getBondMesh();
 
-        std::shared_ptr<ColorBuffer> generateColorBuffer(const AtomPtr& atom);
-        ModelPtr generateAtomModel(const ColorPtr& cBuffer,
-                                   const glm::mat4& matrix
-        );
         glm::mat4 generateAtomMatrix(const glm::vec3& position, const AtomPtr& atom);
         glm::mat4 generateBondMatrix(const glm::vec3& startPosition,
                                      const glm::vec3& endPosition
@@ -115,8 +101,6 @@ class SlotViewer
     private:
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;
-        std::unordered_map<Bond,    ModelPtr, std::hash<Bond>> bondModels_;
-        std::unordered_map<AtomPtr, ModelPtr> atomModels_;
 
         int transitionTime_; //how much elapsed time between each snapshot
         int snapshotA_, snapshotB_; //used to interpolate between during animation

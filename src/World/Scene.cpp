@@ -25,12 +25,9 @@
 
 #include "Scene.hpp"
 #include "Modeling/Shading/ShaderManager.hpp"
-#include "Modeling/DataBuffers/NormalBuffer.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <algorithm>
 #include <chrono>
-                         #include <thread>
-#include <sstream>
 #include <iostream>
 
 

@@ -56,14 +56,14 @@ void Model::saveAs(GLuint programHandle)
     std::cout << "Storing Model under Program " << programHandle << ": { ";
 
     mesh_->store(programHandle);
-    std::cout << typeid(*mesh_).name() << " ";
+    /*std::cout << typeid(*mesh_).name() << " ";
 
     for (auto buffer : optionalDBs_)
     {
         buffer->store(programHandle);
         std::cout << typeid(*buffer).name() << " ";
     }
-
+*/
     std::cout << "}" << std::endl;
     checkGlError();
 }
@@ -98,15 +98,23 @@ void Model::render(GLuint programHandle)
     if (matrixUniform_ == 0)
         matrixUniform_ = glGetUniformLocation(programHandle, "modelMatrix");
 
+    static auto triangles = mesh_->getTriangles();
+
     if (isVisible_)
     {
+        /*
         glUniformMatrix4fv(matrixUniform_, 1, GL_FALSE,
             glm::value_ptr(modelMatrix_)
         ); //necessary when multiple Models share a Program
 
         enableDataBuffers();
         mesh_->draw();
-        //disableDataBuffers();
+        //disableDataBuffers();*/
+
+        //auto data = triangles.data();
+        //std::cout << &data << std::endl;
+        //glDrawElementsInstanced(GL_TRIANGLES, 4, GL_UNSIGNED_INT,
+        //    triangles.data(), triangles.size() * 1);
     }
 }
 
