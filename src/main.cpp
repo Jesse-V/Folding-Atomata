@@ -37,7 +37,7 @@ void startUpdating()
 {
     std::thread updater( [&]()
     {
-        const int UPDATE_DELAY = 18;
+        const int UPDATE_DELAY = 17;
 
         try
         {
@@ -67,7 +67,14 @@ void renderCallback()
 {
     try
     {
+        int startTime = glutGet(GLUT_ELAPSED_TIME);
         Viewer::getInstance().render();
+        int endTime = glutGet(GLUT_ELAPSED_TIME);
+
+        int delay = (int)(1000.0f / 70 - (endTime - startTime));
+        if (delay > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
         glutPostRedisplay(); //make a call to render again at screen's FPS
 
         readyToUpdate = true;
