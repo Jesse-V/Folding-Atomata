@@ -169,6 +169,7 @@ SnippetPtr Scene::getVertexShaderGLSL()
 
             //Scene fields
             attribute vec3 vertex; //position of the vertex
+            uniform mat4 positions[1020];
             uniform mat4 viewMatrix, projMatrix; //Camera view and projection matrices
             uniform mat4 modelMatrix; //matrix transforming model mesh into world space
         ).",
@@ -177,13 +178,7 @@ SnippetPtr Scene::getVertexShaderGLSL()
             vec4 projectVertex()
             {
                 //https://www.opengl.org/registry/specs/ARB/draw_instanced.txt
-                float id = 0.2 * gl_InstanceIDARB;
-                mat4 modelMatrix2 = mat4(
-                    vec4(1, 0, 0, 0),
-                    vec4(0, 1, 0, 0),
-                    vec4(0, 0, 1, 0),
-                    vec4(id, id, id, 1)
-                );
+                mat4 modelMatrix2 = positions[gl_InstanceIDARB];
                 mat4 MVP = projMatrix * viewMatrix * modelMatrix2; //Calculate the Model-View-Projection matrix
                 return MVP * vec4(vertex, 1); // Convert from model space to clip space
             }

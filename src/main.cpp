@@ -71,9 +71,9 @@ void renderCallback()
         Viewer::getInstance().render();
         int endTime = glutGet(GLUT_ELAPSED_TIME);
 
-        int delay = (int)(1000.0f / 70 - (endTime - startTime));
-        if (delay > 0)
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        //int delay = (int)(1000.0f / 70 - (endTime - startTime));
+        //if (delay > 0)
+         //   std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 
         glutPostRedisplay(); //make a call to render again at screen's FPS
 
@@ -269,8 +269,9 @@ void assertSystemRequirements()
         std::cout << "GLSL v" << MIN_GLSL << " required, have " << version <<
             ", so passed system requirements." << std::endl;
 
-    //if (glMultiDrawElements == NULL)
-    //    throw std::runtime_error("glMultiDrawElements is null!");
+    auto extensions = std::string((const char*)glGetString(GL_EXTENSIONS));
+    if (extensions.find("GL_ARB_draw_instanced") == std::string::npos)
+        throw std::runtime_error("No support for GL_ARB_draw_instanced!");
     if (glDrawElementsInstancedEXT == NULL)
         throw std::runtime_error("glDrawElementsInstancedEXT is null!");
 }
