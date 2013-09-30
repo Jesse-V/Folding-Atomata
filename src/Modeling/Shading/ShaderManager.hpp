@@ -39,7 +39,7 @@
     /World/Light.hpp for full typedef declarations if they are not obvious.
 **/
 
-#include "Modeling/Model.hpp"
+#include "Modeling/BaseModel.hpp"
 #include "Modeling/DataBuffers/DataBuffer.hpp"
 #include "World/Light.hpp"
 #include "Program.hpp"
@@ -50,7 +50,7 @@
 class ShaderManager
 {
     public:
-        static ProgramPtr createProgram(const std::shared_ptr<Model>& obj,
+        static ProgramPtr createProgram(const std::shared_ptr<BaseModel>& obj,
             const SnippetPtr& sceneVertexShader,
             const SnippetPtr& sceneFragmentShader, const LightList& lights
         );

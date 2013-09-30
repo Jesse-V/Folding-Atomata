@@ -44,12 +44,12 @@
 #include "Camera.hpp"
 #include "Light.hpp"
 #include "Modeling/Shading/Program.hpp"
-#include "Modeling/Model.hpp"
+#include "Modeling/BaseModel.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <unordered_map>
 #include <vector>
 
-typedef std::shared_ptr<Model> ModelPtr;
+typedef std::shared_ptr<BaseModel> ModelPtr;
 
 class Scene
 {

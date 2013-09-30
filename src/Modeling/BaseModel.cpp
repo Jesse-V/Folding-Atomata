@@ -23,21 +23,22 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "Model.hpp"
+#include "BaseModel.hpp"
 #include "Modeling/Shading/Program.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <iostream>
 
 
-Model::Model(const std::shared_ptr<Mesh>& mesh) :
+BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh) :
     mesh_(mesh), modelMatrix_(glm::mat4()), isVisible_(true)
 {}
 
 
 
-Model::Model(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs) :
-    Model(mesh)
+BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh,
+                     const BufferList& optionalDBs) :
+    BaseModel(mesh)
 {
     optionalDBs_ = optionalDBs;
 
@@ -51,7 +52,7 @@ Model::Model(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs) :
 
 
 
-void Model::saveAs(GLuint programHandle)
+void BaseModel::saveAs(GLuint programHandle)
 {
     std::cout << "Storing Model under Program " << programHandle << ": { ";
 
@@ -71,7 +72,7 @@ void Model::saveAs(GLuint programHandle)
 
 
 // Objects that are not 'visible' will not be rendered
-void Model::setVisible(bool visible)
+void BaseModel::setVisible(bool visible)
 {
     isVisible_ = visible;
 }
@@ -79,21 +80,21 @@ void Model::setVisible(bool visible)
 
 
 // Set the matrix to convert from model coords to world coords
-void Model::setModelMatrix(const glm::mat4& matrix)
+void BaseModel::setModelMatrix(const glm::mat4& matrix)
 {
     modelMatrix_ = matrix;
 }
 
 
 
-BufferList Model::getOptionalDataBuffers()
+BufferList BaseModel::getOptionalDataBuffers()
 {
     return optionalDBs_;
 }
 
 
 
-void Model::render(GLuint programHandle)
+void BaseModel::render(GLuint programHandle)
 {
     if (matrixUniform_ == 0)
         matrixUniform_ = glGetUniformLocation(programHandle, "modelMatrix");
@@ -120,7 +121,7 @@ void Model::render(GLuint programHandle)
 
 
 
-void Model::enableDataBuffers()
+void BaseModel::enableDataBuffers()
 {
     mesh_->enable();
 
@@ -130,7 +131,7 @@ void Model::enableDataBuffers()
 
 
 
-void Model::disableDataBuffers()
+void BaseModel::disableDataBuffers()
 {
     mesh_->disable();
 

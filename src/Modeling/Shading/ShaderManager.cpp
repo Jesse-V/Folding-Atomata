@@ -31,7 +31,7 @@
 
 
 ProgramPtr ShaderManager::createProgram(
-    const std::shared_ptr<Model>& model, const SnippetPtr& sceneVertexShader,
+    const std::shared_ptr<BaseModel>& model, const SnippetPtr& sceneVertexShader,
     const SnippetPtr& sceneFragmentShader, const LightList& lights
 )
 {

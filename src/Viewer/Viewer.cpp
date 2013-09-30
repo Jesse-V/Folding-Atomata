@@ -93,7 +93,7 @@ void Viewer::addModels()
     //addSkybox();
     //addSlotViewers();
 
-    auto model = std::make_shared<Model>(getSkyboxMesh());
+    auto model = std::make_shared<BaseModel>(getSkyboxMesh());
     auto program = ShaderManager::createProgram(model,
         scene_->getVertexShaderGLSL(),
         scene_->getFragmentShaderGLSL(), scene_->getLights()
