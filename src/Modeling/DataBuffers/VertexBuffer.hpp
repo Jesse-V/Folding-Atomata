@@ -57,7 +57,7 @@ class VertexBuffer : public DataBuffer
         void storePoints();
         void enableVertices();
 
-    private:
+    public: //temp
         std::vector<glm::vec3> vertices_;
         GLuint vertexBuffer_;
         GLint vertexAttrib_;

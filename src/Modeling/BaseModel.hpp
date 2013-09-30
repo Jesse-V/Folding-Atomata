@@ -41,8 +41,6 @@ class BaseModel
 
         virtual void saveAs(GLuint programHandle);
         void setVisible(bool visible);
-        void setModelMatrix(const glm::mat4& matrix); // model -> world coords
-        void setRenderMode(GLenum newMode);
         void render(GLuint programHandle);
 
         BufferList getOptionalDataBuffers();
@@ -54,8 +52,6 @@ class BaseModel
     protected:
         std::shared_ptr<Mesh> mesh_;
         BufferList optionalDBs_;
-        glm::mat4 modelMatrix_;
-        GLint matrixUniform_;
         bool isVisible_;
 };
 

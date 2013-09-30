@@ -93,7 +93,48 @@ void Viewer::addModels()
     //addSkybox();
     //addSlotViewers();
 
-    auto model = std::make_shared<BaseModel>(getSkyboxMesh());
+    const int ATOM_STACKS = 8;
+    const int ATOM_SLICES = 16;
+    const float PI = 3.1415926535897f;
+
+    std::vector<glm::vec3> vertices;
+    for (unsigned int stack = 0; stack <= ATOM_STACKS; stack++)
+    {
+        for (unsigned int slice = 0; slice < ATOM_SLICES; slice++)
+        {
+            float theta = stack * PI / ATOM_STACKS;
+            float phi   = slice * 2 * PI / ATOM_SLICES;
+
+            float sinTheta = std::sin(theta);
+            float cosTheta = std::cos(theta);
+
+            float sinPhi = std::sin(phi);
+            float cosPhi = std::cos(phi);
+
+            vertices.push_back(glm::vec3(
+                cosPhi * sinTheta,
+                sinPhi * sinTheta,
+                cosTheta
+            ));
+        }
+    }
+
+    std::vector<GLuint> indices;
+    for (unsigned int stack = 0; stack < ATOM_STACKS; stack++)
+    {
+        for (unsigned int slice = 0; slice <= ATOM_SLICES; slice++)
+        {
+            auto sliceMod = slice % ATOM_SLICES;
+            indices.push_back((stack       * ATOM_SLICES) + sliceMod);
+            indices.push_back(((stack + 1) * ATOM_SLICES) + sliceMod);
+        }
+    }
+
+    auto vBuffer = std::make_shared<VertexBuffer>(vertices);
+    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
+    auto mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
+
+    auto model = std::make_shared<BaseModel>(mesh);
     auto program = ShaderManager::createProgram(model,
         scene_->getVertexShaderGLSL(),
         scene_->getFragmentShaderGLSL(), scene_->getLights()

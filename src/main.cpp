@@ -262,8 +262,10 @@ void assertSystemRequirements()
         std::cout << "GLSL v" << MIN_GLSL << " required, have " << version <<
             ", so passed system requirements." << std::endl;
 
-    std::cout << glMultiDrawElements << std::endl;
-    std::cout << glDrawElementsInstancedEXT << std::endl;
+    //if (glMultiDrawElements == NULL)
+    //    throw std::runtime_error("glMultiDrawElements is null!");
+    if (glDrawElementsInstancedEXT == NULL)
+        throw std::runtime_error("glDrawElementsInstancedEXT is null!");
 }
 
 

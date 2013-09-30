@@ -75,7 +75,7 @@ class Mesh : public DataBuffer
         std::shared_ptr<VertexBuffer> getVertexBuffer();
         std::shared_ptr<IndexBuffer> getIndexBuffer();
 
-    private:
+    public: //temp
         std::shared_ptr<VertexBuffer> vertexBuffer_;
         std::shared_ptr<IndexBuffer> indexBuffer_;
         GLenum renderingMode_;

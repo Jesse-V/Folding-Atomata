@@ -31,7 +31,7 @@
 
 
 BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh) :
-    mesh_(mesh), modelMatrix_(glm::mat4()), isVisible_(true)
+    mesh_(mesh), isVisible_(true)
 {}
 
 
@@ -79,14 +79,6 @@ void BaseModel::setVisible(bool visible)
 
 
 
-// Set the matrix to convert from model coords to world coords
-void BaseModel::setModelMatrix(const glm::mat4& matrix)
-{
-    modelMatrix_ = matrix;
-}
-
-
-
 BufferList BaseModel::getOptionalDataBuffers()
 {
     return optionalDBs_;
@@ -96,13 +88,12 @@ BufferList BaseModel::getOptionalDataBuffers()
 
 void BaseModel::render(GLuint programHandle)
 {
-    if (matrixUniform_ == 0)
-        matrixUniform_ = glGetUniformLocation(programHandle, "modelMatrix");
-
-    static auto triangles = mesh_->getTriangles();
+    //static auto triangles = mesh_->getTriangles();
 
     if (isVisible_)
     {
+        //enableDataBuffers();
+        mesh_->enable();
         /*
         glUniformMatrix4fv(matrixUniform_, 1, GL_FALSE,
             glm::value_ptr(modelMatrix_)
@@ -114,8 +105,14 @@ void BaseModel::render(GLuint programHandle)
 
         //auto data = triangles.data();
         //std::cout << &data << std::endl;
-        //glDrawElementsInstanced(GL_TRIANGLES, 4, GL_UNSIGNED_INT,
-        //    triangles.data(), triangles.size() * 1);
+        //std::cout << triangles.size() << std::endl;
+        static auto ib = mesh_->indexBuffer_;
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->indexBuffer_);
+        //if (triangles)
+
+        static int size = (int)ib->indices_.size();
+        //glDrawElements(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_INT, 0);
+        glDrawElementsInstancedEXT(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_INT, 0, 100);
     }
 }
 
