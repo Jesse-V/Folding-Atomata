@@ -295,8 +295,16 @@ std::shared_ptr<Camera> Viewer::createCamera()
 void Viewer::update(int deltaTime)
 {
     player_->update(deltaTime);
+    if (player_->isMoving())
+        glutPostRedisplay(); //need to redraw the camera update
+}
+
+
+
+void Viewer::animate(int deltaTime)
+{
     for (auto viewer : slotViewers_)
-        viewer->update(deltaTime);
+        viewer->animate(deltaTime);
 }
 
 

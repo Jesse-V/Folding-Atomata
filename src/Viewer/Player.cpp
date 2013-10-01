@@ -25,6 +25,7 @@
 
 #include "Player.hpp"
 #include "World/Camera.hpp"
+#include "Viewer/SlotViewer.hpp"
 #include <algorithm>
 #include <iostream>
 
@@ -259,4 +260,12 @@ void Player::setWindowOffset(int x, int y)
 
     windowCenterX_ = glutGet(GLUT_WINDOW_WIDTH)  / 2;
     windowCenterY_ = glutGet(GLUT_WINDOW_HEIGHT) / 2;
+}
+
+
+
+bool Player::isMoving()
+{
+    const auto DELTA = SlotViewer::getDotProduct(movementDelta_, movementDelta_);
+    return downKeys_.empty() && DELTA < 0.05f;
 }

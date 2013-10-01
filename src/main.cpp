@@ -33,32 +33,50 @@
 
 static bool readyToUpdate = false;
 
-void startUpdating()
+void animateThread()
 {
-    std::thread updater( [&]()
+    const int ANIMATE_DELAY = 20; //this should be user controllable
+    try
     {
-        const int UPDATE_DELAY = 17;
+        while (!readyToUpdate)
+            std::this_thread::sleep_for(std::chrono::milliseconds(ANIMATE_DELAY));
 
-        try
+        while (true)
         {
-            while (!readyToUpdate)
-                std::this_thread::sleep_for(std::chrono::milliseconds(25));
-
-            while (true)
-            {
-                Viewer::getInstance().update(UPDATE_DELAY);
-                std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
-            }
+            Viewer::getInstance().animate(ANIMATE_DELAY);
+            std::this_thread::sleep_for(std::chrono::milliseconds(ANIMATE_DELAY));
         }
-        catch (std::exception& e)
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught " << typeid(e).name() << " during render: " <<
+            e.what() << std::endl;
+        glutDestroyWindow(glutGetWindow());
+    }
+}
+
+
+
+void updateThread()
+{
+    const int UPDATE_DELAY = 20; //17 is ~60, 20 is 50 FPS, 25 is 40 FPS
+    try
+    {
+        while (!readyToUpdate)
+            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
+
+        while (true)
         {
-            std::cerr << "Caught " << typeid(e).name() << " during update: " <<
-                e.what() << std::endl;
-            glutDestroyWindow(glutGetWindow());
+            Viewer::getInstance().update(UPDATE_DELAY);
+            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
         }
-    });
-
-    updater.detach();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught " << typeid(e).name() << " during update: " <<
+            e.what() << std::endl;
+        glutDestroyWindow(glutGetWindow());
+    }
 }
 
 
@@ -67,16 +85,7 @@ void renderCallback()
 {
     try
     {
-        int startTime = glutGet(GLUT_ELAPSED_TIME);
         Viewer::getInstance().render();
-        int endTime = glutGet(GLUT_ELAPSED_TIME);
-
-        //int delay = (int)(1000.0f / 70 - (endTime - startTime));
-        //if (delay > 0)
-         //   std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-
-        glutPostRedisplay(); //make a call to render again at screen's FPS
-
         readyToUpdate = true;
     }
     catch (std::exception& e)
@@ -94,6 +103,7 @@ void windowReshapeCallback(int width, int height)
     {
         Viewer::getInstance().handleWindowReshape(width, height);
         glViewport(0, 0, width, height); //this is a subtle but critical call!
+        glutPostRedisplay(); //need to redraw after window update
     }
     catch (std::exception& e)
     {
@@ -322,8 +332,14 @@ int main(int argc, char** argv)
             std::cout.rdbuf(nullOut.rdbuf());
         }
 
+        //temp?
         Viewer::getInstance(); //calls Viewer's constructor, sets up everything...
-        startUpdating();
+
+        std::thread updater(updateThread);
+        std::thread animater(animateThread);
+        updater.detach();
+        animater.detach();
+
         glutMainLoop();
     }
     catch (std::exception& e)

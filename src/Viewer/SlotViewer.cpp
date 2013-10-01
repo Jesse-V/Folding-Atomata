@@ -46,7 +46,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
 
 
 
-void SlotViewer::update(int deltaTime)
+void SlotViewer::animate(int deltaTime)
 {
 
 }

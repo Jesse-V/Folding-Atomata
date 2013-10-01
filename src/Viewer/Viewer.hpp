@@ -45,6 +45,7 @@ class Viewer
 {
     public:
         void update(int deltaTime);
+        void animate(int deltaTime);
         void render();
         void handleWindowReshape(int screenWidth, int screenHeight);
         std::shared_ptr<Player> getPlayer();

@@ -56,6 +56,7 @@ class Player
         void update(int deltaTime);
         void applyAcceleration(int deltaTime);
         void setWindowOffset(int x, int y);
+        bool isMoving();
         void grabPointer();
         void releasePointer();
         void recenterCursor();
