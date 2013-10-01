@@ -49,7 +49,7 @@
 Viewer::Viewer() :
     scene_(std::make_shared<Scene>(createCamera())),
     player_(std::make_shared<Player>(scene_)),
-    timeSpentRendering_(0), frameCount_(0)
+    timeSpentRendering_(0), frameCount_(0), needsRerendering_(true)
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -69,15 +69,12 @@ void Viewer::reportFPS()
     std::thread fpsReporter([&]() {
         while (true)
         {
-            sleep(1000);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 
             float msPerFrame = timeSpentRendering_ / frameCount_;
             std::cout << frameCount_ << " FPS, spent " <<
                 timeSpentRendering_ << " ms rendering, avg " <<
-                msPerFrame << " ms/frame, avg " <<
-                (int)(scene_->getModelCount() * 1000 / msPerFrame) <<
-                " Models/sec" << std::endl;
-
+                msPerFrame << " ms/frame" << std::endl;
             frameCount_ = 0;
             timeSpentRendering_ = 0;
         }
@@ -295,22 +292,30 @@ std::shared_ptr<Camera> Viewer::createCamera()
 void Viewer::update(int deltaTime)
 {
     player_->update(deltaTime);
-    if (player_->isMoving())
-        glutPostRedisplay(); //need to redraw the camera update
+    //note: tests of whether or not the player is moving is done in render()
 }
 
 
 
 void Viewer::animate(int deltaTime)
 {
+    bool animationHappened = false;
     for (auto viewer : slotViewers_)
-        viewer->animate(deltaTime);
+        if (viewer->animate(deltaTime)) //test if animation happened
+            animationHappened = true;
+
+    if (animationHappened)
+        needsRerendering_ = true; //the atoms moved, so redraw the scene
 }
 
 
 
 void Viewer::render()
 {
+    if (!needsRerendering_ && !player_->isMoving())
+        return;
+    needsRerendering_ = false; //it was true, so reset it and then render
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     timeSpentRendering_ += scene_->render();
@@ -325,21 +330,10 @@ void Viewer::handleWindowReshape(int newWidth, int newHeight)
 {
     scene_->getCamera()->setAspectRatio(newWidth / (float)newHeight);
     player_->setWindowOffset(glutGet(GLUT_WINDOW_X), glutGet(GLUT_WINDOW_Y));
+    needsRerendering_ = true; //need to redraw after window update
 
     std::cout << "Windows updated to " << newWidth << " by " << newHeight <<
         ", a ratio of " << (newWidth / (float)newHeight) << std::endl;
-}
-
-
-
-/**
- * Causes the current thread to sleep
- * for the specified number of milliseconds
- */
-void Viewer::sleep(int milliseconds)
-{
-    std::chrono::milliseconds duration(milliseconds);
-    std::this_thread::sleep_for(duration); //C++11 way to sleep!
 }
 
 

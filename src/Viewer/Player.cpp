@@ -26,6 +26,7 @@
 #include "Player.hpp"
 #include "World/Camera.hpp"
 #include "Viewer/SlotViewer.hpp"
+#include <GL/glut.h>
 #include <algorithm>
 #include <iostream>
 
@@ -58,6 +59,7 @@ void Player::releasePointer()
 void Player::recenterCursor()
 {
     glutWarpPointer(windowCenterX_, windowCenterY_); //moves mouse cursor
+    mouseMoved_ = true;
 }
 
 
@@ -267,5 +269,7 @@ void Player::setWindowOffset(int x, int y)
 bool Player::isMoving()
 {
     const auto DELTA = SlotViewer::getDotProduct(movementDelta_, movementDelta_);
-    return downKeys_.empty() && DELTA < 0.05f;
+    bool test = DELTA > MINIMUM_SPEED || mouseMoved_;
+    mouseMoved_ = false; //minor hack; isMoving() must be called from render()
+    return test;
 }

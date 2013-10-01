@@ -31,14 +31,14 @@
 #include <thread>
 #include <sstream>
 
-static bool readyToUpdate = false;
+static bool readyToUpdate_ = false;
 
 void animateThread()
 {
     const int ANIMATE_DELAY = 20; //this should be user controllable
     try
     {
-        while (!readyToUpdate)
+        while (!readyToUpdate_)
             std::this_thread::sleep_for(std::chrono::milliseconds(ANIMATE_DELAY));
 
         while (true)
@@ -62,7 +62,7 @@ void updateThread()
     const int UPDATE_DELAY = 20; //17 is ~60, 20 is 50 FPS, 25 is 40 FPS
     try
     {
-        while (!readyToUpdate)
+        while (!readyToUpdate_)
             std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
 
         while (true)
@@ -83,10 +83,20 @@ void updateThread()
 
 void renderCallback()
 {
+    const int MAX_FPS = 50;
     try
     {
+        int startTime = glutGet(GLUT_ELAPSED_TIME);
         Viewer::getInstance().render();
-        readyToUpdate = true;
+        readyToUpdate_ = true;
+        int endTime = glutGet(GLUT_ELAPSED_TIME);
+
+        //reduce extremely fast polling
+        int delay = (int)(1000.0f / MAX_FPS - (endTime - startTime));
+        if (delay > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
+        glutPostRedisplay();
     }
     catch (std::exception& e)
     {
@@ -97,13 +107,13 @@ void renderCallback()
 }
 
 
+
 void windowReshapeCallback(int width, int height)
 {
     try
     {
         Viewer::getInstance().handleWindowReshape(width, height);
         glViewport(0, 0, width, height); //this is a subtle but critical call!
-        glutPostRedisplay(); //need to redraw after window update
     }
     catch (std::exception& e)
     {
@@ -333,7 +343,7 @@ int main(int argc, char** argv)
         }
 
         //temp?
-        Viewer::getInstance(); //calls Viewer's constructor, sets up everything...
+        //Viewer::getInstance(); //calls Viewer's constructor, sets up everything...
 
         std::thread updater(updateThread);
         std::thread animater(animateThread);

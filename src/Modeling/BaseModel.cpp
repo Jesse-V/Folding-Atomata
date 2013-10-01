@@ -50,7 +50,7 @@ BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh,
     */
 }
 
-const int SIZE = 100; //sync this with GLSL in Scene
+const int SIZE = 5000; //sync this with GLSL in Scene
 
 void BaseModel::saveAs(GLuint programHandle)
 {

@@ -60,7 +60,6 @@ class Viewer
         void addLight();
         std::shared_ptr<Mesh> getSkyboxMesh();
         std::shared_ptr<Camera> createCamera();
-        static void sleep(int milliseconds);
 
     private:
         static Viewer* singleton_;
@@ -69,6 +68,7 @@ class Viewer
         std::shared_ptr<Player> player_;
         float timeSpentRendering_;
         int frameCount_;
+        bool needsRerendering_;
 
         std::vector<std::shared_ptr<SlotViewer>> slotViewers_;
 };

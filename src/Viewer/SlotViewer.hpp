@@ -71,7 +71,7 @@ class SlotViewer
         SlotViewer(const TrajectoryPtr& trajectory,
                    const std::shared_ptr<Scene>& scene
         );
-        void animate(int deltaTime);
+        bool animate(int deltaTime); //returns true if there was animation
         static glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
         static float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
         static float getMagnitude(const glm::vec3& vector);

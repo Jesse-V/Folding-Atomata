@@ -46,6 +46,7 @@ class Player
         const float ACCELERATION = 0.0007f;
         const float GEOMETRIC_SPEED_DECAY = 0.96f;
         const float MAX_SPEED = 1.5f;
+        const float MINIMUM_SPEED = 0.0000001f;
 
         const float PITCH_COEFFICIENT = 0.05f;
         const float YAW_COEFFICIENT = 0.05f;
@@ -87,7 +88,7 @@ class Player
         };
 
         std::shared_ptr<Scene> scene_;
-        bool mouseControlsCamera_;
+        bool mouseControlsCamera_, mouseMoved_;
         int windowCenterX_, windowCenterY_;
 
         glm::vec3 movementDelta_;
