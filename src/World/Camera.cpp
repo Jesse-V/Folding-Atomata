@@ -58,6 +58,7 @@ void Camera::sync(GLuint programHandle) const
 {
     //assemble view matrix and sync with program handle
     GLint viewMatrixUniform = glGetUniformLocation(programHandle, "viewMatrix");
+
     glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE,
                        glm::value_ptr(calculateViewMatrix()));
 

@@ -50,7 +50,7 @@ BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh,
     */
 }
 
-const int SIZE = 1020; //sync this with GLSL in Scene
+const int SIZE = 5450; //sync this with GLSL in Scene
 
 void BaseModel::saveAs(GLuint programHandle)
 {
@@ -58,38 +58,18 @@ void BaseModel::saveAs(GLuint programHandle)
 
     mesh_->store(programHandle);
 
-    auto length = 4 * 4 * SIZE;
-    auto matrices = new float[length];
-    for (int j = 0; j < length; j += 16)
+    auto length = 3 * SIZE;
+    auto data = new float[length];
+    for (int j = 0; j < length; j += 3)
     {
-        matrices[j + 0]  = 1;
-        matrices[j + 1]  = 0;
-        matrices[j + 2]  = 0;
-        matrices[j + 3]  = 0;
-
-        matrices[j + 4]  = 0;
-        matrices[j + 5]  = 1;
-        matrices[j + 6]  = 0;
-        matrices[j + 7]  = 0;
-
-        matrices[j + 8]  = 0;
-        matrices[j + 9]  = 0;
-        matrices[j + 10] = 1;
-        matrices[j + 11] = 0;
-
-        matrices[j + 12] = (j % 1024) * 0.15f;
-        matrices[j + 13] = (j / 16) * 0.05f;
-        matrices[j + 14] = 1;
-        matrices[j + 15] = 1;
+        data[j + 0] = (j % 1024) * 0.15f;
+        data[j + 1] = (j / 16) * 0.05f;
+        data[j + 2] = 1;
     }
 
     glUseProgram(programHandle);
     auto loc = glGetUniformLocation(programHandle, "positions");
-    std::cout << loc << std::endl;
-    std::cout << programHandle << std::endl;
-    checkGlError();
-    std::cout.flush();
-    glUniformMatrix4fv(loc, SIZE, GL_FALSE, matrices);
+    glUniform3fv(loc, SIZE, data);
 
     //GL_INVALID_OPERATION is generated if location is an invalid uniform location for the current program object and location is not equal to -1.
     //GL_INVALID_OPERATION is generated if there is no current program object.

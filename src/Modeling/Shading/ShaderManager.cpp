@@ -175,7 +175,6 @@ std::string ShaderManager::buildShader(const std::string& fields,
     //return fields + methods + mainBodyCode;
     return R".(
             #version 120
-
         )."
         + fields
         + "\n"
