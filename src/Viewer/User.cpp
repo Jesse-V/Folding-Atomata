@@ -23,7 +23,7 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "Player.hpp"
+#include "User.hpp"
 #include "World/Camera.hpp"
 #include "Viewer/SlotViewer.hpp"
 #include <GL/glut.h>
@@ -31,7 +31,7 @@
 #include <iostream>
 
 
-Player::Player(std::shared_ptr<Scene> scene) :
+User::User(std::shared_ptr<Scene> scene) :
     scene_(scene), mouseControlsCamera_(true),
     windowCenterX_(glutGet(GLUT_WINDOW_WIDTH)  / 2),
     windowCenterY_(glutGet(GLUT_WINDOW_HEIGHT) / 2)
@@ -39,7 +39,7 @@ Player::Player(std::shared_ptr<Scene> scene) :
 
 
 
-void Player::grabPointer()
+void User::grabPointer()
 {
     glutSetCursor(GLUT_CURSOR_NONE);
     mouseControlsCamera_ = true;
@@ -48,7 +48,7 @@ void Player::grabPointer()
 
 
 
-void Player::releasePointer()
+void User::releasePointer()
 {
     glutSetCursor(GLUT_CURSOR_CROSSHAIR);
     mouseControlsCamera_ = false;
@@ -56,7 +56,7 @@ void Player::releasePointer()
 
 
 
-void Player::recenterCursor()
+void User::recenterCursor()
 {
     glutWarpPointer(windowCenterX_, windowCenterY_); //moves mouse cursor
     mouseMoved_ = true;
@@ -64,7 +64,7 @@ void Player::recenterCursor()
 
 
 
-void Player::onKeyPress(unsigned char key)
+void User::onKeyPress(unsigned char key)
 {
     static const auto ESCAPE = (unsigned char)27;
 
@@ -102,7 +102,7 @@ void Player::onKeyPress(unsigned char key)
 
 
 
-void Player::onKeyRelease(unsigned char key)
+void User::onKeyRelease(unsigned char key)
 {
     switch(key)
     {
@@ -134,7 +134,7 @@ void Player::onKeyRelease(unsigned char key)
 
 
 
-void Player::onSpecialKeyPress(int key)
+void User::onSpecialKeyPress(int key)
 {
     switch(key)
     {
@@ -150,7 +150,7 @@ void Player::onSpecialKeyPress(int key)
 
 
 
-void Player::onSpecialKeyRelease(int key)
+void User::onSpecialKeyRelease(int key)
 {
     switch(key)
     {
@@ -166,7 +166,7 @@ void Player::onSpecialKeyRelease(int key)
 
 
 
-void Player::onMouseClick(int button, int state, int x, int y)
+void User::onMouseClick(int button, int state, int x, int y)
 {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
@@ -179,7 +179,7 @@ void Player::onMouseClick(int button, int state, int x, int y)
 
 
 
-void Player::onMouseMotion(int x, int y)
+void User::onMouseMotion(int x, int y)
 {
     static int lastX = windowCenterX_, lastY = windowCenterY_;
     static bool determinedLastPosition;
@@ -208,12 +208,12 @@ void Player::onMouseMotion(int x, int y)
 
 
 
-void Player::onMouseDrag(int x, int y)
+void User::onMouseDrag(int x, int y)
 {}
 
 
 
-void Player::update(int deltaTime)
+void User::update(int deltaTime)
 {
     applyAcceleration(deltaTime);
 
@@ -235,7 +235,7 @@ void Player::update(int deltaTime)
 
 
 
-void Player::applyAcceleration(int deltaTime)
+void User::applyAcceleration(int deltaTime)
 {
     if (downKeys_.count(KeyAction::FORWARD))
         movementDelta_.x += ACCELERATION * deltaTime;
@@ -255,7 +255,7 @@ void Player::applyAcceleration(int deltaTime)
 
 
 
-void Player::setWindowOffset(int x, int y)
+void User::setWindowOffset(int x, int y)
 {
     //there's something upstream in Linux or the drivers going on here:
     //this code alone shouldn't fix #30, yet it does for some reason
@@ -266,7 +266,7 @@ void Player::setWindowOffset(int x, int y)
 
 
 
-bool Player::isMoving()
+bool User::isMoving()
 {
     const auto DELTA = SlotViewer::getDotProduct(movementDelta_, movementDelta_);
     bool test = DELTA > MINIMUM_SPEED || mouseMoved_;

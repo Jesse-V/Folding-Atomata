@@ -129,7 +129,7 @@ void keyPressCallback(unsigned char key, int, int)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onKeyPress(key);
+        Viewer::getInstance().getUser()->onKeyPress(key);
     }
     catch (std::exception& e)
     {
@@ -145,7 +145,7 @@ void keyReleaseCallback(unsigned char key, int, int)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onKeyRelease(key);
+        Viewer::getInstance().getUser()->onKeyRelease(key);
     }
     catch (std::exception& e)
     {
@@ -161,7 +161,7 @@ void specialKeyPressCallback(int key, int, int)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onSpecialKeyPress(key);
+        Viewer::getInstance().getUser()->onSpecialKeyPress(key);
     }
     catch (std::exception& e)
     {
@@ -177,7 +177,7 @@ void specialKeyReleaseCallback(int key, int, int)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onSpecialKeyRelease(key);
+        Viewer::getInstance().getUser()->onSpecialKeyRelease(key);
     }
     catch (std::exception& e)
     {
@@ -193,7 +193,7 @@ void mouseClickCallback(int button, int state, int x, int y)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onMouseClick(button, state, x, y);
+        Viewer::getInstance().getUser()->onMouseClick(button, state, x, y);
     }
     catch (std::exception& e)
     {
@@ -209,7 +209,7 @@ void mouseMotionCallback(int x, int y)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onMouseMotion(x, y);
+        Viewer::getInstance().getUser()->onMouseMotion(x, y);
     }
     catch (std::exception& e)
     {
@@ -225,7 +225,7 @@ void mouseDragCallback(int x, int y)
 {
     try
     {
-        Viewer::getInstance().getPlayer()->onMouseDrag(x, y);
+        Viewer::getInstance().getUser()->onMouseDrag(x, y);
     }
     catch (std::exception& e)
     {

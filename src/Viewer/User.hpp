@@ -23,11 +23,11 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef PLAYER
-#define PLAYER
+#ifndef USER
+#define USER
 
 /**
-    The Player class handles functions relating to user interaction and movement.
+    The User class handles functions relating to user interaction and movement.
     Its main goal is to represent the user interacting with the Scene.
     For example, one of its basic jobs is to accept and handle mouse and keyboard
     actions and use them to move the Scene's Camera accordingly.
@@ -40,7 +40,7 @@
 #include <memory>
 #include <unordered_set>
 
-class Player
+class User
 {
     public:
         const float ACCELERATION = 0.0007f;
@@ -53,7 +53,7 @@ class Player
         const float ROLL_SPEED = 0.05f;
 
     public:
-        Player(std::shared_ptr<Scene> scene);
+        User(std::shared_ptr<Scene> scene);
         void update(int deltaTime);
         void applyAcceleration(int deltaTime);
         void setWindowOffset(int x, int y);

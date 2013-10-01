@@ -36,7 +36,7 @@
     the amount of time since the last time the update method was called.
 **/
 
-#include "Player.hpp"
+#include "User.hpp"
 #include "World/Scene.hpp"
 #include "SlotViewer.hpp"
 #include <memory>
@@ -48,7 +48,7 @@ class Viewer
         void animate(int deltaTime);
         void render();
         void handleWindowReshape(int screenWidth, int screenHeight);
-        std::shared_ptr<Player> getPlayer();
+        std::shared_ptr<User> getUser();
         static Viewer& getInstance();
 
     private:
@@ -65,7 +65,7 @@ class Viewer
         static Viewer* singleton_;
 
         std::shared_ptr<Scene> scene_;
-        std::shared_ptr<Player> player_;
+        std::shared_ptr<User> user_;
         float timeSpentRendering_;
         int frameCount_;
         bool needsRerendering_;

@@ -48,7 +48,7 @@
 
 Viewer::Viewer() :
     scene_(std::make_shared<Scene>(createCamera())),
-    player_(std::make_shared<Player>(scene_)),
+    user_(std::make_shared<User>(scene_)),
     timeSpentRendering_(0), frameCount_(0), needsRerendering_(true)
 {
     glEnable(GL_DEPTH_TEST);
@@ -58,7 +58,7 @@ Viewer::Viewer() :
     addLight();
     addModels();
 
-    player_->grabPointer();
+    user_->grabPointer();
     reportFPS();
 }
 
@@ -291,7 +291,7 @@ std::shared_ptr<Camera> Viewer::createCamera()
 
 void Viewer::update(int deltaTime)
 {
-    player_->update(deltaTime);
+    user_->update(deltaTime);
     //note: tests of whether or not the player is moving is done in render()
 }
 
@@ -312,7 +312,7 @@ void Viewer::animate(int deltaTime)
 
 void Viewer::render()
 {
-    if (!needsRerendering_ && !player_->isMoving())
+    if (!needsRerendering_ && !user_->isMoving())
         return;
     needsRerendering_ = false; //it was true, so reset it and then render
 
@@ -329,7 +329,7 @@ void Viewer::render()
 void Viewer::handleWindowReshape(int newWidth, int newHeight)
 {
     scene_->getCamera()->setAspectRatio(newWidth / (float)newHeight);
-    player_->setWindowOffset(glutGet(GLUT_WINDOW_X), glutGet(GLUT_WINDOW_Y));
+    user_->setWindowOffset(glutGet(GLUT_WINDOW_X), glutGet(GLUT_WINDOW_Y));
     needsRerendering_ = true; //need to redraw after window update
 
     std::cout << "Windows updated to " << newWidth << " by " << newHeight <<
@@ -338,9 +338,9 @@ void Viewer::handleWindowReshape(int newWidth, int newHeight)
 
 
 
-std::shared_ptr<Player> Viewer::getPlayer()
+std::shared_ptr<User> Viewer::getUser()
 {
-    return player_;
+    return user_;
 }
 
 
