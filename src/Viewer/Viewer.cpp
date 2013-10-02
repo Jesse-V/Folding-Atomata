@@ -90,8 +90,8 @@ void Viewer::addModels()
     //addSkybox();
     //addSlotViewers();
 
-    const int ATOM_STACKS = 8;
-    const int ATOM_SLICES = 16;
+    const unsigned int ATOM_STACKS = 8;
+    const unsigned int ATOM_SLICES = 16;
     const float PI = 3.1415926535897f;
 
     std::vector<glm::vec3> vertices;

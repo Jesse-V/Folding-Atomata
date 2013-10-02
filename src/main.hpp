@@ -4,7 +4,8 @@
 
 #include <iostream>
 
-void startUpdating();
+void animateThread();
+void updateThread();
 void renderCallback();
 void windowReshapeCallback(int width, int height);
 void keyPressCallback(unsigned char key, int x, int y);

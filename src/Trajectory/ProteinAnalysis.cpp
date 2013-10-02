@@ -29,6 +29,11 @@
 #include <iterator>
 #include <iostream>
 
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+
 typedef std::vector<std::vector<std::vector<ProteinAnalysis::Bucket>>> BucketMap;
 typedef std::vector<std::vector<AtomPtr>> AtomGroups;
 
@@ -195,3 +200,5 @@ std::vector<int> ProteinAnalysis::getUnassignedBucket(const BucketMap& map)
                     return {(int)x, (int)y, (int)z};
     return {};
 }
+
+#pragma GCC diagnostic pop

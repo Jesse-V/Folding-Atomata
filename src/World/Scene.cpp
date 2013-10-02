@@ -52,16 +52,16 @@ void Scene::addModel(const ModelPtr& model, const ProgramPtr& program, bool save
         model->saveAs(program->getHandle());
 
     auto programIt = std::find(programs_.begin(), programs_.end(), program);
-    int index = 0;
+    std::size_t index = 0;
     if (programIt == programs_.end())
     {
         index = programs_.size();
         programs_.push_back(program);
     }
     else
-        index = std::distance(programs_.begin(), programIt);
+        index = (std::size_t)std::distance(programs_.begin(), programIt);
 
-    models_.push_back(std::make_pair((std::size_t)index, model));
+    models_.push_back(std::make_pair(index, model));
 }
 
 

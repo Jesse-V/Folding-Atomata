@@ -35,11 +35,11 @@ static bool readyToUpdate_ = false;
 
 void animateThread()
 {
-    const int ANIMATE_DELAY = 20; //this should be user controllable
+    const int ANIMATE_DELAY = Options::getInstance().getAnimationDelay();
     try
     {
         while (!readyToUpdate_)
-            std::this_thread::sleep_for(std::chrono::milliseconds(ANIMATE_DELAY));
+            std::this_thread::sleep_for(std::chrono::milliseconds(15));
 
         while (true)
         {
@@ -63,7 +63,7 @@ void updateThread()
     try
     {
         while (!readyToUpdate_)
-            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
+            std::this_thread::sleep_for(std::chrono::milliseconds(15));
 
         while (true)
         {

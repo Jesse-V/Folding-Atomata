@@ -41,8 +41,8 @@ Options& Options::getInstance()
 
 
 Options::Options() :
-    connectionHost_("127.0.0.1"), connectionPort_(36330), usesPassword_(false),
-    atomStacks_(8), atomSlices_(16)
+    connectionHost_("127.0.0.1"), connectionPort_(36330), animationDelay_(25),
+    usesPassword_(false), atomStacks_(8), atomSlices_(16)
 {}
 
 
@@ -64,15 +64,16 @@ Usage:
     FAHViewer [OPTION...]
 
 Commands:
-    --help, -h          Show usage and flag options.
-    --connect, -c       Address and port to use to connect to FAHClient.
-    --license           Prints license information.
-    --mode, -m          Rendering mode. 3 is stick, everything is ball-n-stick.
-    --password, -p      Password for accessing the remote FAHClient.
-    --slices, -sl       Slices to use for the atom mesh. Default is 8.
-    --stacks, -st       Stacks to use for the atom mesh. Default is 16.
-    --verbose, -v       Verbose printing to stdout.
-    --version           Print version information.
+    --animationDelay, -ad  Milliseconds to wait between each animation frame.
+    --connect, -c          Address and port to use to connect to FAHClient.
+    --help, -h             Show flag options and their usage.
+    --license              Prints license information.
+    --mode, -m             Rendering mode. 3 is stick. Ball-n-stick by default.
+    --password, -p         Password for accessing the remote FAHClient.
+    --slices, -sl          Slices to use for the atom mesh. Default is 8.
+    --stacks, -st          Stacks to use for the atom mesh. Default is 16.
+    --verbose, -v          Verbose printing to stdout.
+    --version              Print version information.
 
 Examples:
     FoldingAtomata
@@ -108,7 +109,7 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     //check for 1-piece flags
     if (verbose1(flag) || connect1(flag) || bounceSnapshots1(flag) ||
         cycleSnapshots1(flag) || password1(flag) || renderMode1(flag) ||
-        atomStacks1(flag) || atomSlices1(flag)
+        atomStacks1(flag) || atomSlices1(flag) || animationDelay1(flag)
         // || slotID1(flag)
     )
         return 1;
@@ -125,7 +126,8 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     std::string arg(options[index + 1]);
     if (connect2(flag, arg) || bounceSnapshots2(flag, arg) ||
         cycleSnapshots2(flag, arg) || password2(flag, arg) ||
-        renderMode2(flag, arg) || atomStacks2(flag, arg) || atomSlices2(flag, arg)
+        renderMode2(flag, arg) || atomStacks2(flag, arg) ||
+        atomSlices2(flag, arg) || animationDelay2(flag, arg)
         // || slotID2(flag, arg)
     )
         return 2;
@@ -343,6 +345,36 @@ bool Options::renderMode2(const std::string& flag, const std::string& arg)
 }
 
 
+
+bool Options::animationDelay1(const std::string& flag)
+{
+    if (StringManip::startsWith(flag, "--animationDelay="))
+    {
+        auto parts = StringManip::explode(flag, '=');
+        if (!confirm(parts.size() == 2, flag))
+            return false;
+
+        std::istringstream(parts[1]) >> animationDelay_;
+        return true;
+    }
+
+    return false;
+}
+
+
+
+bool Options::animationDelay2(const std::string& flag, const std::string& arg)
+{
+    if (flag == "--animationDelay" || flag == "-ad")
+    {
+        std::istringstream(arg) >> animationDelay_;
+        return true;
+    }
+
+    return false;
+}
+
+
 /*
 
 bool Options::slotID1(const std::string& flag)
@@ -505,6 +537,13 @@ unsigned int Options::getAtomStacks()
 unsigned int Options::getAtomSlices()
 {
     return atomSlices_;
+}
+
+
+
+int Options::getAnimationDelay()
+{
+    return animationDelay_;
 }
 
 

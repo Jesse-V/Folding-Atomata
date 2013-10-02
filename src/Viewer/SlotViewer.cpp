@@ -169,7 +169,7 @@ glm::mat4 SlotViewer::generateBondMatrix(const glm::vec3& startPosition,
 )
 {
     float distance = getMagnitude(startPosition - endPosition);
-    if (distance == 0.0f)
+    if (distance <= FLT_EPSILON)
         return glm::scale(glm::mat4(), glm::vec3(glm::vec2(BOND_SCALE), FLT_EPSILON));
 
     auto matrix = alignBetween(startPosition, endPosition);

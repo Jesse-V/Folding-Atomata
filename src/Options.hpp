@@ -48,6 +48,7 @@ class Options
         std::string getPassword();
         unsigned int getAtomStacks();
         unsigned int getAtomSlices();
+        int getAnimationDelay();
         //bool slotIDisSet();
         //int getSlotID();
 
@@ -70,6 +71,8 @@ class Options
         bool password2(const std::string& flag, const std::string& arg);
         bool renderMode1(const std::string& flag);
         bool renderMode2(const std::string& flag, const std::string& arg);
+        bool animationDelay1(const std::string& flag);
+        bool animationDelay2(const std::string& flag, const std::string& arg);
         //bool slotID1(const std::string& flag);
         //bool slotID2(const std::string& flag, const std::string& arg);
         bool atomStacks1(const std::string& flag);
@@ -82,7 +85,7 @@ class Options
         static Options* singleton_;
 
         std::string connectionHost_;
-        int connectionPort_; //slotID_, ;
+        int connectionPort_, animationDelay_; //slotID_, ;
         std::string authPassword_;
 
         RenderMode renderMode_ = RenderMode::BALL_N_STICK;
