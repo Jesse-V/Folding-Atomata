@@ -37,42 +37,48 @@ InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh) :
 
 
 InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
-                     const BufferList& optionalDBs) :
+               const glm::mat4& modelMatrix) :
     InstancedModel(mesh)
 {
-    optionalDBs_ = optionalDBs;
-
-    /*
-    std::cout << "Created a Model with { ";
-    for (auto buffer : optionalDBs_)
-        std::cout << typeid(*buffer).name() << " ";
-    std::cout << "} OptionalDataBuffers." << std::endl;
-    */
+    modelMatrices_.push_back(modelMatrix);
 }
 
-const int SIZE = 5000; //sync this with GLSL in Scene
+
+
+InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
+               const std::vector<glm::mat4>& modelMatrices) :
+    InstancedModel(mesh)
+{
+    modelMatrices_ = modelMatrices;
+}
+
+
+
+InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
+               const glm::mat4& modelMatrix,
+               const BufferList& optionalDBs) :
+    InstancedModel(mesh, modelMatrix)
+{
+    optionalDBs_ = optionalDBs;
+}
+
+
+
+InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
+               const std::vector<glm::mat4>& modelMatrices,
+               const BufferList& optionalDBs) :
+    InstancedModel(mesh, modelMatrices)
+{
+    optionalDBs_ = optionalDBs;
+}
+
+
 
 void InstancedModel::saveAs(GLuint programHandle)
 {
     std::cout << "Storing Model under Program " << programHandle << ": { ";
 
     mesh_->store(programHandle);
-
-    auto length = 3 * SIZE;
-    auto data = new float[length];
-    for (int j = 0; j < length; j += 3)
-    {
-        data[j + 0] = (j % 1024) * 0.15f;
-        data[j + 1] = (j / 16) * 0.05f;
-        data[j + 2] = 1;
-    }
-
-    glUseProgram(programHandle);
-    auto loc = glGetUniformLocation(programHandle, "positions");
-    glUniform3fv(loc, SIZE, data);
-
-    //GL_INVALID_OPERATION is generated if location is an invalid uniform location for the current program object and location is not equal to -1.
-    //GL_INVALID_OPERATION is generated if there is no current program object.
 
     /*std::cout << typeid(*mesh_).name() << " ";
 
@@ -105,31 +111,22 @@ BufferList InstancedModel::getOptionalDataBuffers()
 
 void InstancedModel::render(GLuint programHandle)
 {
-    //static auto triangles = mesh_->getTriangles();
+    static GLint matrixLoc = -1;
+    if (matrixLoc < 0)
+        matrixLoc = glGetUniformLocation(programHandle, "modelMatrix");
 
     if (isVisible_)
     {
-        //enableDataBuffers();
         mesh_->enable();
-        /*
-        glUniformMatrix4fv(matrixUniform_, 1, GL_FALSE,
-            glm::value_ptr(modelMatrix_)
-        ); //necessary when multiple Models share a Program
-
-        enableDataBuffers();
-        mesh_->draw();
-        //disableDataBuffers();*/
-
-        //auto data = triangles.data();
-        //std::cout << &data << std::endl;
-        //std::cout << triangles.size() << std::endl;
-        static auto ib = mesh_->indexBuffer_;
+        auto ib = mesh_->indexBuffer_;
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->indexBuffer_);
-        //if (triangles)
+        int size = (int)ib->indices_.size();
 
-        static int size = (int)ib->indices_.size();
-        //glDrawElements(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_INT, 0);
-        glDrawElementsInstancedEXT(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_INT, 0, SIZE);
+        for (glm::mat4 modelMatrix : modelMatrices_)
+        {
+            glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+            glDrawElements(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_INT, 0);
+        }
     }
 }
 

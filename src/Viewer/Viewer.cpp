@@ -131,7 +131,15 @@ void Viewer::addModels()
     auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
     auto mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
 
-    auto model = std::make_shared<InstancedModel>(mesh);
+    const int SIZE = 100;
+    std::vector<glm::mat4> modelMatrices;
+    for (int j = 0; j < SIZE; j++)
+    {
+        glm::vec3 position((j % 10) * 1.0f, (j / 10) * 1.0f, 1);
+        modelMatrices.push_back(glm::translate(glm::mat4(), position));
+    }
+
+    auto model = std::make_shared<InstancedModel>(mesh, modelMatrices);
     auto program = ShaderManager::createProgram(model,
         scene_->getVertexShaderGLSL(),
         scene_->getFragmentShaderGLSL(), scene_->getLights()

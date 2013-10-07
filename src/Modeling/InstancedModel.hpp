@@ -37,7 +37,16 @@ class InstancedModel
 {
     public:
         InstancedModel(const std::shared_ptr<Mesh>& mesh);
-        InstancedModel(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs);
+        InstancedModel(const std::shared_ptr<Mesh>& mesh,
+                       const glm::mat4& modelMatrix);
+        InstancedModel(const std::shared_ptr<Mesh>& mesh,
+                       const std::vector<glm::mat4>& modelMatrices);
+        InstancedModel(const std::shared_ptr<Mesh>& mesh,
+                       const glm::mat4& modelMatrix,
+                       const BufferList& optionalDBs);
+        InstancedModel(const std::shared_ptr<Mesh>& mesh,
+                       const std::vector<glm::mat4>& modelMatrices,
+                       const BufferList& optionalDBs);
 
         virtual void saveAs(GLuint programHandle);
         void setVisible(bool visible);
@@ -51,6 +60,7 @@ class InstancedModel
 
     protected:
         std::shared_ptr<Mesh> mesh_;
+        std::vector<glm::mat4> modelMatrices_;
         BufferList optionalDBs_;
         bool isVisible_;
 };
