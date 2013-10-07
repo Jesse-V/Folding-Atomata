@@ -84,7 +84,7 @@ add_executable(FoldingAtomata
     PyON/TrajectoryParser.cpp
     PyON/StringManip.cpp
 
-    Modeling/BaseModel.cpp
+    Modeling/InstancedModel.cpp
     Modeling/Mesh/Mesh.cpp
 
     Modeling/DataBuffers/VertexBuffer.cpp

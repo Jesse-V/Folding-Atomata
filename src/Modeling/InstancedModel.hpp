@@ -23,8 +23,8 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef BASE_MODEL
-#define BASE_MODEL
+#ifndef INSTANCED_MODEL
+#define INSTANCED_MODEL
 
 #include "Modeling/Mesh/Mesh.hpp"
 #include "Modeling/DataBuffers/OptionalDataBuffer.hpp"
@@ -33,11 +33,11 @@
 
 typedef std::vector<std::shared_ptr<OptionalDataBuffer>> BufferList;
 
-class BaseModel
+class InstancedModel
 {
     public:
-        BaseModel(const std::shared_ptr<Mesh>& mesh);
-        BaseModel(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs);
+        InstancedModel(const std::shared_ptr<Mesh>& mesh);
+        InstancedModel(const std::shared_ptr<Mesh>& mesh, const BufferList& optionalDBs);
 
         virtual void saveAs(GLuint programHandle);
         void setVisible(bool visible);

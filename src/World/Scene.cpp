@@ -173,12 +173,10 @@ SnippetPtr Scene::getVertexShaderGLSL()
 {
     return std::make_shared<ShaderSnippet>(
         R".(
-            #extension GL_ARB_draw_instanced : require
             // ********* VERTEX SHADER ********* \\
 
             //Scene fields
             attribute vec3 vertex; //position of the vertex
-            uniform vec3 positions[5000];
             uniform mat4 viewMatrix, projMatrix; //Camera view and projection matrices
             uniform mat4 modelMatrix; //matrix transforming model mesh into world space
         ).",
@@ -186,15 +184,8 @@ SnippetPtr Scene::getVertexShaderGLSL()
             //Scene methods
             vec4 projectVertex()
             {
-                //https://www.opengl.org/registry/specs/ARB/draw_instanced.txt
-                mat4 modelMatrix2 = mat4(
-                    vec4(1, 0, 0, 0),
-                    vec4(0, 1, 0, 0),
-                    vec4(0, 0, 1, 0),
-                    vec4(positions[gl_InstanceIDARB], 1)
-                );
-                mat4 MVP = projMatrix * viewMatrix * modelMatrix2; //Calculate the Model-View-Projection matrix
-                return MVP * vec4(vertex, 1); // Convert from model space to clip space
+                mat4 MVP = projMatrix * viewMatrix * modelMatrix;
+                return MVP * vec4(vertex, 1);
             }
         ).",
         R".(

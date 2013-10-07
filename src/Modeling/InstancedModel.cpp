@@ -23,22 +23,22 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "BaseModel.hpp"
+#include "InstancedModel.hpp"
 #include "Modeling/Shading/Program.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <iostream>
 
 
-BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh) :
+InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh) :
     mesh_(mesh), isVisible_(true)
 {}
 
 
 
-BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh,
+InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
                      const BufferList& optionalDBs) :
-    BaseModel(mesh)
+    InstancedModel(mesh)
 {
     optionalDBs_ = optionalDBs;
 
@@ -52,7 +52,7 @@ BaseModel::BaseModel(const std::shared_ptr<Mesh>& mesh,
 
 const int SIZE = 5000; //sync this with GLSL in Scene
 
-void BaseModel::saveAs(GLuint programHandle)
+void InstancedModel::saveAs(GLuint programHandle)
 {
     std::cout << "Storing Model under Program " << programHandle << ": { ";
 
@@ -89,21 +89,21 @@ void BaseModel::saveAs(GLuint programHandle)
 
 
 // Objects that are not 'visible' will not be rendered
-void BaseModel::setVisible(bool visible)
+void InstancedModel::setVisible(bool visible)
 {
     isVisible_ = visible;
 }
 
 
 
-BufferList BaseModel::getOptionalDataBuffers()
+BufferList InstancedModel::getOptionalDataBuffers()
 {
     return optionalDBs_;
 }
 
 
 
-void BaseModel::render(GLuint programHandle)
+void InstancedModel::render(GLuint programHandle)
 {
     //static auto triangles = mesh_->getTriangles();
 
@@ -135,7 +135,7 @@ void BaseModel::render(GLuint programHandle)
 
 
 
-void BaseModel::enableDataBuffers()
+void InstancedModel::enableDataBuffers()
 {
     mesh_->enable();
 
@@ -145,7 +145,7 @@ void BaseModel::enableDataBuffers()
 
 
 
-void BaseModel::disableDataBuffers()
+void InstancedModel::disableDataBuffers()
 {
     mesh_->disable();
 

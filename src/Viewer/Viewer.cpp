@@ -131,7 +131,7 @@ void Viewer::addModels()
     auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
     auto mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
 
-    auto model = std::make_shared<BaseModel>(mesh);
+    auto model = std::make_shared<InstancedModel>(mesh);
     auto program = ShaderManager::createProgram(model,
         scene_->getVertexShaderGLSL(),
         scene_->getFragmentShaderGLSL(), scene_->getLights()

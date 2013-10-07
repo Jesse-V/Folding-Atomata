@@ -288,12 +288,6 @@ void assertSystemRequirements()
     else
         std::cout << "GLSL v" << MIN_GLSL << " required, have " << version <<
             ", so passed system requirements." << std::endl;
-
-    auto extensions = std::string((const char*)glGetString(GL_EXTENSIONS));
-    if (extensions.find("GL_ARB_draw_instanced") == std::string::npos)
-        throw std::runtime_error("No support for GL_ARB_draw_instanced!");
-    if (glDrawElementsInstancedEXT == NULL)
-        throw std::runtime_error("glDrawElementsInstancedEXT is null!");
 }
 
 
