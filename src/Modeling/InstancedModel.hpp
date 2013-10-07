@@ -62,6 +62,8 @@ class InstancedModel
         std::shared_ptr<Mesh> mesh_;
         std::vector<glm::mat4> modelMatrices_;
         BufferList optionalDBs_;
+        GLuint cachedHandle_;
+        GLint matrixModelLocation_;
         bool isVisible_;
 };
 

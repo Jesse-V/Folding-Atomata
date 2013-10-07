@@ -58,7 +58,7 @@ class IndexBuffer : public DataBuffer
         virtual SnippetPtr getVertexShaderGLSL();
         virtual SnippetPtr getFragmentShaderGLSL();
 
-    public: //temp
+    private:
         std::vector<GLuint> indices_;
         GLuint indexBuffer_;
         GLenum acceptedAsType_;

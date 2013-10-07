@@ -31,7 +31,7 @@
 
 
 InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh) :
-    mesh_(mesh), isVisible_(true)
+    mesh_(mesh), cachedHandle_(0), isVisible_(true)
 {}
 
 
@@ -80,14 +80,14 @@ void InstancedModel::saveAs(GLuint programHandle)
 
     mesh_->store(programHandle);
 
-    /*std::cout << typeid(*mesh_).name() << " ";
+    std::cout << typeid(*mesh_).name() << " ";
 
     for (auto buffer : optionalDBs_)
     {
         buffer->store(programHandle);
         std::cout << typeid(*buffer).name() << " ";
     }
-*/
+
     std::cout << "}" << std::endl;
     checkGlError();
 }
@@ -111,21 +111,21 @@ BufferList InstancedModel::getOptionalDataBuffers()
 
 void InstancedModel::render(GLuint programHandle)
 {
-    static GLint matrixLoc = -1;
-    if (matrixLoc < 0)
-        matrixLoc = glGetUniformLocation(programHandle, "modelMatrix");
+    if (programHandle != cachedHandle_) //bit of adaptable caching
+    {
+        matrixModelLocation_ = glGetUniformLocation(programHandle, "modelMatrix");
+        cachedHandle_ = programHandle;
+    }
 
     if (isVisible_)
     {
-        mesh_->enable();
-        auto ib = mesh_->indexBuffer_;
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->indexBuffer_);
-        int size = (int)ib->indices_.size();
+        mesh_->enable(); //temp, what about other DBs?
 
         for (glm::mat4 modelMatrix : modelMatrices_)
         {
-            glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-            glDrawElements(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_INT, 0);
+            glUniformMatrix4fv(matrixModelLocation_, 1, GL_FALSE,
+                glm::value_ptr(modelMatrix));
+            mesh_->draw();
         }
     }
 }

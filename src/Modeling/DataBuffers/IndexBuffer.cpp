@@ -57,7 +57,6 @@ void IndexBuffer::store(GLuint)
 
 void IndexBuffer::draw(GLenum mode)
 {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer_);
     glDrawElements(mode, (int)indices_.size(), GL_UNSIGNED_INT, 0);
 }
 
@@ -136,7 +135,9 @@ std::vector<Triangle> IndexBuffer::castToTriangles()
 
 
 void IndexBuffer::enable()
-{}
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer_);
+}
 
 
 

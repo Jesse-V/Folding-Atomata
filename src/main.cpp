@@ -32,6 +32,7 @@
 #include <sstream>
 
 static bool readyToUpdate_ = false;
+const int MAX_FPS = 50;
 
 void animateThread()
 {
@@ -83,7 +84,6 @@ void updateThread()
 
 void renderCallback()
 {
-    const int MAX_FPS = 50;
     try
     {
         int startTime = glutGet(GLUT_ELAPSED_TIME);
@@ -92,7 +92,7 @@ void renderCallback()
         int endTime = glutGet(GLUT_ELAPSED_TIME);
 
         //reduce extremely fast polling
-        int delay = (int)(1000.0f / MAX_FPS - (endTime - startTime));
+        int delay = (int)(1000.0f / MAX_FPS - (endTime - startTime)) - 1;
         if (delay > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 
@@ -336,14 +336,12 @@ int main(int argc, char** argv)
             std::cout.rdbuf(nullOut.rdbuf());
         }
 
-        //temp?
-        //Viewer::getInstance(); //calls Viewer's constructor, sets up everything...
-
         std::thread updater(updateThread);
         std::thread animater(animateThread);
         updater.detach();
         animater.detach();
 
+        std::cout << "Threads launched. FPS cap set at " << MAX_FPS << std::endl;
         glutMainLoop();
     }
     catch (std::exception& e)
