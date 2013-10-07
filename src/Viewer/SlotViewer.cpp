@@ -58,9 +58,20 @@ SnippetPtr SlotViewer::ProteinAnimation::getVertexShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //ProteinAnimation fields
+            uniform vec3 snapshotPositions[2];
+            int time;
+
+            #define projectVertex(); customProjection()
         ).",
         R".(
             //ProteinAnimation methods
+            vec4 customProjection()
+            {
+                vec3 a = modelMatrix * vertex + snapshotPositions[0];
+                vec3 b = modelMatrix * vertex + snapshotPositions[1];
+                vec3 position = (b - a) * (time / 2000.0) + a;
+                return projMatrix * viewMatrix * vec4(position, 1);
+            }
         ).",
         R".(
             //ProteinAnimation main method code
@@ -72,17 +83,7 @@ SnippetPtr SlotViewer::ProteinAnimation::getVertexShaderGLSL()
 
 SnippetPtr SlotViewer::ProteinAnimation::getFragmentShaderGLSL()
 {
-    return std::make_shared<ShaderSnippet>(
-        R".(
-            //ProteinAnimation fields
-        ).",
-        R".(
-            //ProteinAnimation methods
-        ).",
-        R".(
-            //ProteinAnimation main method code
-        )."
-    );
+    return std::make_shared<ShaderSnippet>();
 }
 
 
