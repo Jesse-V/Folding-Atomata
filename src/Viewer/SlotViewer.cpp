@@ -53,6 +53,40 @@ bool SlotViewer::animate(int deltaTime)
 
 
 
+SnippetPtr SlotViewer::ProteinAnimation::getVertexShaderGLSL()
+{
+    return std::make_shared<ShaderSnippet>(
+        R".(
+            //ProteinAnimation fields
+        ).",
+        R".(
+            //ProteinAnimation methods
+        ).",
+        R".(
+            //ProteinAnimation main method code
+        )."
+    );
+}
+
+
+
+SnippetPtr SlotViewer::ProteinAnimation::getFragmentShaderGLSL()
+{
+    return std::make_shared<ShaderSnippet>(
+        R".(
+            //ProteinAnimation fields
+        ).",
+        R".(
+            //ProteinAnimation methods
+        ).",
+        R".(
+            //ProteinAnimation main method code
+        )."
+    );
+}
+
+
+
 std::shared_ptr<Mesh> SlotViewer::getAtomMesh()
 {
     static std::shared_ptr<Mesh> mesh = nullptr;

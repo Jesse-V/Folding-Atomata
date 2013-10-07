@@ -76,6 +76,13 @@ class SlotViewer
         static float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
         static float getMagnitude(const glm::vec3& vector);
 
+        class ProteinAnimation : public OptionalDataBuffer
+        {
+            public:
+                virtual SnippetPtr getVertexShaderGLSL();
+                virtual SnippetPtr getFragmentShaderGLSL();
+        };
+
     public:
         const float ATOM_SCALE = 0.15f; //0.04 is good for getMass
         const float BOND_SCALE = 0.06f;
