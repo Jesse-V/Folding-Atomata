@@ -79,6 +79,10 @@ class SlotViewer
         class ProteinAnimation : public OptionalDataBuffer
         {
             public:
+                virtual void store(GLuint programHandle); //todo: implement
+                virtual void enable();
+                virtual void disable();
+
                 virtual SnippetPtr getVertexShaderGLSL();
                 virtual SnippetPtr getFragmentShaderGLSL();
         };

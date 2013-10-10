@@ -32,7 +32,8 @@
 #include <iostream>
 
 
-Camera::Camera()
+Camera::Camera() :
+    projectionUpdated_(false), viewUpdated_(false)
 {
     reset();
 }
@@ -54,21 +55,23 @@ void Camera::reset()
 
 
 
-void Camera::sync(GLuint programHandle) const
+void Camera::sync(GLint viewMatrixUniform, GLint projMatrixUniform)
 {
-    //assemble view matrix and sync with program handle
-    GLint viewMatrixUniform = glGetUniformLocation(programHandle, "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE,
-                       glm::value_ptr(calculateViewMatrix()));
-
-    //sync projection matrix with program handle
-    GLint projMatrixUniform = glGetUniformLocation(programHandle, "projMatrix");
-    glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE,
-                       glm::value_ptr(getProjectionMatrix()));
-
-    //assert that they went through to GLSL variables
     if (viewMatrixUniform < 0 || projMatrixUniform < 0)
         throw std::runtime_error("Unable to find Camera uniform variables!");
+
+    //assemble view matrix and sync if it has updated
+    if (viewUpdated_)
+        glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE,
+                                        glm::value_ptr(calculateViewMatrix()));
+
+    //sync projection matrix if it has updated
+    if (projectionUpdated_)
+        glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE,
+                                        glm::value_ptr(getProjectionMatrix()));
+
+    projectionUpdated_ = false;
+    viewUpdated_ = false;
 }
 
 
@@ -80,6 +83,7 @@ void Camera::setPosition(const glm::vec3& newPosition)
         throw std::runtime_error("Cannot be where we're looking at!");
 
     position_ = newPosition;
+    viewUpdated_ = true;
 }
 
 
@@ -92,6 +96,7 @@ void Camera::lookAt(const glm::vec3& gazePoint, const glm::vec3& upVector)
 
     lookingAt_ = gazePoint;
     upVector_ = upVector;
+    viewUpdated_ = true;
 }
 
 
@@ -122,6 +127,7 @@ void Camera::translate(const glm::vec3& delta)
 {
     position_ += delta;
     lookingAt_ += delta;
+    viewUpdated_ = true;
 }
 
 
@@ -159,6 +165,7 @@ void Camera::pitch(float theta)
     upVector_  = (rotationMatrix * glm::vec4(upVector_,  1)).xyz();
     lookVector = (rotationMatrix * glm::vec4(lookVector, 1)).xyz();
     lookingAt_ = position_ + lookVector;
+    viewUpdated_ = true;
 }
 
 
@@ -174,6 +181,7 @@ void Camera::yaw(float theta, bool aroundUpVector)
     lookVector = (rotationMatrix * glm::vec4(lookVector, 1)).xyz();
     upVector_  = (rotationMatrix * glm::vec4(upVector_,  1)).xyz();
     lookingAt_ = position_ + lookVector;
+    viewUpdated_ = true;
 }
 
 
@@ -184,6 +192,7 @@ void Camera::roll(float theta)
     glm::vec3 orientation = calculateLookDirection();
     glm::mat4 rotationMatrix = glm::rotate(glm::mat4(), theta, orientation);
     upVector_ = (rotationMatrix * glm::vec4(upVector_, 1)).xyz();
+    viewUpdated_ = true;
 }
 
 
@@ -206,6 +215,7 @@ bool Camera::constrainedPitch(float theta)
     {
         upVector_ = oldUpVector;
         lookingAt_ = oldLookingAt;
+        viewUpdated_ = true;
         //std::cout << "Camera pitch constrained. Reverted request." << std::endl;
         return true;
     }
@@ -223,6 +233,7 @@ bool Camera::constrainedRoll(float theta)
     if (upVector_.z < 0)
     {
         upVector_ = oldUpVector;
+        viewUpdated_ = true;
         std::cout << "Camera roll constrained. Reverted request." << std::endl;
         return true;
     }
@@ -282,6 +293,7 @@ void Camera::updateProjectionMatrix()
 {
     projection_ = glm::perspective(fieldOfView_, aspectRatio_,
                                    nearFieldClip_, farFieldClip_);
+    projectionUpdated_ = true;
 }
 
 

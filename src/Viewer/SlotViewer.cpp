@@ -48,6 +48,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
 
 bool SlotViewer::animate(int deltaTime)
 {
+    //GLint viewMatrixUniform = glGetUniformLocation(programHandle, "viewMatrix");
     return false; //no animation
 }
 

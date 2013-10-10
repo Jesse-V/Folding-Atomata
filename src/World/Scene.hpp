@@ -56,12 +56,10 @@ class Scene
     public:
         Scene(const std::shared_ptr<Camera>& camera);
         void addModel(const ModelPtr& model);
-        void addModel(const ModelPtr& model, const ProgramPtr& program,
-                                                              bool save = true);
+        void addModel(const ModelPtr& model, const ProgramPtr& program);
         void addLight(const std::shared_ptr<Light>& light);
         void setCamera(const std::shared_ptr<Camera>& camera);
         void setAmbientLight(const glm::vec3& rgb);
-        void update();
         float render();
 
         std::shared_ptr<Camera> getCamera();
@@ -72,12 +70,23 @@ class Scene
         virtual SnippetPtr getVertexShaderGLSL();
         virtual SnippetPtr getFragmentShaderGLSL();
 
-    private:
-        void syncLighting(GLuint handle);
+        struct Renderable
+        {
+            Renderable(ModelPtr m, ProgramPtr prog, GLint a, GLint v, GLint p) :
+                model(m), program(prog), ambientLightUniform(a),
+                viewUniform(v), projUniform(p)
+            {}
+
+            ModelPtr model;
+            ProgramPtr program;
+            GLint ambientLightUniform, viewUniform, projUniform;
+        };
 
     private:
-        std::vector<ProgramPtr> programs_;
-        std::vector<std::pair<std::size_t, ModelPtr>> models_;
+        void syncLighting(GLuint programHandle, GLint ambientLightUniform);
+
+    private:
+        std::vector<Renderable> renderables_;
         LightList lights_;
         std::shared_ptr<Camera> camera_;
         glm::vec3 ambientLight_;

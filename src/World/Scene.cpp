@@ -40,28 +40,21 @@ Scene::Scene(const std::shared_ptr<Camera>& camera):
 void Scene::addModel(const ModelPtr& model)
 {
     addModel(model, ShaderManager::createProgram(model,
-        getVertexShaderGLSL(), getFragmentShaderGLSL(), lights_), true
-    );
+        getVertexShaderGLSL(), getFragmentShaderGLSL(), lights_));
 }
 
 
 
-void Scene::addModel(const ModelPtr& model, const ProgramPtr& program, bool save)
+void Scene::addModel(const ModelPtr& model, const ProgramPtr& program)
 {
-    if (save)
-        model->saveAs(program->getHandle());
+    auto programHandle = program->getHandle();
 
-    auto programIt = std::find(programs_.begin(), programs_.end(), program);
-    std::size_t index = 0;
-    if (programIt == programs_.end())
-    {
-        index = programs_.size();
-        programs_.push_back(program);
-    }
-    else
-        index = (std::size_t)std::distance(programs_.begin(), programIt);
+    model->saveAs(programHandle);
+    GLint ambLU = glGetUniformLocation(programHandle, "ambientLight");
+    GLint viewU = glGetUniformLocation(programHandle, "viewMatrix");
+    GLint projU = glGetUniformLocation(programHandle, "projMatrix");
 
-    models_.push_back(std::make_pair(index, model));
+    renderables_.push_back(Renderable(model, program, ambLU, viewU, projU));
 }
 
 
@@ -89,36 +82,19 @@ void Scene::setAmbientLight(const glm::vec3& rgb)
 
 
 
-void Scene::update()
-{
-    for (auto program : programs_)
-    {
-        GLuint handle = program->getHandle();
-        glUseProgram(handle);
-        camera_->sync(handle);
-        syncLighting(handle);
-    }
-}
-
-
-
 float Scene::render()
 {
-    //static int count = 0;
-    //if (count < 300)
-    {
-        update(); //this call drops the FPS by nearly half
-       // count++;
-    }
-
-
     using namespace std::chrono;
     auto start = steady_clock::now();
-    for (auto pair : models_)
+
+    for (auto renderable : renderables_)
     {
-        auto programHandle = programs_[pair.first]->getHandle();
-        auto model = pair.second;
-        model->render(programHandle);
+        GLuint handle = renderable.program->getHandle();
+        glUseProgram(handle);
+        camera_->sync(renderable.projUniform, renderable.viewUniform);
+        syncLighting(handle, renderable.ambientLightUniform);
+
+        renderable.model->render(handle);
     }
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
@@ -136,7 +112,7 @@ std::shared_ptr<Camera> Scene::getCamera()
 
 int Scene::getModelCount()
 {
-    return (int)models_.size();
+    return (int)renderables_.size();
 }
 
 
@@ -155,16 +131,15 @@ glm::vec3 Scene::getAmbientLight()
 
 
 
-void Scene::syncLighting(GLuint handle)
+void Scene::syncLighting(GLuint programHandle, GLint ambientLightUniform)
 {
     if (lights_.empty())
         return;
 
-    GLint ambientLightUniform = glGetUniformLocation(handle, "ambientLight");
     glUniform3fv(ambientLightUniform, 1, glm::value_ptr(ambientLight_));
 
     for (std::size_t j = 0; j < lights_.size(); j++)
-        lights_[j]->sync(handle, j);
+        lights_[j]->sync(programHandle, j);
 }
 
 

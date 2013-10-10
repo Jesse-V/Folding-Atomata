@@ -132,20 +132,16 @@ void Viewer::addModels()
     auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
     auto mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
 
-    const int SIZE = 10;
+    const int SIZE = 100;
     std::vector<glm::mat4> modelMatrices;
     for (int j = 0; j < SIZE; j++)
     {
-        glm::vec3 position((j % 3) * 1.0f, (j / 3) * 1.0f, 1);
+        glm::vec3 position((j % 10) * 2.0f, (j / 10) * 2.0f, 1);
         modelMatrices.push_back(glm::translate(glm::mat4(), position));
     }
 
     auto model = std::make_shared<InstancedModel>(mesh, modelMatrices);
-    auto program = ShaderManager::createProgram(model,
-        scene_->getVertexShaderGLSL(),
-        scene_->getFragmentShaderGLSL(), scene_->getLights()
-    );
-    scene_->addModel(model, program, true);
+    scene_->addModel(model);
 }
 
 
@@ -326,6 +322,7 @@ void Viewer::render()
     needsRerendering_ = false; //it was true, so reset it and then render
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClearColor(.39f, 0.58f, 0.93f, 0.0f); //nice blue background
 
     timeSpentRendering_ += scene_->render();
     frameCount_++;
