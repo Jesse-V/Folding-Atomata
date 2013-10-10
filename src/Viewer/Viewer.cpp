@@ -28,7 +28,6 @@
 #include "Viewer.hpp"
 #include "FAHClientIO.hpp"
 #include "Sockets/SocketException.hpp"
-#include "Modeling/Shading/ShaderManager.hpp"
 #include "PyON/TrajectoryParser.hpp"
 #include "Options.hpp"
 #include <thread>
@@ -322,7 +321,6 @@ void Viewer::render()
     needsRerendering_ = false; //it was true, so reset it and then render
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glClearColor(.39f, 0.58f, 0.93f, 0.0f); //nice blue background
 
     timeSpentRendering_ += scene_->render();
     frameCount_++;

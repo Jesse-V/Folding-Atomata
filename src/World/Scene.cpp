@@ -91,7 +91,7 @@ float Scene::render()
     {
         GLuint handle = renderable.program->getHandle();
         glUseProgram(handle);
-        camera_->sync(renderable.projUniform, renderable.viewUniform);
+        camera_->sync(renderable.viewUniform, renderable.projUniform);
         syncLighting(handle, renderable.ambientLightUniform);
 
         renderable.model->render(handle);
