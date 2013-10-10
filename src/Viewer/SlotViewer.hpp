@@ -101,8 +101,17 @@ class SlotViewer
         const float PI = 3.141592653589f;
 
     private:
+        void addAllAtoms();
+        void addAllBonds();
+        void addAtom(const AtomPtr& atom, const glm::mat4& matrix);
+
         std::shared_ptr<Mesh> getAtomMesh();
         std::shared_ptr<Mesh> getBondMesh();
+
+        std::shared_ptr<ColorBuffer> generateColorBuffer(const AtomPtr& atom);
+        InstancedModelPtr generateAtomModel(const AtomPtr& atom,
+                                            const glm::mat4& matrix
+        );
 
         glm::mat4 generateAtomMatrix(const glm::vec3& position, const AtomPtr& atom);
         glm::mat4 generateBondMatrix(const glm::vec3& startPosition,
@@ -112,6 +121,8 @@ class SlotViewer
     private:
         TrajectoryPtr trajectory_;
         std::shared_ptr<Scene> scene_;
+        InstancedModelPtr bondInstance_;
+        std::unordered_map<char, InstancedModelPtr> elementInstances_;
 
         int transitionTime_; //how much elapsed time between each snapshot
         int snapshotA_, snapshotB_; //used to interpolate between during animation

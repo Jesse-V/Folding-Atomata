@@ -88,59 +88,7 @@ void Viewer::reportFPS()
 void Viewer::addModels()
 {
     //addSkybox();
-    //addSlotViewers();
-
-    const unsigned int ATOM_STACKS = 8;
-    const unsigned int ATOM_SLICES = 16;
-    const float PI = 3.1415926535897f;
-
-    std::vector<glm::vec3> vertices;
-    for (unsigned int stack = 0; stack <= ATOM_STACKS; stack++)
-    {
-        for (unsigned int slice = 0; slice < ATOM_SLICES; slice++)
-        {
-            float theta = stack * PI / ATOM_STACKS;
-            float phi   = slice * 2 * PI / ATOM_SLICES;
-
-            float sinTheta = std::sin(theta);
-            float cosTheta = std::cos(theta);
-
-            float sinPhi = std::sin(phi);
-            float cosPhi = std::cos(phi);
-
-            vertices.push_back(glm::vec3(
-                cosPhi * sinTheta,
-                sinPhi * sinTheta,
-                cosTheta
-            ));
-        }
-    }
-
-    std::vector<GLuint> indices;
-    for (unsigned int stack = 0; stack < ATOM_STACKS; stack++)
-    {
-        for (unsigned int slice = 0; slice <= ATOM_SLICES; slice++)
-        {
-            auto sliceMod = slice % ATOM_SLICES;
-            indices.push_back((stack       * ATOM_SLICES) + sliceMod);
-            indices.push_back(((stack + 1) * ATOM_SLICES) + sliceMod);
-        }
-    }
-
-    auto vBuffer = std::make_shared<VertexBuffer>(vertices);
-    auto iBuffer = std::make_shared<IndexBuffer>(indices, GL_TRIANGLE_STRIP);
-    auto mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLE_STRIP);
-
-    const int SIZE = 100;
-    std::vector<glm::mat4> modelMatrices;
-    for (int j = 0; j < SIZE; j++)
-    {
-        glm::vec3 position((j % 10) * 2.0f, (j / 10) * 2.0f, 1);
-        modelMatrices.push_back(glm::translate(glm::mat4(), position));
-    }
-
-    auto model = std::make_shared<InstancedModel>(mesh, modelMatrices);
-    scene_->addModel(model);
+    addSlotViewers();
 }
 
 
@@ -177,43 +125,34 @@ void Viewer::addSkybox()
 
 
 
-std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
+void Viewer::addSlotViewers()
 {
-    static std::shared_ptr<Mesh> mesh = nullptr;
+    std::vector<TrajectoryPtr> trajectories = getTrajectories();
 
-    if (mesh)
-        return mesh;
-
-    const std::vector<glm::vec3> VERTICES = {
-        glm::vec3(-1, -1, -1),
-        glm::vec3(-1, -1,  1),
-        glm::vec3(-1,  1, -1),
-        glm::vec3(-1,  1,  1),
-        glm::vec3( 1, -1, -1),
-        glm::vec3( 1, -1,  1),
-        glm::vec3( 1,  1, -1),
-        glm::vec3( 1,  1,  1)
-    };
-
-    //visible from the inside only, so faces in
-    const std::vector<GLuint> INDICES = {
-        0, 1, 5, 4, //front
-        6, 7, 3, 2, //back
-        2, 0, 4, 6,  //top
-        7, 5, 1, 3, //bottom
-        2, 3, 1, 0, //left
-        4, 5, 7, 6  //right
-    };
-
-    auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
-    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_QUADS);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
-    return mesh;
+    auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
+    slotViewers_.push_back(slot0Viewer);
 }
 
 
 
-void Viewer::addSlotViewers()
+void Viewer::addLight()
+{
+    scene_->setAmbientLight(glm::vec3(1));
+/*
+    auto light1 = std::make_shared<Light>(
+        glm::vec3(0),       //position
+        glm::vec3(0, 0, 1), //blue
+        10.0f                //power
+    );
+
+    scene_->addLight(light1);*/
+
+    checkGlError();
+}
+
+
+
+std::vector<TrajectoryPtr> Viewer::getTrajectories()
 {
     std::vector<TrajectoryPtr> trajectories;
 
@@ -255,27 +194,44 @@ void Viewer::addSlotViewers()
         trajectories.push_back(parser.parse());
     }
 
-    auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
-    slotViewers_.push_back(slot0Viewer);
+    return trajectories;
 }
 
 
 
-void Viewer::addLight()
+std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
 {
-    scene_->setAmbientLight(glm::vec3(1));
-/*
-    auto light1 = std::make_shared<Light>(
-        glm::vec3(0),       //position
-        glm::vec3(0, 0, 1), //blue
-        10.0f                //power
-    );
+    static std::shared_ptr<Mesh> mesh = nullptr;
 
-    scene_->addLight(light1);*/
+    if (mesh)
+        return mesh;
 
-    checkGlError();
+    const std::vector<glm::vec3> VERTICES = {
+        glm::vec3(-1, -1, -1),
+        glm::vec3(-1, -1,  1),
+        glm::vec3(-1,  1, -1),
+        glm::vec3(-1,  1,  1),
+        glm::vec3( 1, -1, -1),
+        glm::vec3( 1, -1,  1),
+        glm::vec3( 1,  1, -1),
+        glm::vec3( 1,  1,  1)
+    };
+
+    //visible from the inside only, so faces in
+    const std::vector<GLuint> INDICES = {
+        0, 1, 5, 4, //front
+        6, 7, 3, 2, //back
+        2, 0, 4, 6,  //top
+        7, 5, 1, 3, //bottom
+        2, 3, 1, 0, //left
+        4, 5, 7, 6  //right
+    };
+
+    auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
+    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_QUADS);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
+    return mesh;
 }
-
 
 
 std::shared_ptr<Camera> Viewer::createCamera()

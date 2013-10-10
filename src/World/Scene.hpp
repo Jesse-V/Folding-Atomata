@@ -49,14 +49,12 @@
 #include <unordered_map>
 #include <vector>
 
-typedef std::shared_ptr<InstancedModel> ModelPtr;
-
 class Scene
 {
     public:
         Scene(const std::shared_ptr<Camera>& camera);
-        void addModel(const ModelPtr& model);
-        void addModel(const ModelPtr& model, const ProgramPtr& program);
+        void addModel(const InstancedModelPtr& model);
+        void addModel(const InstancedModelPtr& model, const ProgramPtr& program);
         void addLight(const std::shared_ptr<Light>& light);
         void setCamera(const std::shared_ptr<Camera>& camera);
         void setAmbientLight(const glm::vec3& rgb);
@@ -72,12 +70,12 @@ class Scene
 
         struct Renderable
         {
-            Renderable(ModelPtr m, ProgramPtr prog, GLint a, GLint v, GLint p) :
+            Renderable(InstancedModelPtr m, ProgramPtr prog, GLint a, GLint v, GLint p) :
                 model(m), program(prog), ambientLightUniform(a),
                 viewUniform(v), projUniform(p)
             {}
 
-            ModelPtr model;
+            InstancedModelPtr model;
             ProgramPtr program;
             GLint ambientLightUniform, viewUniform, projUniform;
         };

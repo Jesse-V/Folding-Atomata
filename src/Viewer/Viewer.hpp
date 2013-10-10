@@ -58,6 +58,7 @@ class Viewer
         void addSkybox();
         void addSlotViewers();
         void addLight();
+        std::vector<TrajectoryPtr> getTrajectories();
         std::shared_ptr<Mesh> getSkyboxMesh();
         std::shared_ptr<Camera> createCamera();
 

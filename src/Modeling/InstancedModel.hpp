@@ -40,7 +40,7 @@ class InstancedModel
         InstancedModel(const std::shared_ptr<Mesh>& mesh,
                        const glm::mat4& modelMatrix);
         InstancedModel(const std::shared_ptr<Mesh>& mesh,
-                       const std::vector<glm::mat4>& modelMatrices);
+                       const BufferList& optionalDBs);
         InstancedModel(const std::shared_ptr<Mesh>& mesh,
                        const glm::mat4& modelMatrix,
                        const BufferList& optionalDBs);
@@ -49,9 +49,9 @@ class InstancedModel
                        const BufferList& optionalDBs);
 
         virtual void saveAs(GLuint programHandle);
-        void setVisible(bool visible);
+        void addInstance(const glm::mat4& instanceModelMatrix);
         void render(GLuint programHandle);
-
+        void setVisible(bool visible);
         BufferList getOptionalDataBuffers();
 
     private:
@@ -66,5 +66,7 @@ class InstancedModel
         GLint matrixModelLocation_;
         bool isVisible_;
 };
+
+typedef std::shared_ptr<InstancedModel> InstancedModelPtr;
 
 #endif

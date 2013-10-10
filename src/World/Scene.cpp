@@ -37,7 +37,7 @@ Scene::Scene(const std::shared_ptr<Camera>& camera):
 
 
 
-void Scene::addModel(const ModelPtr& model)
+void Scene::addModel(const InstancedModelPtr& model)
 {
     addModel(model, ShaderManager::createProgram(model,
         getVertexShaderGLSL(), getFragmentShaderGLSL(), lights_));
@@ -45,7 +45,7 @@ void Scene::addModel(const ModelPtr& model)
 
 
 
-void Scene::addModel(const ModelPtr& model, const ProgramPtr& program)
+void Scene::addModel(const InstancedModelPtr& model, const ProgramPtr& program)
 {
     auto programHandle = program->getHandle();
 

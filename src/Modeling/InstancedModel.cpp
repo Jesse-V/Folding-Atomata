@@ -37,7 +37,7 @@ InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh) :
 
 
 InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
-               const glm::mat4& modelMatrix) :
+                               const glm::mat4& modelMatrix) :
     InstancedModel(mesh)
 {
     modelMatrices_.push_back(modelMatrix);
@@ -46,17 +46,17 @@ InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
 
 
 InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
-               const std::vector<glm::mat4>& modelMatrices) :
+                               const BufferList& optionalDBs) :
     InstancedModel(mesh)
 {
-    modelMatrices_ = modelMatrices;
+    optionalDBs_ = optionalDBs;
 }
 
 
 
 InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
-               const glm::mat4& modelMatrix,
-               const BufferList& optionalDBs) :
+                               const glm::mat4& modelMatrix,
+                               const BufferList& optionalDBs) :
     InstancedModel(mesh, modelMatrix)
 {
     optionalDBs_ = optionalDBs;
@@ -93,18 +93,9 @@ void InstancedModel::saveAs(GLuint programHandle)
 }
 
 
-
-// Objects that are not 'visible' will not be rendered
-void InstancedModel::setVisible(bool visible)
+void InstancedModel::addInstance(const glm::mat4& instanceModelMatrix)
 {
-    isVisible_ = visible;
-}
-
-
-
-BufferList InstancedModel::getOptionalDataBuffers()
-{
-    return optionalDBs_;
+    modelMatrices_.push_back(instanceModelMatrix);
 }
 
 
@@ -148,4 +139,19 @@ void InstancedModel::disableDataBuffers()
 
     for (auto buffer : optionalDBs_)
         buffer->disable();
+}
+
+
+
+// Objects that are not 'visible' will not be rendered
+void InstancedModel::setVisible(bool visible)
+{
+    isVisible_ = visible;
+}
+
+
+
+BufferList InstancedModel::getOptionalDataBuffers()
+{
+    return optionalDBs_;
 }

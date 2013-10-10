@@ -41,7 +41,90 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     trajectory_(trajectory), scene_(scene),
     snapshotA_(0), snapshotB_(1)
 {
+    std::cout << std::endl;
+
+    if (trajectory_->countSnapshots() == 0)
+        throw std::runtime_error("No snapshots to work with!");
+    else
+        std::cout << "Creating viewer for trajectory with " <<
+            trajectory_->countSnapshots() << " snapshots..." << std::endl;
+
+    const auto RENDER_MODE = Options::getInstance().getRenderMode();
+    if (RENDER_MODE == Options::RenderMode::BALL_N_STICK)
+    {
+        addAllAtoms();
+        std::cout << std::endl;
+    }
+
+    addAllBonds();
+    std::cout << std::endl;
+
+    std::thread thread( [&] {
+        ProteinAnalysis proteinAnalysis(trajectory_);
+        proteinAnalysis.fixProteinSplits();
+    });
+    thread.detach();
+
     std::cout << "... done creating SlotViewer." << std::endl;
+}
+
+
+
+void SlotViewer::addAllAtoms()
+{
+    const auto ATOMS = trajectory_->getTopology()->getAtoms();
+
+    std::cout << "Trajectory consists of " << ATOMS.size()
+        << " atoms." << std::endl;
+    std::cout << "Adding Atoms to Scene..." << std::endl;
+
+    auto snapshotZero = trajectory_->getSnapshot(0);
+    for (const auto atom : ATOMS)
+        addAtom(atom, generateAtomMatrix(snapshotZero[atom], atom));
+
+    std::cout << "... done adding atoms for that trajectory." << std::endl;
+}
+
+
+
+void SlotViewer::addAllBonds()
+{
+    const auto BONDS = trajectory_->getTopology()->getBonds();
+
+    std::cout << "Trajectory consists of " << BONDS.size()
+        << " bonds." << std::endl;
+    std::cout << "Adding Bonds to Scene..." << std::endl;
+
+    BufferList list = { std::make_shared<ColorBuffer>(BOND_COLOR, 6) };
+    bondInstance_ = std::make_shared<InstancedModel>(getBondMesh(), list);
+
+    auto snapshotZero = trajectory_->getSnapshot(0);
+    for (auto bond : BONDS)
+    {
+        auto positionA = snapshotZero[bond.first];
+        auto positionB = snapshotZero[bond.second];
+
+        bondInstance_->addInstance(generateBondMatrix(positionA, positionB));
+    }
+
+    std::cout << "... done adding bonds for that trajectory." << std::endl;
+}
+
+
+
+void SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
+{
+    auto instancedModel = elementInstances_.find(atom->getElement());
+    if (instancedModel == elementInstances_.end())
+    { //not in cache
+        auto model = generateAtomModel(atom, matrix);
+        elementInstances_.insert(std::make_pair(atom->getElement(), model));
+        scene_->addModel(model);
+    }
+    else
+    { //already in cache
+        elementInstances_.at(atom->getElement())->addInstance(matrix);
+    }
 }
 
 
@@ -85,6 +168,27 @@ SnippetPtr SlotViewer::ProteinAnimation::getVertexShaderGLSL()
 SnippetPtr SlotViewer::ProteinAnimation::getFragmentShaderGLSL()
 {
     return std::make_shared<ShaderSnippet>();
+}
+
+
+
+std::shared_ptr<ColorBuffer> SlotViewer::generateColorBuffer(const AtomPtr& atom)
+{
+    static auto N_VERTICES = (ATOM_STACKS + 1) * ATOM_SLICES;
+    std::vector<glm::vec3> colors(N_VERTICES, atom->getColor());
+
+    auto vertices = getAtomMesh()->getVertices();
+    for (std::size_t j = 0; j < N_VERTICES; j++)
+    {
+        float distance = getMagnitude(vertices[j] - ATOM_LIGHT_POSITION);
+        float scaledDistance = distance / ATOM_LIGHT_POWER;
+        glm::vec3 luminosity = ATOM_LIGHT_COLOR * (1 - scaledDistance);
+
+        if (luminosity.x > 0 && luminosity.y > 0 && luminosity.z > 0)
+            colors[j] += luminosity;
+    }
+
+    return std::make_shared<ColorBuffer>(colors);
 }
 
 
@@ -187,6 +291,15 @@ std::shared_ptr<Mesh> SlotViewer::getBondMesh()
 
     std::cout << "done. Cached the result." << std::endl;
     return mesh;
+}
+
+
+
+InstancedModelPtr SlotViewer::generateAtomModel(const AtomPtr& atom,
+                                                const glm::mat4& matrix)
+{
+    BufferList list = { generateColorBuffer(atom) };
+    return std::make_shared<InstancedModel>(getAtomMesh(), matrix, list);
 }
 
 
