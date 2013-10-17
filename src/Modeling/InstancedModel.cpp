@@ -156,3 +156,10 @@ BufferList InstancedModel::getOptionalDataBuffers()
 {
     return optionalDBs_;
 }
+
+
+
+std::size_t InstancedModel::getNumberOfInstances()
+{
+    return modelMatrices_.size();
+}

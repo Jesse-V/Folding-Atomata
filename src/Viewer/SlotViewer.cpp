@@ -38,7 +38,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
                        const std::shared_ptr<Scene>& scene) :
     ATOM_STACKS(Options::getInstance().getAtomStacks()),
     ATOM_SLICES(Options::getInstance().getAtomSlices()),
-    trajectory_(trajectory), scene_(scene),
+    scene_(scene), trajectory_(trajectory),
     snapshotA_(0), snapshotB_(1)
 {
     std::cout << std::endl;
@@ -79,8 +79,28 @@ void SlotViewer::addAllAtoms()
     std::cout << "Adding Atoms to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
+    std::unordered_map<char, InstancedModelPtr> elementMap;
+    elementMap.reserve(8);
     for (const auto atom : ATOMS)
-        addAtom(atom, generateAtomMatrix(snapshotZero[atom], atom));
+    {
+        auto matrix = generateAtomMatrix(snapshotZero[atom], atom);
+        auto element = atom->getElement();
+
+        if (elementMap.find(element) == elementMap.end()) //not in cache
+        {
+            auto model = generateAtomModel(atom, matrix);
+            elementMap[element] = model;
+            scene_->addModel(model);
+            elementIndexes_.push_back(ElementIndex(elementMap.size(), 0));
+        }
+        else //already in cache
+        {
+            elementMap[element]->addInstance(matrix);
+            auto d = std::distance(elementMap.begin(), elementMap.find(element));
+            elementIndexes_.push_back(ElementIndex(d,
+                elementMap[element]->getNumberOfInstances()));
+        }
+    }
 
     std::cout << "... done adding atoms for that trajectory." << std::endl;
 }
@@ -109,23 +129,6 @@ void SlotViewer::addAllBonds()
 
     scene_->addModel(bondInstance_);
     std::cout << "... done adding bonds for that trajectory." << std::endl;
-}
-
-
-
-void SlotViewer::addAtom(const AtomPtr& atom, const glm::mat4& matrix)
-{
-    auto instancedModel = elementInstances_.find(atom->getElement());
-    if (instancedModel == elementInstances_.end())
-    { //not in cache
-        auto model = generateAtomModel(atom, matrix);
-        elementInstances_.insert(std::make_pair(atom->getElement(), model));
-        scene_->addModel(model);
-    }
-    else
-    { //already in cache
-        elementInstances_.at(atom->getElement())->addInstance(matrix);
-    }
 }
 
 

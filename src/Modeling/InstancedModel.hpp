@@ -53,6 +53,7 @@ class InstancedModel
         void render(GLuint programHandle);
         void setVisible(bool visible);
         BufferList getOptionalDataBuffers();
+        std::size_t getNumberOfInstances();
 
     private:
         void enableDataBuffers();
