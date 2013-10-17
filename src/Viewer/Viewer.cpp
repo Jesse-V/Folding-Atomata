@@ -54,9 +54,7 @@ Viewer::Viewer() :
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    addLight();
     addModels();
-
     user_->grabPointer();
     reportFPS();
 }
@@ -109,16 +107,7 @@ void Viewer::addSkybox()
     auto model = std::make_shared<Model>(getSkyboxMesh(), list);
     auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
     model->setModelMatrix(matrix);
-
-    std::cout << "Generating program for skybox..." << std::endl;
-    auto program = ShaderManager::createProgram(model,
-        scene_->getVertexShaderGLSL(),
-        scene_->getFragmentShaderGLSL(), scene_->getLights()
-    );
-
-    std::cout << "... done generating skybox program." << std::endl;
-
-    scene_->addModel(model, program, true); //add to Scene and save
+    scene_->addModel(model); //add to Scene and save
 
     std::cout << "... done creating skybox." << std::endl;*/
 }
@@ -131,23 +120,6 @@ void Viewer::addSlotViewers()
 
     auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
     slotViewers_.push_back(slot0Viewer);
-}
-
-
-
-void Viewer::addLight()
-{
-    scene_->setAmbientLight(glm::vec3(1));
-/*
-    auto light1 = std::make_shared<Light>(
-        glm::vec3(0),       //position
-        glm::vec3(0, 0, 1), //blue
-        10.0f                //power
-    );
-
-    scene_->addLight(light1);*/
-
-    checkGlError();
 }
 
 

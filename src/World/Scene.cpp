@@ -96,6 +96,7 @@ float Scene::render()
 
         renderable.model->render(handle);
     }
+    camera_->setFullySynced();
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
     return diff / 1000.0f;

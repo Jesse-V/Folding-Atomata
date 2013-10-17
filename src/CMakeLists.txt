@@ -89,6 +89,7 @@ add_executable(FoldingAtomata
 
     Modeling/DataBuffers/VertexBuffer.cpp
     Modeling/DataBuffers/IndexBuffer.cpp
+    Modeling/DataBuffers/ColorBuffer.cpp
 
     Modeling/Shading/ShaderManager.cpp
     Modeling/Shading/ShaderSnippet.cpp

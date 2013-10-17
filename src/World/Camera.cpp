@@ -69,7 +69,12 @@ void Camera::sync(GLint viewMatrixUniform, GLint projMatrixUniform)
     if (projectionUpdated_)
         glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE,
                                         glm::value_ptr(getProjectionMatrix()));
+}
 
+
+
+void Camera::setFullySynced()
+{
     projectionUpdated_ = false;
     viewUpdated_ = false;
 }

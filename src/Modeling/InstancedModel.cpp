@@ -65,10 +65,11 @@ InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
 
 
 InstancedModel::InstancedModel(const std::shared_ptr<Mesh>& mesh,
-               const std::vector<glm::mat4>& modelMatrices,
-               const BufferList& optionalDBs) :
-    InstancedModel(mesh, modelMatrices)
+                               const std::vector<glm::mat4>& modelMatrices,
+                               const BufferList& optionalDBs) :
+    InstancedModel(mesh)
 {
+    modelMatrices_ = modelMatrices;
     optionalDBs_ = optionalDBs;
 }
 
@@ -102,15 +103,15 @@ void InstancedModel::addInstance(const glm::mat4& instanceModelMatrix)
 
 void InstancedModel::render(GLuint programHandle)
 {
-    if (programHandle != cachedHandle_) //bit of adaptable caching
+    if (cachedHandle_ != programHandle) //bit of adaptable caching
     {
-        matrixModelLocation_ = glGetUniformLocation(programHandle, "modelMatrix");
         cachedHandle_ = programHandle;
+        matrixModelLocation_ = glGetUniformLocation(programHandle, "modelMatrix");
     }
 
     if (isVisible_)
     {
-        mesh_->enable(); //temp, what about other DBs?
+        enableDataBuffers();
 
         for (glm::mat4 modelMatrix : modelMatrices_)
         {

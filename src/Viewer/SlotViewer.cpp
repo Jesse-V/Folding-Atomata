@@ -59,11 +59,11 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     addAllBonds();
     std::cout << std::endl;
 
-    std::thread thread( [&] {
+    /*std::thread thread( [&] {
         ProteinAnalysis proteinAnalysis(trajectory_);
         proteinAnalysis.fixProteinSplits();
     });
-    thread.detach();
+    thread.detach();*/
 
     std::cout << "... done creating SlotViewer." << std::endl;
 }
@@ -107,6 +107,7 @@ void SlotViewer::addAllBonds()
         bondInstance_->addInstance(generateBondMatrix(positionA, positionB));
     }
 
+    scene_->addModel(bondInstance_);
     std::cout << "... done adding bonds for that trajectory." << std::endl;
 }
 
@@ -133,41 +134,6 @@ bool SlotViewer::animate(int deltaTime)
 {
     //GLint viewMatrixUniform = glGetUniformLocation(programHandle, "viewMatrix");
     return false; //no animation
-}
-
-
-
-SnippetPtr SlotViewer::ProteinAnimation::getVertexShaderGLSL()
-{
-    return std::make_shared<ShaderSnippet>(
-        R".(
-            //ProteinAnimation fields
-            uniform vec3 snapshotPositions[2];
-            int time;
-
-            #define projectVertex(); customProjection()
-        ).",
-        R".(
-            //ProteinAnimation methods
-            vec4 customProjection()
-            {
-                vec3 a = modelMatrix * vertex + snapshotPositions[0];
-                vec3 b = modelMatrix * vertex + snapshotPositions[1];
-                vec3 position = (b - a) * (time / 2000.0) + a;
-                return projMatrix * viewMatrix * vec4(position, 1);
-            }
-        ).",
-        R".(
-            //ProteinAnimation main method code
-        )."
-    );
-}
-
-
-
-SnippetPtr SlotViewer::ProteinAnimation::getFragmentShaderGLSL()
-{
-    return std::make_shared<ShaderSnippet>();
 }
 
 

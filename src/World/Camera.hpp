@@ -51,6 +51,7 @@ class Camera
         Camera();
         void reset();
         void sync(GLint viewMatrixUniform, GLint projMatrixUniform);
+        void setFullySynced();
 
         //position and orient the camera
         void setPosition(const glm::vec3& newPosition);

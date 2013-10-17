@@ -36,10 +36,10 @@
 */
 
 #include "Trajectory/Trajectory.hpp"
-#include "Modeling/Mesh/Mesh.hpp"
 #include "World/Scene.hpp"
+#include "Modeling/DataBuffers/ColorBuffer.hpp"
 
-
+/*
 // http://stackoverflow.com/questions/7222143/unordered-map-hash-function-c
 template <class T>
 inline void hash_combine(std::size_t & seed, const T & v)
@@ -63,7 +63,7 @@ namespace std
         }
     };
 }
-
+*/
 
 class SlotViewer
 {
@@ -75,17 +75,6 @@ class SlotViewer
         static glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
         static float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
         static float getMagnitude(const glm::vec3& vector);
-
-        class ProteinAnimation : public OptionalDataBuffer
-        {
-            public:
-                virtual void store(GLuint programHandle); //todo: implement
-                virtual void enable();
-                virtual void disable();
-
-                virtual SnippetPtr getVertexShaderGLSL();
-                virtual SnippetPtr getFragmentShaderGLSL();
-        };
 
     public:
         const float ATOM_SCALE = 0.15f; //0.04 is good for getMass
