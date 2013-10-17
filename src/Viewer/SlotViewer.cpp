@@ -39,7 +39,7 @@ SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
     ATOM_STACKS(Options::getInstance().getAtomStacks()),
     ATOM_SLICES(Options::getInstance().getAtomSlices()),
     scene_(scene), trajectory_(trajectory),
-    snapshotA_(0), snapshotB_(1)
+    snapshotIndexA_(0), snapshotIndexB_(1)
 {
     std::cout << std::endl;
 
@@ -79,7 +79,8 @@ void SlotViewer::addAllAtoms()
     std::cout << "Adding Atoms to Scene..." << std::endl;
 
     auto snapshotZero = trajectory_->getSnapshot(0);
-    std::unordered_map<char, InstancedModelPtr> elementMap;
+    typedef std::pair<std::size_t, InstancedModelPtr> Instance;
+    std::unordered_map<char, Instance> elementMap;
     elementMap.reserve(8);
     for (std::size_t j = 0; j < ATOMS.size(); j++)
     {
@@ -90,16 +91,16 @@ void SlotViewer::addAllAtoms()
         if (elementMap.find(element) == elementMap.end()) //not in cache
         {
             auto model = generateAtomModel(atom, matrix);
-            elementMap[element] = model;
             scene_->addModel(model);
-            elementIndexes_.push_back(ElementIndex(elementMap.size(), 0));
+            elementMap[element] = std::make_pair(atomInstances_.size(), model);
+            elementIndexes_.push_back(ElementIndex(atomInstances_.size(), 0));
+            atomInstances_.push_back(model);
         }
         else //already in cache
         {
-            elementMap[element]->addInstance(matrix);
-            auto d = std::distance(elementMap.begin(), elementMap.find(element));
-            elementIndexes_.push_back(ElementIndex((std::size_t)d,
-                elementMap[element]->getNumberOfInstances()));
+            elementMap[element].second->addInstance(matrix);
+            elementIndexes_.push_back(ElementIndex(elementMap[element].first,
+                elementMap[element].second->getInstanceCount()));
         }
     }
 
@@ -136,7 +137,55 @@ void SlotViewer::addAllBonds()
 
 bool SlotViewer::animate(int deltaTime)
 {
-    return false; //no animation
+    const int snapshotCount = trajectory_->countSnapshots();
+
+    if (snapshotCount <= 1)
+        return false; //can't animate with one snapshot
+
+    if (atomInstances_.size() == 0 && bondInstance_->getInstanceCount() == 0)
+        return false; //we have nothing to animate
+
+    transitionTime_ += deltaTime;
+    int a = transitionTime_ / 2000; //int division on purpose
+    int b = transitionTime_ % 2000;
+    transitionTime_ = b;
+
+    if (snapshotCount > 2)
+    {
+        snapshotIndexA_ = (snapshotIndexA_ + a) % (snapshotCount - 2);
+        snapshotIndexB_ = snapshotIndexA_ + 1;
+    }
+
+    auto snapA = trajectory_->getSnapshot(snapshotIndexA_);
+    auto snapB = trajectory_->getSnapshot(snapshotIndexB_);
+
+    const auto ATOMS = trajectory_->getTopology()->getAtoms();
+    std::vector<glm::vec3> newPositions;
+    newPositions.reserve(ATOMS.size());
+    for (std::size_t j = 0; j < ATOMS.size(); j++)
+    {
+        auto startPosition = snapA->getPosition(j);
+        auto endPosition   = snapB->getPosition(j);
+        auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
+
+        newPositions.push_back(position);
+        const ElementIndex index = elementIndexes_[j];
+        if (atomInstances_.size() > 0)
+        {
+            atomInstances_[index.elementIndex]->setModelMatrix(
+                index.instanceIndex, generateAtomMatrix(position, ATOMS[j]));
+        }
+    }
+
+    const auto BONDS = trajectory_->getTopology()->getBonds();
+    for (std::size_t j = 0; j < BONDS.size(); j++)
+    {
+        auto positionA = newPositions[BONDS[j].first];
+        auto positionB = newPositions[BONDS[j].second];
+        bondInstance_->setModelMatrix(j, generateBondMatrix(positionA, positionB));
+    }
+
+    return true;
 }
 
 

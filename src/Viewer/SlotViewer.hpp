@@ -116,11 +116,12 @@ class SlotViewer
         std::shared_ptr<Scene> scene_;
         TrajectoryPtr trajectory_;
 
-        std::vector<ElementIndex> elementIndexes_;
+        std::vector<ElementIndex> elementIndexes_; //references specific instances
+        std::vector<InstancedModelPtr> atomInstances_;
         InstancedModelPtr bondInstance_;
 
         int transitionTime_; //how much elapsed time between each snapshot
-        int snapshotA_, snapshotB_; //used to interpolate between during animation
+        int snapshotIndexA_, snapshotIndexB_; //interpolate between these
 };
 
 #endif

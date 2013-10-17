@@ -94,6 +94,7 @@ void InstancedModel::saveAs(GLuint programHandle)
 }
 
 
+
 void InstancedModel::addInstance(const glm::mat4& instanceModelMatrix)
 {
     modelMatrices_.push_back(instanceModelMatrix);
@@ -144,6 +145,13 @@ void InstancedModel::disableDataBuffers()
 
 
 
+void InstancedModel::setModelMatrix(std::size_t index, const glm::mat4& matrix)
+{
+    modelMatrices_[index] = matrix;
+}
+
+
+
 // Objects that are not 'visible' will not be rendered
 void InstancedModel::setVisible(bool visible)
 {
@@ -159,7 +167,7 @@ BufferList InstancedModel::getOptionalDataBuffers()
 
 
 
-std::size_t InstancedModel::getNumberOfInstances()
+std::size_t InstancedModel::getInstanceCount()
 {
     return modelMatrices_.size();
 }

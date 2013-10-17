@@ -51,9 +51,10 @@ class InstancedModel
         virtual void saveAs(GLuint programHandle);
         void addInstance(const glm::mat4& instanceModelMatrix);
         void render(GLuint programHandle);
+        void setModelMatrix(std::size_t index, const glm::mat4& matrix);
         void setVisible(bool visible);
         BufferList getOptionalDataBuffers();
-        std::size_t getNumberOfInstances();
+        std::size_t getInstanceCount();
 
     private:
         void enableDataBuffers();

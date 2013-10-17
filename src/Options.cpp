@@ -41,7 +41,7 @@ Options& Options::getInstance()
 
 
 Options::Options() :
-    connectionHost_("127.0.0.1"), connectionPort_(36330), animationDelay_(25),
+    connectionHost_("127.0.0.1"), connectionPort_(36330), animationDelay_(40),
     usesPassword_(false), atomStacks_(8), atomSlices_(16)
 {}
 
