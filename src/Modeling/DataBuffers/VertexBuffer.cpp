@@ -48,6 +48,7 @@ void VertexBuffer::store(GLuint programHandle)
 
 void VertexBuffer::enable()
 {
+    glEnableVertexAttribArray(vertexAttrib_);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
     glVertexAttribPointer(vertexAttrib_, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }

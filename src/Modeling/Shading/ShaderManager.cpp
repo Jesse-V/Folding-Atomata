@@ -89,8 +89,6 @@ std::string ShaderManager::assembleFragmentShaderStr(
 
             vec3 lighting = ambientLight * colors.lightBlend;
             vec3 color = colors.material * lighting;
-            color = vec3(1);
-
             gl_FragColor = vec4(color, 1);
         )."
     );

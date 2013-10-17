@@ -31,9 +31,11 @@
 #include <iostream>
 
 
-Scene::Scene(const std::shared_ptr<Camera>& camera):
-    camera_(camera)
-{}
+Scene::Scene(const std::shared_ptr<Camera>& camera) :
+    camera_(camera), ambientLightUpdated_(true)
+{
+    setAmbientLight(glm::vec3(1));
+}
 
 
 
@@ -78,6 +80,7 @@ void Scene::setCamera(const std::shared_ptr<Camera>& sceneCamera)
 void Scene::setAmbientLight(const glm::vec3& rgb)
 {
     ambientLight_ = rgb;
+    ambientLightUpdated_ = true;
 }
 
 
@@ -97,6 +100,7 @@ float Scene::render()
         renderable.model->render(handle);
     }
     camera_->setFullySynced();
+    doneSyncingLighting();
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();
     return diff / 1000.0f;
@@ -134,13 +138,19 @@ glm::vec3 Scene::getAmbientLight()
 
 void Scene::syncLighting(GLuint programHandle, GLint ambientLightUniform)
 {
-    if (lights_.empty())
-        return;
+    if (ambientLightUpdated_)
+        glUniform3fv(ambientLightUniform, 1, glm::value_ptr(ambientLight_));
 
-    glUniform3fv(ambientLightUniform, 1, glm::value_ptr(ambientLight_));
-
+    //todo: Light::sync needs to be optimized like Camera::sync
     for (std::size_t j = 0; j < lights_.size(); j++)
         lights_[j]->sync(programHandle, j);
+}
+
+
+
+void Scene::doneSyncingLighting()
+{
+    ambientLightUpdated_ = true;
 }
 
 

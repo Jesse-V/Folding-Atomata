@@ -82,12 +82,14 @@ class Scene
 
     private:
         void syncLighting(GLuint programHandle, GLint ambientLightUniform);
+        void doneSyncingLighting();
 
     private:
         std::vector<Renderable> renderables_;
         LightList lights_;
         std::shared_ptr<Camera> camera_;
         glm::vec3 ambientLight_;
+        bool ambientLightUpdated_;
 };
 
 
