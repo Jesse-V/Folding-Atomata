@@ -79,8 +79,7 @@ TopologyPtr TrajectoryParser::parseTopology()
     const auto TOPOLOGY_SPAN = StringManip::between(pyon_, FULL, BEGIN, END);
 
     auto atoms = parseAtoms(TOPOLOGY_SPAN);
-    auto bonds = parseBonds(TOPOLOGY_SPAN, atoms);
-
+    auto bonds = parseBonds(TOPOLOGY_SPAN);
     return std::make_shared<Topology>(atoms, bonds);
 }
 
@@ -127,20 +126,18 @@ AtomPtr TrajectoryParser::parseAtom(const Indexes& atomSpan)
 
 
 
-BondList TrajectoryParser::parseBonds(const Indexes& topologySpan,
-                                      const std::vector<AtomPtr>& atoms
-)
+std::vector<Bond> TrajectoryParser::parseBonds(const Indexes& topologySpan)
 {
     const auto BEGIN = "\"bonds\":[\n", END = "]\n";
     auto bondDataRange = StringManip::between(pyon_, topologySpan, BEGIN, END);
 
-    BondList bonds;
+    std::vector<Bond> bonds;
     std::size_t lineStart = bondDataRange.first;
     while (lineStart < bondDataRange.second)
     {
         std::size_t lineEnd = pyon_.find("\n", lineStart);
         auto bond = parseBond(std::make_pair(lineStart, lineEnd));
-        bonds.push_back(std::make_pair(atoms[bond.first], atoms[bond.second]));
+        bonds.push_back(std::make_pair(bond.first, bond.second));
         lineStart = lineEnd + 1;
     }
 
@@ -205,11 +202,11 @@ void TrajectoryParser::parsePositions(const TrajectoryPtr& trajectory)
 10.253361
 ]
 */
-PositionMap TrajectoryParser::parseSnapshot(const Indexes& snapshotRange,
+SnapshotPtr TrajectoryParser::parseSnapshot(const Indexes& snapshotRange,
                                             const TopologyPtr& topology
 )
 {
-    PositionMap snapshot;
+    SnapshotPtr snapshot = std::make_shared<Snapshot>();
     std::cout << "Parsing snapshot... ";
 
     std::size_t index = pyon_.find("[\n", snapshotRange.first);
@@ -223,7 +220,7 @@ PositionMap TrajectoryParser::parseSnapshot(const Indexes& snapshotRange,
         float z = (float)::atof(pyon_.c_str() + index);
         index = pyon_.find("[\n", index);
 
-        snapshot[topology->getAtoms()[count]] = glm::vec3(x, y, z);
+        snapshot->addPosition(glm::vec3(x, y, z));
         count++;
     }
 

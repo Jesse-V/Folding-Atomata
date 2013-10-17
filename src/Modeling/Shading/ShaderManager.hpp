@@ -52,34 +52,28 @@ class ShaderManager
     public:
         static ProgramPtr createProgram(const std::shared_ptr<InstancedModel>& obj,
             const SnippetPtr& sceneVertexShader,
-            const SnippetPtr& sceneFragmentShader, const LightList& lights
-        );
+            const SnippetPtr& sceneFragmentShader, const LightList& lights);
 
     private:
         static std::vector<SnippetPtr> assembleVertexSnippets(
             const SnippetPtr& sceneVertexShader,
-            const BufferList& buffers, const LightList& lights
-        );
+            const BufferList& buffers, const LightList& lights);
         static std::string assembleVertexShaderStr(
             const BufferList& buffers, const SnippetPtr& sceneVertexShader,
-            const LightList& lights
-        );
+            const LightList& lights);
 
         static std::vector<SnippetPtr> assembleFragmentSnippets(
             const SnippetPtr& sceneFragmentShader,
-            const BufferList& buffers, const LightList& lights
-        );
+            const BufferList& buffers, const LightList& lights);
         static std::string assembleFragmentShaderStr(
             const BufferList& buffers, const SnippetPtr& sceneFragmentShader,
-            const LightList& lights
-        );
+            const LightList& lights);
 
         static std::string assembleFields(const SnippetList& snippets);
         static std::string assembleMethods(const SnippetList& snippets);
         static std::string assembleMainBodyCode(const SnippetList& snippets);
         static std::string buildShader(const std::string& fields,
-            const std::string& methods, const std::string& mainBodyCode
-        );
+            const std::string& methods, const std::string& mainBodyCode);
 };
 
 #endif

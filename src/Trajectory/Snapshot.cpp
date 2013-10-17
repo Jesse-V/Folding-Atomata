@@ -23,38 +23,27 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef TRAJECTORY_PARSER
-#define TRAJECTORY_PARSER
+#include "Snapshot.hpp"
+#include <sstream>
+#include <stdexcept>
 
-/**
-    Creates a Trajectory class by analyzing PyON-formatted strings returned
-    from FAHClient. The Trajectory class is a container for other container
-    classes that all have a very structured has-a relationship. This class
-    primarily takes the strings from the FAHClient API and returns
-    a Trajectory class.
-**/
 
-#include "Trajectory/Trajectory.hpp"
-#include "PyON/StringManip.hpp"
-
-class TrajectoryParser
+void Snapshot::addPosition(const glm::vec3& position)
 {
-    public:
-        TrajectoryParser(const std::string& pyon, bool removeSpaces = true);
-        TrajectoryPtr parse(bool filter = true);
+    positions_.push_back(position);
+}
 
-    private:
-        TopologyPtr parseTopology();
-        std::vector<AtomPtr> parseAtoms(const Indexes& topologySubStr);
-        AtomPtr parseAtom(const Indexes& atomSpan);
-        std::vector<Bond> parseBonds(const Indexes& topologySpan);
-        Indexes parseBond(const Indexes& bondline);
-        void parsePositions(const TrajectoryPtr& trajectory);
-        SnapshotPtr parseSnapshot(const Indexes& snapshotRange,
-                                  const TopologyPtr& topology);
 
-    private:
-         std::string pyon_;
-};
 
-#endif
+glm::vec3 Snapshot::getPosition(std::size_t atomIndex)
+{
+    if (atomIndex < 0 || atomIndex >= positions_.size())
+    {
+        std::stringstream stream("");
+        stream << "Index " << atomIndex << " out of [0," <<
+            positions_.size() << ") bounds!";
+        throw std::runtime_error(stream.str());
+    }
+
+    return positions_[atomIndex];
+}

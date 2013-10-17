@@ -69,8 +69,7 @@ class SlotViewer
 {
     public:
         SlotViewer(const TrajectoryPtr& trajectory,
-                   const std::shared_ptr<Scene>& scene
-        );
+                   const std::shared_ptr<Scene>& scene);
         bool animate(int deltaTime); //returns true if there was animation
         static glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
         static float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
@@ -98,13 +97,11 @@ class SlotViewer
 
         std::shared_ptr<ColorBuffer> generateColorBuffer(const AtomPtr& atom);
         InstancedModelPtr generateAtomModel(const AtomPtr& atom,
-                                            const glm::mat4& matrix
-        );
+                                            const glm::mat4& matrix);
 
         glm::mat4 generateAtomMatrix(const glm::vec3& position, const AtomPtr& atom);
         glm::mat4 generateBondMatrix(const glm::vec3& startPosition,
-                                     const glm::vec3& endPosition
-        );
+                                     const glm::vec3& endPosition);
 
         struct ElementIndex
         {

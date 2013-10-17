@@ -36,24 +36,21 @@
 
 #include "Atom.hpp"
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
-typedef std::pair<AtomPtr, AtomPtr> Bond;
-typedef std::vector<Bond> BondList;
+typedef std::pair<std::size_t, std::size_t> Bond;
 
 class Topology
 {
     public:
         Topology(const std::vector<AtomPtr>& atoms,
-                 const BondList& bonds
-        );
+                 const std::vector<Bond>& bonds);
         std::vector<AtomPtr> getAtoms();
-        BondList getBonds();
+        std::vector<Bond>    getBonds();
 
     private:
         std::vector<AtomPtr> atoms_;
-        BondList bonds_;
+        std::vector<Bond>    bonds_;
 };
 
 typedef std::shared_ptr<Topology> TopologyPtr;

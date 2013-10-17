@@ -36,8 +36,7 @@ namespace cs5400
         public:
             Program(
                 const std::shared_ptr<VertexShader>& vertex,
-                const std::shared_ptr<FragmentShader>& fragment
-            );
+                const std::shared_ptr<FragmentShader>& fragment);
             ~Program();
             GLuint getHandle();
 
@@ -49,8 +48,7 @@ namespace cs5400
 
     std::shared_ptr<Program> makeProgram(
         const std::shared_ptr<VertexShader>& vertex,
-        const std::shared_ptr<FragmentShader>& fragment
-    );
+        const std::shared_ptr<FragmentShader>& fragment);
 }
 
 void checkGlError();

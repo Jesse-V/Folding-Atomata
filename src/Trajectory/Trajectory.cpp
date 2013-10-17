@@ -39,14 +39,14 @@ std::shared_ptr<Topology> Trajectory::getTopology()
 
 
 
-void Trajectory::addSnapshot(const PositionMap& newSnapshot)
+void Trajectory::addSnapshot(const SnapshotPtr& newSnapshot)
 {
     snapshots_.push_back(newSnapshot);
 }
 
 
 
-PositionMap Trajectory::getSnapshot(int index)
+SnapshotPtr Trajectory::getSnapshot(int index)
 {
     return snapshots_[(std::size_t)index];
 }

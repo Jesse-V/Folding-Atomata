@@ -26,7 +26,8 @@
 #include "Topology.hpp"
 
 
-Topology::Topology(const std::vector<AtomPtr>& atoms, const BondList& bonds) :
+Topology::Topology(const std::vector<AtomPtr>& atoms,
+                   const std::vector<Bond>& bonds) :
     atoms_(atoms), bonds_(bonds)
 {}
 
@@ -39,7 +40,7 @@ std::vector<AtomPtr> Topology::getAtoms()
 
 
 
-BondList Topology::getBonds()
+std::vector<Bond> Topology::getBonds()
 {
     return bonds_;
 }

@@ -34,8 +34,7 @@ class Atom
 {
     public:
         Atom(const std::string& symbol, int atomicNumber, float charge,
-            float radius, float mass
-        );
+            float radius, float mass);
 
         glm::vec3 getColor();
         char getElement();

@@ -23,36 +23,23 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef STRING_MANIP
-#define STRING_MANIP
+#ifndef SNAPSHOT
+#define SNAPSHOT
 
-/**
-    Defines some useful string manipulation methods. These are used by the
-    TrajectoryParser class for isolating data in a PyON-formatted string.
-**/
-
-#include <string>
+#include "glm/glm.hpp"
 #include <vector>
+#include <memory>
 
-typedef const std::string& StrRef;
-typedef std::pair<std::size_t, std::size_t> Indexes;
-typedef const Indexes& IndexesRef;
-typedef std::vector<Indexes> IndexesVector;
-
-class StringManip
+class Snapshot
 {
     public:
-        static std::string between(StrRef str, StrRef header, StrRef footer,
-                                   std::size_t start = 0);
-        static Indexes between(StrRef str, IndexesRef indexes,
-                               StrRef header, StrRef footer);
-        static std::vector<std::string> explodeAndTrim(StrRef str,
-                                            char delim, StrRef whitespaces);
-        static std::vector<std::string> explode(StrRef str, char delim);
-        static IndexesVector explode(StrRef, IndexesRef indexes, char delim);
-        static std::string trim(StrRef str, StrRef whitespaces);
-        static Indexes trim(StrRef str, IndexesRef indexes, StrRef whitespaces);
-        static bool startsWith(StrRef a, StrRef b);
+        void addPosition(const glm::vec3& position);
+        glm::vec3 getPosition(std::size_t atomIndex);
+
+    private:
+        std::vector<glm::vec3> positions_;
 };
+
+typedef std::shared_ptr<Snapshot> SnapshotPtr;
 
 #endif

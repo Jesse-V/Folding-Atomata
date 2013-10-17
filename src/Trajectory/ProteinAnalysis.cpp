@@ -70,9 +70,9 @@ BucketMap ProteinAnalysis::getBucketMap()
     auto start = steady_clock::now();
 
     float smallestX = 0, smallestY = 0, smallestZ = 0;
-    for (auto atom : ATOMS)
+    for (std::size_t j = 0; j < ATOMS.size(); j++)
     {
-        auto position = snapshotZero[atom];
+        auto position = snapshotZero->getPosition(j);
         if (position.x < smallestX)
             smallestX = position.x;
         if (position.y < smallestY)
@@ -82,9 +82,9 @@ BucketMap ProteinAnalysis::getBucketMap()
     }
 
     BucketMap bucketMap;
-    for (auto atom : ATOMS)
+    for (std::size_t j = 0; j < ATOMS.size(); j++)
     {
-        auto position = snapshotZero[atom];
+        auto position = snapshotZero->getPosition(j);
         auto x = (std::size_t)((position.x - smallestX) / BOND_LENGTH);
         auto y = (std::size_t)((position.y - smallestY) / BOND_LENGTH);
         auto z = (std::size_t)((position.z - smallestZ) / BOND_LENGTH);
@@ -96,7 +96,7 @@ BucketMap ProteinAnalysis::getBucketMap()
         if (bucketMap[x][y].size() <= z)
             bucketMap[x][y].resize(z + 1);
 
-        bucketMap[x][y][z].atoms.push_back(atom);
+        bucketMap[x][y][z].atoms.push_back(ATOMS[j]);
     }
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();

@@ -81,9 +81,10 @@ void SlotViewer::addAllAtoms()
     auto snapshotZero = trajectory_->getSnapshot(0);
     std::unordered_map<char, InstancedModelPtr> elementMap;
     elementMap.reserve(8);
-    for (const auto atom : ATOMS)
+    for (std::size_t j = 0; j < ATOMS.size(); j++)
     {
-        auto matrix = generateAtomMatrix(snapshotZero[atom], atom);
+        auto atom = ATOMS[j];
+        auto matrix = generateAtomMatrix(snapshotZero->getPosition(j), atom);
         auto element = atom->getElement();
 
         if (elementMap.find(element) == elementMap.end()) //not in cache
@@ -97,7 +98,7 @@ void SlotViewer::addAllAtoms()
         {
             elementMap[element]->addInstance(matrix);
             auto d = std::distance(elementMap.begin(), elementMap.find(element));
-            elementIndexes_.push_back(ElementIndex(d,
+            elementIndexes_.push_back(ElementIndex((std::size_t)d,
                 elementMap[element]->getNumberOfInstances()));
         }
     }
@@ -121,8 +122,8 @@ void SlotViewer::addAllBonds()
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (auto bond : BONDS)
     {
-        auto positionA = snapshotZero[bond.first];
-        auto positionB = snapshotZero[bond.second];
+        auto positionA = snapshotZero->getPosition(bond.first);
+        auto positionB = snapshotZero->getPosition(bond.second);
 
         bondInstance_->addInstance(generateBondMatrix(positionA, positionB));
     }
@@ -135,7 +136,6 @@ void SlotViewer::addAllBonds()
 
 bool SlotViewer::animate(int deltaTime)
 {
-    //GLint viewMatrixUniform = glGetUniformLocation(programHandle, "viewMatrix");
     return false; //no animation
 }
 
@@ -273,7 +273,8 @@ InstancedModelPtr SlotViewer::generateAtomModel(const AtomPtr& atom,
 
 
 
-glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position, const AtomPtr& atom)
+glm::mat4 SlotViewer::generateAtomMatrix(const glm::vec3& position,
+                                         const AtomPtr& atom)
 {
     auto matrix = glm::translate(glm::mat4(), position);
     auto shellCount = glm::vec3(atom->getElectronShellCount());

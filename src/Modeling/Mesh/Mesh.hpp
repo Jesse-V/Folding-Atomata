@@ -54,12 +54,10 @@ class Mesh : public DataBuffer
 {
     public:
         Mesh(const std::shared_ptr<VertexBuffer>& vertexBuffer,
-             GLenum mode = GL_TRIANGLES
-        );
+             GLenum mode = GL_TRIANGLES);
         Mesh(const std::shared_ptr<VertexBuffer>& vertexBuffer,
              const std::shared_ptr<IndexBuffer>& indexBuffer,
-             GLenum mode = GL_TRIANGLES
-        );
+             GLenum mode = GL_TRIANGLES);
 
         virtual void store(GLuint programHandle);
         virtual void enable();
