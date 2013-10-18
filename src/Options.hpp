@@ -53,21 +53,17 @@ class Options
         //int getSlotID();
 
         bool highVerbosity();
-        bool bounceSnapshots();
-        bool cycleSnapshots();
+        bool bounce();
         bool usesPassword();
         RenderMode getRenderMode();
-        bool bounceAnimation();
 
     private:
         std::size_t handle(const StringList& options, std::size_t index);
         bool verbose1(const std::string& flag);
         bool connect1(const std::string& flag);
         bool connect2(const std::string& flag, const std::string& arg);
-        bool bounceSnapshots1(const std::string& flag);
-        bool bounceSnapshots2(const std::string& flag, const std::string& arg);
-        bool cycleSnapshots1(const std::string& flag);
-        bool cycleSnapshots2(const std::string& flag, const std::string& arg);
+        bool bounce1(const std::string& flag);
+        bool bounce2(const std::string& flag, const std::string& arg);
         bool password1(const std::string& flag);
         bool password2(const std::string& flag, const std::string& arg);
         bool renderMode1(const std::string& flag);
@@ -90,8 +86,7 @@ class Options
         std::string authPassword_;
 
         RenderMode renderMode_ = RenderMode::BALL_N_STICK;
-        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_, usesPassword_,
-            bounceAnimation_; //, slotIDisSet_;
+        bool highVerbosity_, bounce_, usesPassword_; //, slotIDisSet_;
         unsigned int atomStacks_, atomSlices_;
 };
 

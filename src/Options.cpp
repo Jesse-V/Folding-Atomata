@@ -42,7 +42,7 @@ Options& Options::getInstance()
 
 Options::Options() :
     connectionHost_("127.0.0.1"), connectionPort_(36330), animationDelay_(40),
-    usesPassword_(false), bounceAnimation_(false), atomStacks_(8), atomSlices_(16)
+    bounce_(false), usesPassword_(false), atomStacks_(8), atomSlices_(16)
 {}
 
 
@@ -68,8 +68,12 @@ Commands:
     --connect, -c          Address and port to use to connect to FAHClient.
     --bounce, -b           Animation runs backwards at end, like FAHViewer.
     --help, -h             Show flag options and their usage.
+    --image-a, -ia         Specifies the path to image A for the skybox.
+    --image-b, -ib         Specifies the path to image B for the skybox.
+    --image-c, -ic         Specifies the path to image C for the skybox.
     --license              Prints license information.
     --mode, -m             Rendering mode. 3 is stick. Ball-n-stick by default.
+    --no-skybox            Disables the skybox, leaving a black background.
     --password, -p         Password for accessing the remote FAHClient.
     --slices, -sl          Slices to use for the atom mesh. Default is 8.
     --stacks, -st          Stacks to use for the atom mesh. Default is 16.
@@ -108,10 +112,9 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     std::string flag = options[index];
 
     //check for 1-piece flags
-    if (verbose1(flag) || connect1(flag) || bounceSnapshots1(flag) ||
-        cycleSnapshots1(flag) || password1(flag) || renderMode1(flag) ||
-        atomStacks1(flag) || atomSlices1(flag) || animationDelay1(flag)
-        // || slotID1(flag)
+    if (verbose1(flag) || connect1(flag) || bounce1(flag) || password1(flag) ||
+        renderMode1(flag) || atomStacks1(flag) || atomSlices1(flag) ||
+        animationDelay1(flag) // || slotID1(flag)
     )
         return 1;
 
@@ -125,8 +128,7 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 
     //check for two-piece flags
     std::string arg(options[index + 1]);
-    if (connect2(flag, arg) || bounceSnapshots2(flag, arg) ||
-        cycleSnapshots2(flag, arg) || password2(flag, arg) ||
+    if (connect2(flag, arg) || bounce2(flag, arg) || password2(flag, arg) ||
         renderMode2(flag, arg) || atomStacks2(flag, arg) ||
         atomSlices2(flag, arg) || animationDelay2(flag, arg)
         // || slotID2(flag, arg)
@@ -193,9 +195,9 @@ bool Options::connect2(const std::string& flag, const std::string& arg)
 
 
 
-bool Options::bounceSnapshots1(const std::string& flag)
+bool Options::bounce1(const std::string& flag)
 {
-    if (StringManip::startsWith(flag, "--bounce-snapshots="))
+    if (StringManip::startsWith(flag, "--bounce="))
     {
         auto parts = StringManip::explode(flag, '=');
         if (!confirm(parts.size() == 2, flag))
@@ -204,7 +206,7 @@ bool Options::bounceSnapshots1(const std::string& flag)
         if (!confirm(parts[1] == "true" || parts[1] == "false", flag))
             return false;
 
-        std::istringstream(parts[1]) >> bounceSnapshots_;
+        std::istringstream(parts[1]) >> bounce_;
         return true;
     }
 
@@ -213,58 +215,18 @@ bool Options::bounceSnapshots1(const std::string& flag)
 
 
 
-bool Options::bounceSnapshots2(const std::string& flag, const std::string& arg)
+bool Options::bounce2(const std::string& flag, const std::string& arg)
 {
-    if (flag == "--bounce-snapshots" || flag == "-b")
+    if (flag == "--bounce" || flag == "-b")
     {
         std::string next(arg);
         if (!confirm(next == "true" || next == "false", flag))
         {
-            bounceSnapshots_ = true; //just the flag was given
+            bounce_ = true; //just the flag was given
             return true;
         }
 
-        std::istringstream(next) >> bounceSnapshots_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::cycleSnapshots1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--cycle-snapshots="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        if (!confirm(parts[1] == "true" || parts[1] == "false", flag))
-            return false;
-
-        std::istringstream(parts[1]) >> cycleSnapshots_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::cycleSnapshots2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--cycle-snapshots" || flag == "-b")
-    {
-        std::string next(arg);
-        if (!confirm(next == "true" || next == "false", flag))
-        {
-            cycleSnapshots_ = true; //just the flag was given
-            return false;
-        }
-
-        std::istringstream(next) >> cycleSnapshots_;
+        std::istringstream(next) >> bounce_;
         return true;
     }
 
@@ -549,16 +511,9 @@ int Options::getAnimationDelay()
 
 
 
-bool Options::bounceSnapshots()
+bool Options::bounce()
 {
-    return bounceSnapshots_;
-}
-
-
-
-bool Options::cycleSnapshots()
-{
-    return cycleSnapshots_;
+    return bounce_;
 }
 
 
@@ -573,12 +528,6 @@ bool Options::usesPassword()
 Options::RenderMode Options::getRenderMode()
 {
     return renderMode_;
-}
-
-
-bool Options::bounceAnimation()
-{
-    return bounceAnimation_;
 }
 
 
