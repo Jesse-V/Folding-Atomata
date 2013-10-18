@@ -64,7 +64,7 @@ void updateThread()
     try
     {
         while (!readyToUpdate_)
-            std::this_thread::sleep_for(std::chrono::milliseconds(15));
+            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELAY));
 
         while (true)
         {
@@ -332,6 +332,8 @@ int main(int argc, char** argv)
 
         if (!Options::getInstance().highVerbosity())
         { //https://bbs.archlinux.org/viewtopic.php?id=79378
+          //https://groups.google.com/forum/#!topic/comp.lang.c++.moderated/ggl_2Ii3aVM
+          //http://www.velocityreviews.com/forums/showpost.php?p=1501892&postcount=2
             std::ofstream nullOut("/dev/null");
             std::cout.rdbuf(nullOut.rdbuf());
         }

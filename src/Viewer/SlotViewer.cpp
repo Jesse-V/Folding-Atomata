@@ -90,11 +90,13 @@ void SlotViewer::addAllAtoms()
 
         if (elementMap.find(element) == elementMap.end()) //not in cache
         {
+            std::cout << "Generating model type " << element << "..." << std::endl;
             auto model = generateAtomModel(atom, matrix);
             scene_->addModel(model);
             elementMap[element] = std::make_pair(atomInstances_.size(), model);
             elementIndexes_.push_back(ElementIndex(atomInstances_.size(), 0));
             atomInstances_.push_back(model);
+            std::cout << "... done generating data for " << element << std::endl;
         }
         else //already in cache
         {

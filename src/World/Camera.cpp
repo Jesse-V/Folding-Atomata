@@ -55,6 +55,17 @@ void Camera::reset()
 
 
 
+void Camera::startSync()
+{
+    if (viewUpdated_)
+        temporaryViewMatrix_ = calculateViewMatrix();
+
+    if (projectionUpdated_)
+        temporaryProjMatrix_ = getProjectionMatrix();
+}
+
+
+
 void Camera::sync(GLint viewMatrixUniform, GLint projMatrixUniform)
 {
     if (viewMatrixUniform < 0 || projMatrixUniform < 0)
@@ -63,17 +74,17 @@ void Camera::sync(GLint viewMatrixUniform, GLint projMatrixUniform)
     //assemble view matrix and sync if it has updated
     if (viewUpdated_)
         glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE,
-                                        glm::value_ptr(calculateViewMatrix()));
+                                        glm::value_ptr(temporaryViewMatrix_));
 
     //sync projection matrix if it has updated
     if (projectionUpdated_)
         glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE,
-                                        glm::value_ptr(getProjectionMatrix()));
+                                        glm::value_ptr(temporaryProjMatrix_));
 }
 
 
 
-void Camera::setFullySynced()
+void Camera::endSync()
 {
     projectionUpdated_ = false;
     viewUpdated_ = false;

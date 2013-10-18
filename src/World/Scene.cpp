@@ -90,6 +90,7 @@ float Scene::render()
     using namespace std::chrono;
     auto start = steady_clock::now();
 
+    camera_->startSync();
     for (auto renderable : renderables_)
     {
         GLuint handle = renderable.program->getHandle();
@@ -99,7 +100,7 @@ float Scene::render()
 
         renderable.model->render(handle);
     }
-    camera_->setFullySynced();
+    camera_->endSync();
     doneSyncingLighting();
 
     auto diff = duration_cast<microseconds>(steady_clock::now() - start).count();

@@ -50,8 +50,9 @@ class Camera
     public:
         Camera();
         void reset();
+        void startSync();
         void sync(GLint viewMatrixUniform, GLint projMatrixUniform);
-        void setFullySynced();
+        void endSync();
 
         //position and orient the camera
         void setPosition(const glm::vec3& newPosition);
@@ -107,7 +108,7 @@ class Camera
     private:
         glm::vec3 lookingAt_, position_, upVector_;
         float fieldOfView_, aspectRatio_, nearFieldClip_, farFieldClip_;
-        glm::mat4 projection_;
+        glm::mat4 projection_, temporaryViewMatrix_, temporaryProjMatrix_;
         bool projectionUpdated_, viewUpdated_;
 
     //it'd be cool to have a rotateAround function
