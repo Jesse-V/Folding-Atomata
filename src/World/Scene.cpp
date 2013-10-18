@@ -50,6 +50,7 @@ void Scene::addModel(const InstancedModelPtr& model)
 void Scene::addModel(const InstancedModelPtr& model, const ProgramPtr& program)
 {
     auto programHandle = program->getHandle();
+    glUseProgram(programHandle);
 
     model->saveAs(programHandle);
     GLint ambLU = glGetUniformLocation(programHandle, "ambientLight");

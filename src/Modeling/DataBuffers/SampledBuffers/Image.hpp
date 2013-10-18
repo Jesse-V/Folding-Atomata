@@ -23,27 +23,36 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "Snapshot.hpp"
-#include <sstream>
-#include <stdexcept>
+#ifndef IMAGE
+#define IMAGE
 
+/**
+    An Image holds raw character data that represents a 2D sprite.
+    Images can either be loaded from .bmp or .png files, but the net
+    result is the same. When the image is read from the disk,
+    it's then ready to be given to OpenGL for use. Images are commonly used
+    for texture mapping in 2D or 3D, or for bump mapping a 2D surface.
+**/
 
-void Snapshot::addPosition(const glm::vec3& position)
+#include <string>
+
+class Image
 {
-    positions_.push_back(position);
-}
+    public:
+        Image(const std::string& imagePath);
+        int getWidth();
+        int getHeight();
+        unsigned char* getImageData();
 
+    protected:
+        void loadBMP(const std::string& imagePath);
+        void loadPNG(const std::string& imagePath);
 
+        bool strHasEnding(const std::string& string, const std::string& ending);
 
-glm::vec3 Snapshot::getPosition(std::size_t atomIndex)
-{
-    if (atomIndex >= positions_.size())
-    {
-        std::stringstream stream("");
-        stream << "Index " << atomIndex << " out of [0," <<
-            positions_.size() << ") bounds!";
-        throw std::runtime_error(stream.str());
-    }
+    protected:
+        int width_, height_;
+        unsigned char* data_;
+};
 
-    return positions_[atomIndex];
-}
+#endif

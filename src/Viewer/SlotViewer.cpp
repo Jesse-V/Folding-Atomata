@@ -127,7 +127,6 @@ void SlotViewer::addAllBonds()
     {
         auto positionA = snapshotZero->getPosition(bond.first);
         auto positionB = snapshotZero->getPosition(bond.second);
-
         bondInstance_->addInstance(generateBondMatrix(positionA, positionB));
     }
 

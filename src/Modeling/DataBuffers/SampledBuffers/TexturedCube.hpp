@@ -23,27 +23,40 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "Snapshot.hpp"
-#include <sstream>
-#include <stdexcept>
+#ifndef TEXTURED_CUBE
+#define TEXTURED_CUBE
 
+#include "Image.hpp"
+#include "../OptionalDataBuffer.hpp"
+#include "glm/glm.hpp"
+#include <memory>
 
-void Snapshot::addPosition(const glm::vec3& position)
+class TexturedCube : public OptionalDataBuffer
 {
-    positions_.push_back(position);
-}
+    public:
+        TexturedCube(
+            const std::shared_ptr<Image>& positiveX,
+            const std::shared_ptr<Image>& negativeX,
+            const std::shared_ptr<Image>& positiveY,
+            const std::shared_ptr<Image>& negativeY,
+            const std::shared_ptr<Image>& positiveZ,
+            const std::shared_ptr<Image>& negativeZ
+        );
+        void mapToFace(GLenum target, const std::shared_ptr<Image>& img);
 
+        virtual void store(GLuint programHandle);
+        virtual void enable();
+        virtual void disable();
 
+        virtual SnippetPtr getVertexShaderGLSL();
+        virtual SnippetPtr getFragmentShaderGLSL();
 
-glm::vec3 Snapshot::getPosition(std::size_t atomIndex)
-{
-    if (atomIndex >= positions_.size())
-    {
-        std::stringstream stream("");
-        stream << "Index " << atomIndex << " out of [0," <<
-            positions_.size() << ") bounds!";
-        throw std::runtime_error(stream.str());
-    }
+    private:
+        std::shared_ptr<Image> positiveX_, negativeX_,
+                               positiveY_, negativeY_,
+                               positiveZ_, negativeZ_;
+        GLuint tex_;
+        GLint texMapLocation_;
+};
 
-    return positions_[atomIndex];
-}
+#endif

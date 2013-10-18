@@ -29,6 +29,8 @@
 #include "FAHClientIO.hpp"
 #include "Sockets/SocketException.hpp"
 #include "PyON/TrajectoryParser.hpp"
+#include "Modeling/DataBuffers/SampledBuffers/Image.hpp"
+#include "Modeling/DataBuffers/SampledBuffers/TexturedCube.hpp"
 #include "Options.hpp"
 #include <thread>
 #include <algorithm>
@@ -85,7 +87,7 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    //addSkybox();
+    addSkybox();
     addSlotViewers();
 }
 
@@ -93,23 +95,22 @@ void Viewer::addModels()
 
 void Viewer::addSkybox()
 {
-    /*std::cout << "Creating skybox..." << std::endl;
+    std::cout << "Creating skybox..." << std::endl;
 
     const std::string IMAGES_DIR("/usr/share/FoldingAtomata/images/");
     auto msmImage      = std::make_shared<Image>(IMAGES_DIR + "MSM.png");
     auto primaseImage  = std::make_shared<Image>(IMAGES_DIR + "Primase.png");
     auto ribosomeImage = std::make_shared<Image>(IMAGES_DIR + "Ribosome.png");
 
-    auto cubeTextureMap = std::make_shared<CubeTextureMap>(msmImage, msmImage,
+    auto texturedCube = std::make_shared<TexturedCube>(msmImage, msmImage,
         primaseImage, primaseImage, ribosomeImage, ribosomeImage);
-    BufferList list = { cubeTextureMap };
+    BufferList list = { texturedCube };
 
-    auto model = std::make_shared<Model>(getSkyboxMesh(), list);
     auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
-    model->setModelMatrix(matrix);
+    auto model = std::make_shared<InstancedModel>(getSkyboxMesh(), matrix, list);
     scene_->addModel(model); //add to Scene and save
 
-    std::cout << "... done creating skybox." << std::endl;*/
+    std::cout << "... done creating skybox." << std::endl;
 }
 
 
