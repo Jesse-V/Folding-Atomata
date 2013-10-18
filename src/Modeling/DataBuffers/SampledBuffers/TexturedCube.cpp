@@ -26,6 +26,8 @@
 #include "TexturedCube.hpp"
 #include <iostream>
 #include "Modeling/Shading/Program.hpp"
+#include <string.h>
+
 
 TexturedCube::TexturedCube(
     const std::shared_ptr<Image>& positiveX,
@@ -71,71 +73,25 @@ void TexturedCube::store(GLuint programHandle)
     if (attribute_texcoord == -1)
         throw std::runtime_error("Could not bind texcoord attribute");
 
-    GLfloat cube_texcoords[] = {
+    GLfloat cube_texcoords[2*4*6] = {
         // front
         0.0, 0.0,
         1.0, 0.0,
         1.0, 1.0,
         0.0, 1.0,
     };
+    for (int i = 1; i < 6; i++)
+        memcpy(&cube_texcoords[i*4*2], &cube_texcoords[0], 2*4*sizeof(GLfloat));
+
     glGenBuffers(1, &vbo_cube_texcoords);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_texcoords);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_texcoords), cube_texcoords, GL_STATIC_DRAW);
-
-    /*std::cout << "In initialize1:" << std::endl;
-    std::cout.flush();
-    checkGlError();
-
-    //glActiveTexture(GL_TEXTURE1);
-    glGenBuffers(1, &tex_);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, tex_);
-
-
-
-    //texMapLocation_ = glGetUniformLocation(programHandle, "texMap");
-    //glUniform1i(texMapLocation_, 1); //corresponds to unit 1
-
-    std::cout << "In initialize2:" << std::endl;
-    std::cout.flush();
-    checkGlError();
-
-
-    std::cout << "In store0:" << std::endl;
-    std::cout.flush();
-    checkGlError();
-
-    mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_X, positiveX_);
-    mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, negativeX_);
-    mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, positiveY_);
-    mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, negativeY_);
-    mapToFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, positiveZ_);
-    mapToFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, negativeZ_);
-
-    std::cout << "In store1:" << std::endl;
-    std::cout.flush();
-    checkGlError();
-
-    //when MAGnifying the image (no bigger mipmap available),
-    //use LINEAR filtering
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    //when MINifying the image, use a LINEAR blend of two mipmaps,
-    //each filtered LINEARLY too
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-    //generate mipmaps
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-    std::cout << "In store2:" << std::endl;
-    std::cout.flush();
-    checkGlError();*/
 }
 
 
 
 void TexturedCube::enable()
 {
-    //glEnableVertexAttribArray(texCoordAttrib_);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glUniform1i(uniform_mytexture, /*GL_TEXTURE*/0);

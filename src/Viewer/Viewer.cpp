@@ -180,29 +180,63 @@ std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
         return mesh;
 
     const std::vector<glm::vec3> VERTICES = {
-        glm::vec3(-1, -1, -1),
-        glm::vec3(-1, -1,  1),
-        glm::vec3(-1,  1, -1),
-        glm::vec3(-1,  1,  1),
-        glm::vec3( 1, -1, -1),
-        glm::vec3( 1, -1,  1),
-        glm::vec3( 1,  1, -1),
-        glm::vec3( 1,  1,  1)
+        // front
+        glm::vec3(-1.0, -1.0,  1.0),
+        glm::vec3( 1.0, -1.0,  1.0),
+        glm::vec3( 1.0,  1.0,  1.0),
+        glm::vec3(-1.0,  1.0,  1.0),
+        // top
+        glm::vec3(-1.0,  1.0,  1.0),
+        glm::vec3( 1.0,  1.0,  1.0),
+        glm::vec3( 1.0,  1.0, -1.0),
+        glm::vec3(-1.0,  1.0, -1.0),
+        // back
+        glm::vec3( 1.0, -1.0, -1.0),
+        glm::vec3(-1.0, -1.0, -1.0),
+        glm::vec3(-1.0,  1.0, -1.0),
+        glm::vec3( 1.0,  1.0, -1.0),
+        // bottom
+        glm::vec3(-1.0, -1.0, -1.0),
+        glm::vec3( 1.0, -1.0, -1.0),
+        glm::vec3( 1.0, -1.0,  1.0),
+        glm::vec3(-1.0, -1.0,  1.0),
+        // left
+        glm::vec3(-1.0, -1.0, -1.0),
+        glm::vec3(-1.0, -1.0,  1.0),
+        glm::vec3(-1.0,  1.0,  1.0),
+        glm::vec3(-1.0,  1.0, -1.0),
+        // right
+        glm::vec3( 1.0, -1.0,  1.0),
+        glm::vec3( 1.0, -1.0, -1.0),
+        glm::vec3( 1.0,  1.0, -1.0),
+        glm::vec3( 1.0,  1.0,  1.0)
     };
 
     //visible from the inside only, so faces in
     const std::vector<GLuint> INDICES = {
-        0, 1, 5, 4, //front
-        6, 7, 3, 2, //back
-        2, 0, 4, 6,  //top
-        7, 5, 1, 3, //bottom
-        2, 3, 1, 0, //left
-        4, 5, 7, 6  //right
+        // front
+         0,  1,  2,
+         2,  3,  0,
+        // top
+         4,  5,  6,
+         6,  7,  4,
+        // back
+         8,  9, 10,
+        10, 11,  8,
+        // bottom
+        12, 13, 14,
+        14, 15, 12,
+        // left
+        16, 17, 18,
+        18, 19, 16,
+        // right
+        20, 21, 22,
+        22, 23, 20,
     };
 
     auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
-    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_QUADS);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
+    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_TRIANGLES);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLES);
     return mesh;
 }
 
