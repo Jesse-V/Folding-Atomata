@@ -55,8 +55,9 @@ class TexturedCube : public OptionalDataBuffer
         std::shared_ptr<Image> positiveX_, negativeX_,
                                positiveY_, negativeY_,
                                positiveZ_, negativeZ_;
-        GLuint tex_;
-        GLint texMapLocation_;
+        GLuint texture_id, vbo_cube_texcoords;
+        GLint uniform_mytexture;
+        GLint attribute_coord3d, attribute_v_color, attribute_texcoord;
 };
 
 #endif
