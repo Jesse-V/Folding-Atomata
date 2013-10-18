@@ -71,6 +71,9 @@ class SlotViewer
         SlotViewer(const TrajectoryPtr& trajectory,
                    const std::shared_ptr<Scene>& scene);
         bool animate(int deltaTime); //returns true if there was animation
+        int updateSnapshotIndexes(int deltaTime);
+        std::vector<glm::vec3> animateAtoms(int b);
+        void animateBonds(const std::vector<glm::vec3>& atomPositions);
         static glm::mat4 alignBetween(const glm::vec3& a, const glm::vec3& b);
         static float getDotProduct(const glm::vec3& vecA, const glm::vec3& vecB);
         static float getMagnitude(const glm::vec3& vector);
@@ -78,6 +81,7 @@ class SlotViewer
     public:
         const float ATOM_SCALE = 0.15f; //0.04 is good for getMass
         const float BOND_SCALE = 0.06f;
+        const int ANIMATION_SPEED = 2000;
 
         const unsigned int ATOM_STACKS, ATOM_SLICES;
 

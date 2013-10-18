@@ -139,55 +139,100 @@ void SlotViewer::addAllBonds()
 
 bool SlotViewer::animate(int deltaTime)
 {
-    const int snapshotCount = trajectory_->countSnapshots();
-
-    if (snapshotCount <= 1)
+    if (trajectory_->countSnapshots() <= 1)
         return false; //can't animate with one snapshot
 
     if (atomInstances_.size() == 0 && bondInstance_->getInstanceCount() == 0)
         return false; //we have nothing to animate
 
+    int b = updateSnapshotIndexes(deltaTime);
+    auto newPositions = animateAtoms(b);
+    animateBonds(newPositions);
+
+    return true;
+}
+
+
+
+int SlotViewer::updateSnapshotIndexes(int deltaTime)
+{
     transitionTime_ += deltaTime;
-    int a = transitionTime_ / 2000; //int division on purpose
-    int b = transitionTime_ % 2000;
+
+    int a = transitionTime_ / ANIMATION_SPEED; //int division on purpose
+    int b = transitionTime_ % ANIMATION_SPEED;
     transitionTime_ = b;
 
-    if (snapshotCount > 2)
+    int snapshotCount = trajectory_->countSnapshots();
+    if (snapshotCount > 2 && a > 0)
     {
-        snapshotIndexA_ = (snapshotIndexA_ + a) % (snapshotCount - 2);
-        snapshotIndexB_ = snapshotIndexA_ + 1;
+        if (Options::getInstance().bounceAnimation())
+        { //FAHViewer-like bouncing animation
+            if (snapshotIndexA_ < snapshotIndexB_)
+            { //going forward
+                snapshotIndexA_ = snapshotIndexA_ + a;
+                snapshotIndexB_ = snapshotIndexA_ + 1;
+                if (snapshotIndexB_ == snapshotCount)
+                    snapshotIndexB_ -= 2;
+            }
+            else
+            { //going backwards
+                snapshotIndexA_ = snapshotIndexA_ - a;
+                snapshotIndexB_ = snapshotIndexA_ - 1;
+                if (snapshotIndexB_ == -1)
+                    snapshotIndexB_ += 2;
+            }
+        }
+        else
+        { //default jump-to-first-snapshot animation
+            snapshotIndexA_ = (snapshotIndexA_ + a) % (snapshotCount - 1);
+            snapshotIndexB_ = snapshotIndexA_ + 1;
+        }
     }
 
+    return b;
+}
+
+
+
+std::vector<glm::vec3> SlotViewer::animateAtoms(int b)
+{
     auto snapA = trajectory_->getSnapshot(snapshotIndexA_);
     auto snapB = trajectory_->getSnapshot(snapshotIndexB_);
 
-    const auto ATOMS = trajectory_->getTopology()->getAtoms();
+    const auto atoms = trajectory_->getTopology()->getAtoms();
     std::vector<glm::vec3> newPositions;
-    newPositions.reserve(ATOMS.size());
-    for (std::size_t j = 0; j < ATOMS.size(); j++)
+    newPositions.reserve(atoms.size());
+
+    for (std::size_t j = 0; j < atoms.size(); j++)
     {
         auto startPosition = snapA->getPosition(j);
         auto endPosition   = snapB->getPosition(j);
-        auto position = (endPosition - startPosition) * (b / 2000.0f) + startPosition;
+        auto position = (endPosition - startPosition) *
+                                   (b / (float)ANIMATION_SPEED) + startPosition;
 
         newPositions.push_back(position);
         const ElementIndex index = elementIndexes_[j];
         if (atomInstances_.size() > 0)
         {
             atomInstances_[index.elementIndex]->setModelMatrix(
-                index.instanceIndex, generateAtomMatrix(position, ATOMS[j]));
+                index.instanceIndex, generateAtomMatrix(position, atoms[j]));
         }
     }
 
-    const auto BONDS = trajectory_->getTopology()->getBonds();
-    for (std::size_t j = 0; j < BONDS.size(); j++)
+    return newPositions;
+}
+
+
+
+void SlotViewer::animateBonds(const std::vector<glm::vec3>& atomPositions)
+{
+    const auto bonds = trajectory_->getTopology()->getBonds();
+    for (std::size_t j = 0; j < bonds.size(); j++)
     {
-        auto positionA = newPositions[BONDS[j].first];
-        auto positionB = newPositions[BONDS[j].second];
+        auto positionA = atomPositions[bonds[j].first];
+        auto positionB = atomPositions[bonds[j].second];
         bondInstance_->setModelMatrix(j, generateBondMatrix(positionA, positionB));
     }
-
-    return true;
 }
 
 

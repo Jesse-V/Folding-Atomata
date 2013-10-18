@@ -42,7 +42,7 @@ Options& Options::getInstance()
 
 Options::Options() :
     connectionHost_("127.0.0.1"), connectionPort_(36330), animationDelay_(40),
-    usesPassword_(false), atomStacks_(8), atomSlices_(16)
+    usesPassword_(false), bounceAnimation_(false), atomStacks_(8), atomSlices_(16)
 {}
 
 
@@ -66,6 +66,7 @@ Usage:
 Commands:
     --animationDelay, -ad  Milliseconds to wait between each animation frame.
     --connect, -c          Address and port to use to connect to FAHClient.
+    --bounce, -b           Animation runs backwards at end, like FAHViewer.
     --help, -h             Show flag options and their usage.
     --license              Prints license information.
     --mode, -m             Rendering mode. 3 is stick. Ball-n-stick by default.
@@ -572,6 +573,12 @@ bool Options::usesPassword()
 Options::RenderMode Options::getRenderMode()
 {
     return renderMode_;
+}
+
+
+bool Options::bounceAnimation()
+{
+    return bounceAnimation_;
 }
 
 

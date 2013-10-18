@@ -57,6 +57,7 @@ class Options
         bool cycleSnapshots();
         bool usesPassword();
         RenderMode getRenderMode();
+        bool bounceAnimation();
 
     private:
         std::size_t handle(const StringList& options, std::size_t index);
@@ -89,8 +90,8 @@ class Options
         std::string authPassword_;
 
         RenderMode renderMode_ = RenderMode::BALL_N_STICK;
-        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_, usesPassword_;
-        //, slotIDisSet_;
+        bool highVerbosity_, bounceSnapshots_, cycleSnapshots_, usesPassword_,
+            bounceAnimation_; //, slotIDisSet_;
         unsigned int atomStacks_, atomSlices_;
 };
 

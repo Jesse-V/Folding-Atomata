@@ -1,6 +1,6 @@
 .\" Manpage for Folding Atomata
 .\" Visit github.com/Jesse-V/Folding-Atomata to report bugs, errors, or typos.
-.TH man 8 "5 September 2013" "0.6.8.0" "FoldingAtomata man page"
+.TH man 8 "17 October 2013" "0.6.8.0" "FoldingAtomata man page"
 
 .SH NAME
 FoldingAtomata \- third-party 3D simulation viewer for Folding@home
@@ -27,11 +27,17 @@ The following options can be specified on the command line using the following s
   or when marking boolean values true:
     --<option>
 
+\fB --animationDelay \fR or \fB -ad \fR
+        Specifies the number of milliseconds to wait between each animation frame. Increasing this number improves the smoothness of the animation, but also increases the resource load. When the camera is not moving, the scene is rendered every time animation happens, so the FPS is 1000/ms. Thus a delay of 100 results in 10 FPS. This is 40 by default, for 25 FPS. Set this to 2000 to just display every snapshot.
+
 \fB --connect \fR or \fB -c \fR
         An address/host and port to connect to. By default Atomata connects to 127.0.0.1:36330.
         Examples: --connect=127.0.0.1:36330 or -c 127.0.0.1:36330
         Note that this flag is compatible with FAHControl, as this is one of
         the flags that it sends to FAHViewer.
+
+\fB --bounce \fR or \fB -b \fR
+        Tells the animation to run backwards when it reaches the last snapshot, similar to how FAHViewer operates. Without this option, the animation jumps to snapshot 0 when it reaches the last one, (0, 1, 2, 3, ..., N-1, N, 0, 1, ...) but with the --bounce snapshot it would progress as (N-1, N, N-1, N-2, ..., 2, 1, 0, 1, 2, ...), thus duplicating the animation behavior of FAHViewer.
 
 \fB --help \fR or \fB -h \fR
         Prints usage format and available flags, and then quits.
