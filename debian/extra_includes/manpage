@@ -43,13 +43,13 @@ The following options can be specified on the command line using the following s
         Prints usage format and available flags, and then quits.
 
 \fB --image-a \fR or \fB -ia \fR
-        The skybox is textured using three images. Each image is specified in opposite sides, and are only visible when the camera is inside the skybox. This flag specifies a custom path for image A, overridding the default of /usr/share/FoldingAtomata/images/MSM.png
+        The skybox is textured using three images. Each image is specified in opposite sides, and are only visible when the camera is inside the skybox. This flag specifies a custom path for image A, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
 
 \fB --image-b \fR or \fB -ib \fR
-        This flag specifies a custom path for image B of the skybox, overridding the default of /usr/share/FoldingAtomata/images/Primase.png
+        This flag specifies a custom path for image B of the skybox, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
 
 \fB --image-c \fR or \fB -ic \fR
-        This flag specifies a custom path for image C for the skybox, overridding the default of /usr/share/FoldingAtomata/images/Ribosome.png
+        This flag specifies a custom path for image C for the skybox, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
 
 \fB --license \fR
         Prints license information and quit.

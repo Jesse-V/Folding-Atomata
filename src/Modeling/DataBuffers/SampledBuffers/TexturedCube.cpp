@@ -95,7 +95,7 @@ void TexturedCube::disable()
 void TexturedCube::mapTo(GLenum target, const std::shared_ptr<Image>& img)
 {
     glTexImage2D(target, 0, GL_RGB, img->getWidth(), img->getWidth(), 0,
-        GL_RGB, GL_UNSIGNED_BYTE, img->getImageData()); //image must be square
+        GL_BGR, GL_UNSIGNED_BYTE, img->getImageData()); //image must be square
 }
 
 

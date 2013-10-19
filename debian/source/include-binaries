@@ -1,6 +1,4 @@
 debian/extra_includes/demoProtein
 debian/extra_includes/FoldingAtomata-logo.png
 debian/extra_includes/FoldingAtomata.1.gz
-debian/extra_includes/skybox/MSM.png
-debian/extra_includes/skybox/Primase.png
-debian/extra_includes/skybox/Ribosome.png
+debian/extra_includes/skybox/gradient.png

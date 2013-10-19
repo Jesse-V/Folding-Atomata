@@ -43,9 +43,9 @@ Options& Options::getInstance()
 Options::Options() :
     highVerbosity_(true), cycleSnapshots_(true), skyboxDisabled_(false),
     connectionPath_("127.0.0.1:36330"),
-    imageApath_("/usr/share/FoldingAtomata/images/MSM.png"),
-    imageBpath_("/usr/share/FoldingAtomata/images/Primase.png"),
-    imageCpath_("/usr/share/FoldingAtomata/images/Ribosome.png"),
+    imageApath_("/usr/share/FoldingAtomata/images/gradient.png"),
+    imageBpath_("/usr/share/FoldingAtomata/images/gradient.png"),
+    imageCpath_("/usr/share/FoldingAtomata/images/gradient.png"),
     atomStacks_(8), atomSlices_(16), animationDelay_(40)
 {}
 
