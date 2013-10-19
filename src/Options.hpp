@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 
+typedef const std::string& StrRef;
 typedef std::vector<std::string> StringList;
 
 class Options
@@ -45,49 +46,46 @@ class Options
         Options();
         std::string getHost();
         int getPort();
+        bool usesPassword();
         std::string getPassword();
+        RenderMode getRenderMode();
         unsigned int getAtomStacks();
         unsigned int getAtomSlices();
         int getAnimationDelay();
-        //bool slotIDisSet();
-        //int getSlotID();
-
+        bool cycleSnapshots();
         bool highVerbosity();
-        bool bounce();
-        bool usesPassword();
-        RenderMode getRenderMode();
+        bool skyboxDisabled();
+        std::string getPathToImageA();
+        std::string getPathToImageB();
+        std::string getPathToImageC();
 
     private:
         std::size_t handle(const StringList& options, std::size_t index);
-        bool verbose1(const std::string& flag);
-        bool connect1(const std::string& flag);
-        bool connect2(const std::string& flag, const std::string& arg);
-        bool bounce1(const std::string& flag);
-        bool bounce2(const std::string& flag, const std::string& arg);
-        bool password1(const std::string& flag);
-        bool password2(const std::string& flag, const std::string& arg);
+        bool parseBool(StrRef flag, StrRef target, bool& param);
+        bool parseBool(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                                bool& param);
+        bool parseStr(StrRef flag, StrRef target, std::string& param);
+        bool parseStr(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                        std::string& param);
+        bool parseUInt(StrRef flag, StrRef target, unsigned int& param);
+        bool parseUInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                        unsigned int& param);
+        bool parseInt(StrRef flag, StrRef target, int& param);
+        bool parseInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                                    int& param);
         bool renderMode1(const std::string& flag);
         bool renderMode2(const std::string& flag, const std::string& arg);
-        bool animationDelay1(const std::string& flag);
-        bool animationDelay2(const std::string& flag, const std::string& arg);
-        //bool slotID1(const std::string& flag);
-        //bool slotID2(const std::string& flag, const std::string& arg);
-        bool atomStacks1(const std::string& flag);
-        bool atomStacks2(const std::string& flag, const std::string& arg);
-        bool atomSlices1(const std::string& flag);
-        bool atomSlices2(const std::string& flag, const std::string& arg);
         bool confirm(bool condition, const std::string& flag);
 
     private:
         static Options* singleton_;
 
-        std::string connectionHost_;
-        int connectionPort_, animationDelay_; //slotID_, ;
-        std::string authPassword_;
-
-        RenderMode renderMode_ = RenderMode::BALL_N_STICK;
-        bool highVerbosity_, bounce_, usesPassword_; //, slotIDisSet_;
+        bool highVerbosity_, cycleSnapshots_, skyboxDisabled_;
+        std::string connectionPath_, authPassword_, imageApath_, imageBpath_,
+            imageCpath_;
         unsigned int atomStacks_, atomSlices_;
+        int animationDelay_;
+        RenderMode renderMode_ = RenderMode::BALL_N_STICK;
 };
 
 #endif

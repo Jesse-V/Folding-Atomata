@@ -41,8 +41,12 @@ Options& Options::getInstance()
 
 
 Options::Options() :
-    connectionHost_("127.0.0.1"), connectionPort_(36330), animationDelay_(40),
-    bounce_(false), usesPassword_(false), atomStacks_(8), atomSlices_(16)
+    connectionPath_("127.0.0.1:36330"), animationDelay_(40),
+    cycleSnapshots_(false), atomStacks_(8), atomSlices_(16),
+    skyboxDisabled_(false),
+    imageApath_("/usr/share/FoldingAtomata/images/MSM.png"),
+    imageBpath_("/usr/share/FoldingAtomata/images/Primase.png"),
+    imageCpath_("/usr/share/FoldingAtomata/images/Ribosome.png")
 {}
 
 
@@ -66,7 +70,7 @@ Usage:
 Commands:
     --animationDelay, -ad  Milliseconds to wait between each animation frame.
     --connect, -c          Address and port to use to connect to FAHClient.
-    --bounce, -b           Animation runs backwards at end, like FAHViewer.
+    --cycle-snapshots      If enabled, the animation runs backwards at end.
     --help, -h             Show flag options and their usage.
     --image-a, -ia         Specifies the path to image A for the skybox.
     --image-b, -ib         Specifies the path to image B for the skybox.
@@ -112,10 +116,18 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
     std::string flag = options[index];
 
     //check for 1-piece flags
-    if (verbose1(flag) || connect1(flag) || bounce1(flag) || password1(flag) ||
-        renderMode1(flag) || atomStacks1(flag) || atomSlices1(flag) ||
-        animationDelay1(flag) // || slotID1(flag)
-    )
+    if (parseBool(flag, "--verbosity", highVerbosity_) ||
+        parseBool(flag, "--cycle-snapshots", cycleSnapshots_) ||
+        parseBool(flag, "--no-skybox", skyboxDisabled_) ||
+        parseStr(flag, "--connect", connectionPath_) ||
+        parseStr(flag, "--password", authPassword_) ||
+        parseStr(flag, "--image-a", imageApath_) ||
+        parseStr(flag, "--image-b", imageBpath_) ||
+        parseStr(flag, "--image-c", imageCpath_) ||
+        parseUInt(flag, "--stacks", atomStacks_) ||
+        parseUInt(flag, "--slices", atomSlices_) ||
+        parseInt(flag, "--animation-delay", animationDelay_) ||
+        renderMode1(flag))
         return 1;
 
     //check to see if we can grab next flag
@@ -128,11 +140,18 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 
     //check for two-piece flags
     std::string arg(options[index + 1]);
-    if (connect2(flag, arg) || bounce2(flag, arg) || password2(flag, arg) ||
-        renderMode2(flag, arg) || atomStacks2(flag, arg) ||
-        atomSlices2(flag, arg) || animationDelay2(flag, arg)
-        // || slotID2(flag, arg)
-    )
+    if (parseBool(flag, arg, "--verbosity", "-v", highVerbosity_) ||
+        parseBool(flag, arg, "--cycle-snapshots", "", cycleSnapshots_) ||
+        parseBool(flag, arg, "--no-skybox", "", skyboxDisabled_) ||
+        parseStr(flag, arg, "--connect", "-c", connectionPath_) ||
+        parseStr(flag, arg, "--password", "-p", authPassword_) ||
+        parseStr(flag, arg, "--image-a", "-ia", imageApath_) ||
+        parseStr(flag, arg, "--image-b", "-ib", imageBpath_) ||
+        parseStr(flag, arg, "--image-c", "-ic", imageCpath_) ||
+        parseUInt(flag, arg, "--stacks", "-st", atomStacks_) ||
+        parseUInt(flag, arg, "--slices", "-sl", atomSlices_) ||
+        parseInt(flag, arg, "--animation-delay", "-ad", animationDelay_) ||
+        renderMode2(flag, arg))
         return 2;
 
     std::cerr << "Unrecognized flag " << options[index] << ". Ignoring." << std::endl;
@@ -140,130 +159,61 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 }
 
 
-
-bool Options::verbose1(const std::string& flag)
-{
-    //test for verbosity flags
-    if (flag == "--verbose" || flag == "-v")
-    {
-        highVerbosity_ = true;
-        return true;
-    }
-
+#define PARSE_SINGLE_FLAG                               \
+    if (StringManip::startsWith(flag, target))          \
+    {                                                   \
+        auto parts = StringManip::explode(flag, '=');   \
+        if (!confirm(parts.size() == 2, flag))          \
+            return false;                               \
+                                                        \
+        std::istringstream(parts[1]) >> param;          \
+        return true;                                    \
+    }                                                   \
     return false;
-}
 
 
-
-bool Options::connect1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--connect="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        auto parameters = StringManip::explode(parts[1], ':');
-        if (!confirm(parameters.size() == 2, flag))
-            return false;
-
-        connectionHost_ = parameters[0];
-        std::istringstream(parameters[1]) >> connectionPort_;
-        return true;
-    }
-
+#define PARSE_DOUBLE_FLAG                               \
+    if (flag == target1 || flag == target2)             \
+    {                                                   \
+        std::istringstream(arg) >> param;               \
+        return true;                                    \
+    }                                                   \
     return false;
-}
+
+bool Options::parseBool(StrRef flag, StrRef target, bool& param)
+{ PARSE_SINGLE_FLAG }
 
 
-
-bool Options::connect2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--connect" || flag == "-c")
-    {
-        auto tokens = StringManip::explode(arg, ':');
-        if (!confirm(tokens.size() == 2, flag))
-            return false;
-
-        connectionHost_ = tokens[0];
-        std::istringstream(tokens[1]) >> connectionPort_;
-        return true;
-    }
-
-    return false;
-}
+bool Options::parseBool(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                        bool& param)
+{ PARSE_DOUBLE_FLAG }
 
 
-
-bool Options::bounce1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--bounce="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        if (!confirm(parts[1] == "true" || parts[1] == "false", flag))
-            return false;
-
-        std::istringstream(parts[1]) >> bounce_;
-        return true;
-    }
-
-    return false;
-}
+bool Options::parseStr(StrRef flag, StrRef target, std::string& param)
+{ PARSE_SINGLE_FLAG }
 
 
-
-bool Options::bounce2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--bounce" || flag == "-b")
-    {
-        std::string next(arg);
-        if (!confirm(next == "true" || next == "false", flag))
-        {
-            bounce_ = true; //just the flag was given
-            return true;
-        }
-
-        std::istringstream(next) >> bounce_;
-        return true;
-    }
-
-    return false;
-}
+bool Options::parseStr(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                std::string& param)
+{ PARSE_DOUBLE_FLAG }
 
 
-
-bool Options::password1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--password="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        authPassword_ = StringManip::trim(parts[1], "\"");
-        usesPassword_ = true;
-        return true;
-    }
-
-    return false;
-}
+bool Options::parseUInt(StrRef flag, StrRef target, unsigned int& param)
+{ PARSE_SINGLE_FLAG }
 
 
+bool Options::parseUInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                unsigned int& param)
+{ PARSE_DOUBLE_FLAG }
 
-bool Options::password2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--password" || flag == "-p")
-    {
-        authPassword_ = StringManip::trim(arg, "\"");
-        usesPassword_ = true;
-        return true;
-    }
 
-    return false;
-}
+bool Options::parseInt(StrRef flag, StrRef target, int& param)
+{ PARSE_SINGLE_FLAG }
+
+
+bool Options::parseInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
+                                                            int& param)
+{ PARSE_DOUBLE_FLAG }
 
 
 
@@ -309,131 +259,6 @@ bool Options::renderMode2(const std::string& flag, const std::string& arg)
 
 
 
-bool Options::animationDelay1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--animationDelay="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        std::istringstream(parts[1]) >> animationDelay_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::animationDelay2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--animationDelay" || flag == "-ad")
-    {
-        std::istringstream(arg) >> animationDelay_;
-        return true;
-    }
-
-    return false;
-}
-
-
-/*
-
-bool Options::slotID1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--slot="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        std::istringstream(parts[1]) >> slotID_;
-        slotIDisSet_ = true;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::slotID2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--slot" || flag == "-s")
-    {
-        std::istringstream(arg) >> slotID_;
-        slotIDisSet_ = true;
-        return true;
-    }
-
-    return false;
-}
-
-*/
-
-
-
-bool Options::atomStacks1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--stacks="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        std::istringstream(parts[1]) >> atomStacks_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::atomStacks2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--stacks" || flag == "-st")
-    {
-        std::istringstream(arg) >> atomStacks_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::atomSlices1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--slices="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        std::istringstream(parts[1]) >> atomSlices_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::atomSlices2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--slices" || flag == "-sl")
-    {
-        std::istringstream(arg) >> atomSlices_;
-        return true;
-    }
-
-    return false;
-}
-
-
-
 bool Options::confirm(bool condition, const std::string& flag)
 {
     if (!condition)
@@ -443,13 +268,6 @@ bool Options::confirm(bool condition, const std::string& flag)
     }
 
     return true;
-}
-
-
-
-bool Options::highVerbosity()
-{
-    return highVerbosity_;
 }
 
 
@@ -468,25 +286,24 @@ int Options::getPort()
 
 
 
+bool Options::usesPassword()
+{
+    return usesPassword_;
+}
+
+
+
 std::string Options::getPassword()
 {
     return authPassword_;
 }
 
 
-/*
-bool Options::slotIDisSet()
+
+Options::RenderMode Options::getRenderMode()
 {
-    return slotIDisSet_;
+    return renderMode_;
 }
-
-
-
-int Options::getSlotID()
-{
-    return slotID_;
-}
-*/
 
 
 
@@ -511,29 +328,46 @@ int Options::getAnimationDelay()
 
 
 
-bool Options::bounce()
+bool Options::cycleSnapshots()
 {
-    return bounce_;
+    return cycleSnapshots_;
 }
 
 
 
-bool Options::usesPassword()
+bool Options::highVerbosity()
 {
-    return usesPassword_;
+    return highVerbosity_;
 }
 
 
 
-Options::RenderMode Options::getRenderMode()
+bool Options::skyboxDisabled()
 {
-    return renderMode_;
+    return skyboxDisabled_;
 }
 
 
-/* todo:
---help [string] Print help screen or help on a particular option and exit.
-*/
+
+std::string Options::getPathToImageA()
+{
+    return imageApath_;
+}
+
+
+
+std::string Options::getPathToImageB()
+{
+    return imageBpath_;
+}
+
+
+
+std::string Options::getPathToImageC()
+{
+    return imageCpath_;
+}
+
 
 /*
 **FoldingAtomata**

@@ -27,7 +27,7 @@ The following options can be specified on the command line using the following s
   or when marking boolean values true:
     --<option>
 
-\fB --animationDelay \fR or \fB -ad \fR
+\fB --animation-delay \fR or \fB -ad \fR
         Specifies the number of milliseconds to wait between each animation frame. Increasing this number improves the smoothness of the animation, but also increases the resource load. When the camera is not moving, the scene is rendered every time animation happens, so the FPS is 1000/ms. Thus a delay of 100 results in 10 FPS. This is 40 by default, for 25 FPS. Set this to 2000 to just display every snapshot.
 
 \fB --connect \fR or \fB -c \fR
@@ -36,11 +36,20 @@ The following options can be specified on the command line using the following s
         Note that this flag is compatible with FAHControl, as this is one of
         the flags that it sends to FAHViewer.
 
-\fB --bounce \fR or \fB -b \fR
+\fB --cycle-snapshots \fR
         Tells the animation to run backwards when it reaches the last snapshot, similar to how FAHViewer operates. Without this option, the animation jumps to snapshot 0 when it reaches the last one, (0, 1, 2, 3, ..., N-1, N, 0, 1, ...) but with the --bounce snapshot it would progress as (N-1, N, N-1, N-2, ..., 2, 1, 0, 1, 2, ...), thus duplicating the animation behavior of FAHViewer.
 
 \fB --help \fR or \fB -h \fR
         Prints usage format and available flags, and then quits.
+
+\fB --image-a \fR or \fB -ia \fR
+        The skybox is textured using three images. Each image is specified in opposite sides, and are only visible when the camera is inside the skybox. This flag specifies a custom path for image A, overridding the default of /usr/share/FoldingAtomata/images/MSM.png
+
+\fB --image-b \fR or \fB -ib \fR
+        This flag specifies a custom path for image B of the skybox, overridding the default of /usr/share/FoldingAtomata/images/Primase.png
+
+\fB --image-c \fR or \fB -ic \fR
+        This flag specifies a custom path for image C for the skybox, overridding the default of /usr/share/FoldingAtomata/images/Ribosome.png
 
 \fB --license \fR
         Prints license information and quit.
@@ -49,6 +58,9 @@ The following options can be specified on the command line using the following s
         Selects the rending mode. 3 is stick, everything is ball-and-stick.
         Note that this flag is compatible with FAHControl, as this is one of
         the flags that it sends to FAHViewer.
+
+\fB --no-skybox \fR
+        Disables the skybox, leaving a plain black background.
 
 \fB --password \fR or \fB -p \fR
         A password for accessing the remote client. Note that this is sent in plaintext.

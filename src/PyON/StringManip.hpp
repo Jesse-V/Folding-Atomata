@@ -31,10 +31,10 @@
     TrajectoryParser class for isolating data in a PyON-formatted string.
 **/
 
+#include "Options.hpp"
 #include <string>
 #include <vector>
 
-typedef const std::string& StrRef;
 typedef std::pair<std::size_t, std::size_t> Indexes;
 typedef const Indexes& IndexesRef;
 typedef std::vector<Indexes> IndexesVector;

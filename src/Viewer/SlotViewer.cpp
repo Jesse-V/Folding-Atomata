@@ -164,7 +164,7 @@ int SlotViewer::updateSnapshotIndexes(int deltaTime)
     int snapshotCount = trajectory_->countSnapshots();
     if (snapshotCount > 2 && a > 0)
     {
-        if (Options::getInstance().bounce())
+        if (Options::getInstance().cycleSnapshots())
         { //FAHViewer-like bouncing animation
             if (snapshotIndexA_ < snapshotIndexB_)
             { //going forward

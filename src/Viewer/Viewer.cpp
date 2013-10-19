@@ -87,8 +87,10 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    addSkybox();
     addSlotViewers();
+
+    if (!Options::getInstance().skyboxDisabled())
+        addSkybox();
 }
 
 
@@ -97,15 +99,12 @@ void Viewer::addSkybox()
 {
     std::cout << "Creating skybox..." << std::endl;
 
-    const std::string IMAGES_DIR("/usr/share/FoldingAtomata/images/");
-    auto msmImage      = std::make_shared<Image>(IMAGES_DIR + "MSM.png");
-    auto primaseImage  = std::make_shared<Image>(IMAGES_DIR + "Primase.png");
-    auto ribosomeImage = std::make_shared<Image>(IMAGES_DIR + "Ribosome.png");
+    auto imageA = std::make_shared<Image>(Options::getInstance().getPathToImageA());
+    auto imageB = std::make_shared<Image>(Options::getInstance().getPathToImageB());
+    auto imageC = std::make_shared<Image>(Options::getInstance().getPathToImageC());
 
-    auto texturedCube = std::make_shared<TexturedCube>(msmImage, msmImage,
-        primaseImage, primaseImage, ribosomeImage, ribosomeImage);
-    BufferList list = { texturedCube };
-
+    BufferList list = { std::make_shared<TexturedCube>(imageA, imageA,
+        imageB, imageB, imageC, imageC) };
     auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
     auto model = std::make_shared<InstancedModel>(getSkyboxMesh(), matrix, list);
     scene_->addModel(model); //add to Scene and save
