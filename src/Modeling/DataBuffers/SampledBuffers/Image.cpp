@@ -109,9 +109,9 @@ void Image::loadPNG(const std::string& imagePath)
 
         auto pix = pixbuf.get_pixel((std::size_t)x, (std::size_t)y);
 
-        data_[i + 0] = pix.blue;
+        data_[i + 0] = pix.red;
         data_[i + 1] = pix.green;
-        data_[i + 2] = pix.red;
+        data_[i + 2] = pix.blue;
     }
 }
 
