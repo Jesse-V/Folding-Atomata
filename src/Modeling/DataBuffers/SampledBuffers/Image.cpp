@@ -30,7 +30,8 @@
 #include <iostream>
 
 
-Image::Image(const std::string& imagePath)
+Image::Image(const std::string& imagePath, bool flipX, bool flipY) :
+    flipX_(flipX), flipY_(flipY)
 {
     std::cout << "Loading image from " << imagePath << " ...";
 
@@ -76,6 +77,8 @@ void Image::loadBMP(const std::string& imagePath)
     if (readSize != (unsigned long)imageSize)
         throw std::runtime_error("Invalid fread of " + imagePath);
 
+    //TODO: apply flipX_ and flipY_
+
     //Everything is in memory now, the file can be closed
     fclose(file);
 }
@@ -97,15 +100,19 @@ void Image::loadPNG(const std::string& imagePath)
     for (int i = 0; i < imageSize; i += 3)
     {
         int x = (i / 3) % width_;
+        if (flipX_)
+            x = width_ - x - 1;
+
         int y = (i / 3) / width_;
+        if (flipY_)
+            y = width_ - y - 1;
+
         auto pix = pixbuf.get_pixel((std::size_t)x, (std::size_t)y);
 
         data_[i + 0] = pix.blue;
         data_[i + 1] = pix.green;
         data_[i + 2] = pix.red;
     }
-
-    std::cout << "derp!" << std::endl;
 }
 
 

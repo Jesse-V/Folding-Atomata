@@ -99,13 +99,22 @@ void Viewer::addSkybox()
 {
     std::cout << "Creating skybox..." << std::endl;
 
-    auto imageA = std::make_shared<Image>(Options::getInstance().getPathToImageA());
-    auto imageB = std::make_shared<Image>(Options::getInstance().getPathToImageB());
-    auto imageC = std::make_shared<Image>(Options::getInstance().getPathToImageC());
+    auto positiveX = std::make_shared<Image>(
+        Options::getInstance().getPathToImageA(), false, true);
+    auto negativeX = std::make_shared<Image>(
+        Options::getInstance().getPathToImageA(), true, false);
+    auto positiveY = std::make_shared<Image>(
+        Options::getInstance().getPathToImageB(), false, true);
+    auto negativeY = std::make_shared<Image>(
+        Options::getInstance().getPathToImageB(), true, false);
+    auto positiveZ = std::make_shared<Image>(
+        Options::getInstance().getPathToImageC(), false, true);
+    auto negativeZ = std::make_shared<Image>(
+        Options::getInstance().getPathToImageC(), true, false);
 
-    BufferList list = { std::make_shared<TexturedCube>(imageA, imageA,
-        imageB, imageB, imageC, imageC) };
-    auto matrix = glm::scale(glm::mat4(), glm::vec3(100));
+    BufferList list = { std::make_shared<TexturedCube>(positiveX, negativeX,
+        positiveY, negativeY, positiveZ, negativeZ) };
+    auto matrix = glm::scale(glm::mat4(), glm::vec3(4096));
     auto model = std::make_shared<InstancedModel>(getSkyboxMesh(), matrix, list);
     scene_->addModel(model); //add to Scene and save
 
@@ -179,63 +188,29 @@ std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
         return mesh;
 
     const std::vector<glm::vec3> VERTICES = {
-        // front
-        glm::vec3(-1.0, -1.0,  1.0),
-        glm::vec3( 1.0, -1.0,  1.0),
-        glm::vec3( 1.0,  1.0,  1.0),
-        glm::vec3(-1.0,  1.0,  1.0),
-        // top
-        glm::vec3(-1.0,  1.0,  1.0),
-        glm::vec3( 1.0,  1.0,  1.0),
-        glm::vec3( 1.0,  1.0, -1.0),
-        glm::vec3(-1.0,  1.0, -1.0),
-        // back
-        glm::vec3( 1.0, -1.0, -1.0),
-        glm::vec3(-1.0, -1.0, -1.0),
-        glm::vec3(-1.0,  1.0, -1.0),
-        glm::vec3( 1.0,  1.0, -1.0),
-        // bottom
-        glm::vec3(-1.0, -1.0, -1.0),
-        glm::vec3( 1.0, -1.0, -1.0),
-        glm::vec3( 1.0, -1.0,  1.0),
-        glm::vec3(-1.0, -1.0,  1.0),
-        // left
-        glm::vec3(-1.0, -1.0, -1.0),
-        glm::vec3(-1.0, -1.0,  1.0),
-        glm::vec3(-1.0,  1.0,  1.0),
-        glm::vec3(-1.0,  1.0, -1.0),
-        // right
-        glm::vec3( 1.0, -1.0,  1.0),
-        glm::vec3( 1.0, -1.0, -1.0),
-        glm::vec3( 1.0,  1.0, -1.0),
-        glm::vec3( 1.0,  1.0,  1.0)
+        glm::vec3(-1, -1, -1),
+        glm::vec3(-1, -1,  1),
+        glm::vec3(-1,  1, -1),
+        glm::vec3(-1,  1,  1),
+        glm::vec3( 1, -1, -1),
+        glm::vec3( 1, -1,  1),
+        glm::vec3( 1,  1, -1),
+        glm::vec3( 1,  1,  1)
     };
 
     //visible from the inside only, so faces in
     const std::vector<GLuint> INDICES = {
-        // front
-        2, 1, 0,
-        0, 3, 2,
-        // top
-        6, 5, 4,
-        4, 7, 6,
-        // back
-        10, 9, 8,
-        8, 11, 10,
-        // bottom
-        14, 13, 12,
-        12, 15, 14,
-        // left
-        18, 17, 16,
-        16, 19, 18,
-        // right
-        22, 21, 20,
-        20, 23, 22
+        0, 1, 5, 4, //front
+        6, 7, 3, 2, //back
+        2, 0, 4, 6,  //top
+        7, 5, 1, 3, //bottom
+        2, 3, 1, 0, //left
+        4, 5, 7, 6  //right
     };
 
     auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
-    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_TRIANGLES);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_TRIANGLES);
+    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_QUADS);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
     return mesh;
 }
 

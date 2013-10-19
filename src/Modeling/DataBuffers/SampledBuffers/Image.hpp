@@ -39,7 +39,7 @@
 class Image
 {
     public:
-        Image(const std::string& imagePath);
+        Image(const std::string& imagePath, bool flipX = false, bool flipY = false);
         int getWidth();
         int getHeight();
         unsigned char* getImageData();
@@ -53,6 +53,7 @@ class Image
     protected:
         int width_, height_;
         unsigned char* data_;
+        bool flipX_, flipY_;
 };
 
 #endif
