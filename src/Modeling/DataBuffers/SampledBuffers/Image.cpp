@@ -92,7 +92,6 @@ void Image::loadPNG(const std::string& imagePath)
     height_ = (int)image.get_height();
 
     int imageSize = width_ * height_ * 3;
-
     data_ = new unsigned char[imageSize];
 
     for (int i = 0; i < imageSize; i += 3)
@@ -105,6 +104,8 @@ void Image::loadPNG(const std::string& imagePath)
         data_[i + 1] = pix.green;
         data_[i + 2] = pix.red;
     }
+
+    std::cout << "derp!" << std::endl;
 }
 
 

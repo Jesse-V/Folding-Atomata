@@ -56,32 +56,58 @@ void TexturedCube::store(GLuint programHandle)
         https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_06
     */
 
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, // target
-               0,  // level, 0 = base, no minimap,
-               GL_RGB, // internalformat
-               positiveX_->getWidth(),  // width
-               positiveX_->getHeight(),  // height
-               0,  // border, always 0 in OpenGL ES
-               GL_RGB,  // format
-               GL_UNSIGNED_BYTE, // type
-               positiveX_->getImageData());
+    glGenTextures(1, &cubeTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //glActiveTexture(GL_TEXTURE0);
+
+    mapTo(GL_TEXTURE_CUBE_MAP_POSITIVE_X, positiveX_);
+    mapTo(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, negativeX_);
+    mapTo(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, positiveY_);
+    mapTo(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, negativeY_);
+    mapTo(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, positiveZ_);
+    mapTo(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, negativeZ_);
 
     attribute_texcoord = glGetAttribLocation(programHandle, "texcoord");
     if (attribute_texcoord == -1)
         throw std::runtime_error("Could not bind texcoord attribute");
 
-    GLfloat cube_texcoords[2*4*6] = {
+    GLfloat cube_texcoords[3*4*6] = {
         // front
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
+        0.0, 0.0, 1.0,
+        1.0, 0.0, 1.0,
+        1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0,
+        // front
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        // front
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 1.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 1.0,
+        // front
+        0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 1.0,
+        0.0, 1.0, 0.0,
+        // front
+        0.0, 0.0, 1.0,
+        1.0, 0.0, 1.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        // front
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0
     };
-    for (int i = 1; i < 6; i++)
-        memcpy(&cube_texcoords[i*4*2], &cube_texcoords[0], 2*4*sizeof(GLfloat));
+    //for (int i = 1; i < 6; i++)
+    //    memcpy(&cube_texcoords[i*4*2], &cube_texcoords[0], 2*4*sizeof(GLfloat));
 
     glGenBuffers(1, &vbo_cube_texcoords);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_texcoords);
@@ -92,15 +118,12 @@ void TexturedCube::store(GLuint programHandle)
 
 void TexturedCube::enable()
 {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
     glUniform1i(uniform_mytexture, /*GL_TEXTURE*/0);
-
     glEnableVertexAttribArray(attribute_texcoord);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_cube_texcoords);
     glVertexAttribPointer(
         attribute_texcoord, // attribute
-        2,                  // number of elements per vertex, here (x,y)
+        3,                  // number of elements per vertex, here (x,y)
         GL_FLOAT,           // the type of each element
         GL_FALSE,           // take our values as-is
         0,                  // no extra data between each position
@@ -117,10 +140,10 @@ void TexturedCube::disable()
 
 
 
-void TexturedCube::mapToFace(GLenum target, const std::shared_ptr<Image>& img)
+void TexturedCube::mapTo(GLenum target, const std::shared_ptr<Image>& img)
 {
-    glTexImage2D(target, 0, GL_RGB, img->getWidth(), img->getHeight(),
-        0, GL_RGB, GL_UNSIGNED_BYTE, img->getImageData());
+    glTexImage2D(target, 0, GL_RGB, img->getWidth(), img->getHeight(), 0,
+        GL_RGB, GL_UNSIGNED_BYTE, img->getImageData());
 }
 
 
@@ -131,8 +154,8 @@ SnippetPtr TexturedCube::getVertexShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //TexturedCube fields
-            attribute vec2 texcoord;
-            varying vec2 f_texcoord;
+            attribute vec3 texcoord;
+            varying vec3 f_texcoord;
         ).",
         R".(
             //TexturedCube methods
@@ -151,15 +174,15 @@ SnippetPtr TexturedCube::getFragmentShaderGLSL()
     return std::make_shared<ShaderSnippet>(
         R".(
             //TexturedCube fields
-            uniform sampler2D mytexture;
-            varying vec2 f_texcoord;
+            uniform samplerCube mytexture;
+            varying vec3 f_texcoord;
         ).",
         R".(
             //TexturedCube methods
         ).",
         R".(
             //TexturedCube main method code
-            colors.material = texture2D(mytexture, f_texcoord).rgb;
+            colors.material = textureCube(mytexture, f_texcoord).rgb;
         )."
     );
 }

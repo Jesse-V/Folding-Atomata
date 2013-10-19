@@ -41,12 +41,12 @@ Options& Options::getInstance()
 
 
 Options::Options() :
-    connectionPath_("127.0.0.1:36330"), animationDelay_(40),
-    cycleSnapshots_(false), atomStacks_(8), atomSlices_(16),
-    skyboxDisabled_(false),
+    highVerbosity_(true), cycleSnapshots_(true), skyboxDisabled_(false),
+    connectionPath_("127.0.0.1:36330"),
     imageApath_("/usr/share/FoldingAtomata/images/MSM.png"),
     imageBpath_("/usr/share/FoldingAtomata/images/Primase.png"),
-    imageCpath_("/usr/share/FoldingAtomata/images/Ribosome.png")
+    imageCpath_("/usr/share/FoldingAtomata/images/Ribosome.png"),
+    atomStacks_(8), atomSlices_(16), animationDelay_(40)
 {}
 
 
@@ -117,8 +117,11 @@ std::size_t Options::handle(const StringList& options, std::size_t index)
 
     //check for 1-piece flags
     if (parseBool(flag, "--verbosity", highVerbosity_) ||
+        parseBool(flag, "1", "--verbosity", "-v", highVerbosity_) ||
         parseBool(flag, "--cycle-snapshots", cycleSnapshots_) ||
+        parseBool(flag, "1", "--cycle-snapshots", "", cycleSnapshots_) ||
         parseBool(flag, "--no-skybox", skyboxDisabled_) ||
+        parseBool(flag, "1", "--no-skybox", "", skyboxDisabled_) ||
         parseStr(flag, "--connect", connectionPath_) ||
         parseStr(flag, "--password", authPassword_) ||
         parseStr(flag, "--image-a", imageApath_) ||
@@ -274,21 +277,23 @@ bool Options::confirm(bool condition, const std::string& flag)
 
 std::string Options::getHost()
 {
-    return connectionHost_;
+    return StringManip::explode(connectionPath_, ':')[0];
 }
 
 
 
 int Options::getPort()
 {
-    return connectionPort_;
+    int port;
+    std::istringstream(StringManip::explode(connectionPath_, ':')[1]) >> port;
+    return port;
 }
 
 
 
 bool Options::usesPassword()
 {
-    return usesPassword_;
+    return !authPassword_.empty();
 }
 
 

@@ -42,7 +42,7 @@ class TexturedCube : public OptionalDataBuffer
             const std::shared_ptr<Image>& positiveZ,
             const std::shared_ptr<Image>& negativeZ
         );
-        void mapToFace(GLenum target, const std::shared_ptr<Image>& img);
+        void mapTo(GLenum target, const std::shared_ptr<Image>& img);
 
         virtual void store(GLuint programHandle);
         virtual void enable();
@@ -55,7 +55,7 @@ class TexturedCube : public OptionalDataBuffer
         std::shared_ptr<Image> positiveX_, negativeX_,
                                positiveY_, negativeY_,
                                positiveZ_, negativeZ_;
-        GLuint texture_id, vbo_cube_texcoords;
+        GLuint vbo_cube_texcoords, cubeTexture;
         GLint uniform_mytexture;
         GLint attribute_coord3d, attribute_v_color, attribute_texcoord;
 };
