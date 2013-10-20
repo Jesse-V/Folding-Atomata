@@ -69,6 +69,7 @@ class SlotViewer
 {
     public:
         SlotViewer(const TrajectoryPtr& trajectory,
+                   const glm::vec3& offsetVector,
                    const std::shared_ptr<Scene>& scene);
         bool animate(int deltaTime); //returns true if there was animation
         int updateSnapshotIndexes(int deltaTime);
@@ -119,6 +120,7 @@ class SlotViewer
     private:
         std::shared_ptr<Scene> scene_;
         TrajectoryPtr trajectory_;
+        glm::vec3 offsetVector_;
 
         std::vector<ElementIndex> elementIndexes_; //references specific instances
         std::vector<InstancedModelPtr> atomInstances_;

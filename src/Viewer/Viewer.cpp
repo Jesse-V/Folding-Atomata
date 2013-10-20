@@ -126,10 +126,19 @@ void Viewer::addSkybox()
 
 void Viewer::addSlotViewers()
 {
-    std::vector<TrajectoryPtr> trajectories = getTrajectories();
+    typedef glm::vec3 v3;
+    const std::vector<std::vector<v3>> OFFSET_VECTORS{
+        { v3( 0, 0, 0) },
+        { v3( 0, 1, 0), v3( 0, -1, 0) },
+        { v3( 1, 0, 0), v3( 0,  1, 0), v3(0,  0,  1) },
+        { v3(-1, 1, 0), v3(-1, -1, 0), v3(1,  0, -1), v3( 1,  0, 1) },
+        { v3(-1, 1, 0), v3( 1,  1, 0), v3(1, -1,  0), v3(-1, -1, 0), v3(0, 0, 1) }
+    };
 
-    auto slot0Viewer = std::make_shared<SlotViewer>(trajectories[0], scene_);
-    slotViewers_.push_back(slot0Viewer);
+    std::vector<TrajectoryPtr> trajectories = getTrajectories();
+    for (std::size_t j = 0; j < 5 && j < trajectories.size(); j++)
+        slotViewers_.push_back(std::make_shared<SlotViewer>(trajectories[j],
+            OFFSET_VECTORS[trajectories.size() - 1][j] * glm::vec3(30), scene_));
 }
 
 
@@ -152,10 +161,10 @@ std::vector<TrajectoryPtr> Viewer::getTrajectories()
             std::cerr << "Not enough slots to work with. " <<
                 "Using demo protein." << std::endl;
     }
-    catch (SocketException&)
+    catch (SocketException& se)
     {
-        std::cerr << "Error connection to FAHClient (SocketException). " <<
-                "Using demo protein." << std::endl;
+        std::cerr << "Error connection to FAHClient (" << se.description() <<
+            "). Using demo protein." << std::endl;
     }
 
     if (trajectories.empty())
@@ -311,128 +320,3 @@ Viewer& Viewer::getInstance()
 
     return *singleton_;
 }
-
-
-
-
-/* num-slots
-std::vector<glm::vec2> getOffsetVectors(int numberOfSlots)
-{
-    switch (numberOfSlots)
-    {
-        case 1 :
-            return {
-                glm::vec2(0, 0)
-            };
-
-        case 2 :
-            return {
-                glm::vec2(0, 1),
-                glm::vec2(0, -1)
-            }
-
-        case 3 :
-            return {
-                glm::vec2(0, 1),
-                glm::vec2(1, -0.7),
-                glm::vec2(-1, -0.7)
-            }
-
-        case 4 :
-            return {
-                glm::vec2(-1, 1),
-                glm::vec2(1, -1),
-                glm::vec2(1, 1),
-                glm::vec2(-1, -1)
-            }
-
-        case 5 :
-            return {
-                glm::vec2(-1, 1),
-                glm::vec2(1, -1),
-                glm::vec2(1, 1),
-                glm::vec2(-1, -1),
-                glm::vec2(0, 0)
-            }
-
-        default :
-            throw std::runtime_error("Too many slots");
-    }
-}
-
-static std::vector<SlotViewer> viewAllSlots(const std::string& host, int port);
-*/
-
-
-/*
-    http://stackoverflow.com/questions/5988686/creating-a-3d-sphere-in-opengl-using-visual-c
-
-    protected:
-    std::vector<GLfloat> vertices;
-    std::vector<GLfloat> normals;
-    std::vector<GLfloat> texcoords;
-    std::vector<GLushort> indices;
-
-public:
-    SolidSphere(float radius, unsigned int rings, unsigned int sectors)
-    {
-        float const R = 1./(float)(rings-1);
-        float const S = 1./(float)(sectors-1);
-        int r, s;
-
-        vertices.resize(rings * sectors * 3);
-        normals.resize(rings * sectors * 3);
-        texcoords.resize(rings * sectors * 2);
-        std::vector<GLfloat>::iterator v = vertices.begin();
-        std::vector<GLfloat>::iterator n = normals.begin();
-        std::vector<GLfloat>::iterator t = texcoords.begin();
-        for(r = 0; r < rings; r++) for(s = 0; s < sectors; s++) {
-                float const y = sin( -M_PI_2 + M_PI * r * R );
-                float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-                float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-
-                *t++ = s*S;
-                *t++ = r*R;
-
-                *v++ = x * radius;
-                *v++ = y * radius;
-                *v++ = z * radius;
-
-                *n++ = x;
-                *n++ = y;
-                *n++ = z;
-        }
-
-        indices.resize(rings * sectors * 4);
-        std::vector<GLushort>::iterator i = indices.begin();
-        for(r = 0; r < rings-1; r++) for(s = 0; s < sectors-1; s++) {
-                *i++ = r * sectors + s;
-                *i++ = r * sectors + (s+1);
-                *i++ = (r+1) * sectors + (s+1);
-                *i++ = (r+1) * sectors + s;
-        }
-    }
-    */
-
-//slot-info, in between "\"id\": \"" and "\",\n"
-    //1) check for heartbeat, throw error if no connection
-    //2) get topology. This data should be accessible as soon it's available.
-    //3) get checkpoints. Can view more and more of them as they come in.
-    /*
-    try
-    {
-        SlotViewer viewer(Connection("localhost", 36330), 0);
-
-        while (true)
-        {
-            std::chrono::milliseconds duration(2000);
-            std::this_thread::sleep_for(duration);
-            std::cout << "Main looping..." << std::endl;
-        }
-
-    }
-    catch (SocketException& e)
-    {
-        std::cout << "Exception was caught: " << e.description() << "\n";
-    }
-*/

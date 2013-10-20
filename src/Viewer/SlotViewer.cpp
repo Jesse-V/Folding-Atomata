@@ -35,10 +35,11 @@
 
 
 SlotViewer::SlotViewer(const TrajectoryPtr& trajectory,
+                       const glm::vec3& offsetVector,
                        const std::shared_ptr<Scene>& scene) :
     ATOM_STACKS(Options::getInstance().getAtomStacks()),
     ATOM_SLICES(Options::getInstance().getAtomSlices()),
-    scene_(scene), trajectory_(trajectory),
+    scene_(scene), trajectory_(trajectory), offsetVector_(offsetVector),
     snapshotIndexA_(0), snapshotIndexB_(1)
 {
     std::cout << std::endl;
@@ -85,7 +86,8 @@ void SlotViewer::addAllAtoms()
     for (std::size_t j = 0; j < ATOMS.size(); j++)
     {
         auto atom = ATOMS[j];
-        auto matrix = generateAtomMatrix(snapshotZero->getPosition(j), atom);
+        auto matrix = generateAtomMatrix(
+                            snapshotZero->getPosition(j) + offsetVector_, atom);
         auto element = atom->getElement();
 
         if (elementMap.find(element) == elementMap.end()) //not in cache
@@ -125,8 +127,8 @@ void SlotViewer::addAllBonds()
     auto snapshotZero = trajectory_->getSnapshot(0);
     for (auto bond : BONDS)
     {
-        auto positionA = snapshotZero->getPosition(bond.first);
-        auto positionB = snapshotZero->getPosition(bond.second);
+        auto positionA = snapshotZero->getPosition(bond.first) + offsetVector_;
+        auto positionB = snapshotZero->getPosition(bond.second) + offsetVector_;
         bondInstance_->addInstance(generateBondMatrix(positionA, positionB));
     }
 
@@ -208,14 +210,13 @@ std::vector<glm::vec3> SlotViewer::animateAtoms(int b)
         auto endPosition   = snapB->getPosition(j);
         auto position = (endPosition - startPosition) *
                                    (b / (float)ANIMATION_SPEED) + startPosition;
+        position += offsetVector_;
 
         newPositions.push_back(position);
         const ElementIndex index = elementIndexes_[j];
         if (atomInstances_.size() > 0)
-        {
             atomInstances_[index.elementIndex]->setModelMatrix(
                 index.instanceIndex, generateAtomMatrix(position, atoms[j]));
-        }
     }
 
     return newPositions;
