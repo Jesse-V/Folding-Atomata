@@ -43,11 +43,10 @@ bool BoundingBox::intersectsWith(const std::shared_ptr<BoundingBox>& other)
 
 
 
-BoundingBox& BoundingBox::operator+=(const glm::vec3& offset)
+BoundingBox BoundingBox::operator+(const glm::vec3& offset) const
 {
-    minimum_ += offset;
-    maximum_ += offset;
-    return *this;
+    BoundingBox newBox(minimum_ + offset, maximum_ + offset);
+    return newBox;
 }
 
 

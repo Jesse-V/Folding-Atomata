@@ -151,15 +151,16 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
 
     //these vectors will be expanded so that no two bounding boxes overlap
     std::cout << "Separating bounding boxes... ";
+    std::vector<BoundingBoxPtr> resizedBoxes(boundingBoxes);
     auto offsetVectors = OFFSET_UNIT_VECTORS[trajectories.size() - 1];
     bool boundingBoxesOverlap;
     do
     {
         //determines whether or not any of the bounding boxes overlap
         boundingBoxesOverlap = false;
-        for (std::size_t j = 0; j < boundingBoxes.size(); j++)
-            for (std::size_t k = j + 1; k < boundingBoxes.size(); k++)
-                if (boundingBoxes[j]->intersectsWith(boundingBoxes[k]))
+        for (std::size_t j = 0; j < resizedBoxes.size(); j++)
+            for (std::size_t k = j + 1; k < resizedBoxes.size(); k++)
+                if (resizedBoxes[j]->intersectsWith(resizedBoxes[k]))
                     boundingBoxesOverlap = true;
 
         //expand vectors if needed
@@ -167,8 +168,8 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
         {
             for (std::size_t j = 0; j < trajectories.size(); j++)
             {
-                offsetVectors[j] *= 1.25f;
-                *boundingBoxes[j] += offsetVectors[j]; //todo, right operation?
+                *resizedBoxes[j] = *boundingBoxes[j] + offsetVectors[j];
+                offsetVectors[j] *= 2;
             }
         }
     } while (boundingBoxesOverlap);
@@ -178,7 +179,7 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
         slotViewers_.push_back(std::make_shared<SlotViewer>(trajectories[j],
             offsetVectors[j], scene_));
 
-    return boundingBoxes;
+    return resizedBoxes;
 }
 
 

@@ -34,7 +34,7 @@ class BoundingBox
     public:
         BoundingBox(const glm::vec3& mimimum, const glm::vec3& maximum);
         bool intersectsWith(const std::shared_ptr<BoundingBox>& otherBox);
-        BoundingBox& operator+=(const glm::vec3& offset);
+        BoundingBox operator+(const glm::vec3& offset) const;
         glm::vec3 getSizes();
         glm::vec3 getMinimum();
         glm::vec3 getMaximum();
