@@ -23,40 +23,25 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#ifndef TRAJECTORY
-#define TRAJECTORY
+#ifndef BOUNDING_BOX
+#define BOUNDING_BOX
 
-/**
-    A Trajectory holds all the atoms, their atomic properties, and where they
-    all are for each available snapshot. The Topology class is primarily
-    responsible for holding all of the atomic and bond information, whereas
-    this class provides access to a Topology instance as well as access to
-    a list of PositionMaps. PositionMaps are a mapping (using a hashtable) of
-    atoms to their positions. This allows for direct and efficient lookup
-    of an atom's position without needing to know the atom's index, which can
-    be useful for certain algorithms such as the ones in ProteinAnalysis.cpp.
-**/
+#include "glm/glm.hpp"
+#include <memory>
 
-#include "Topology.hpp"
-#include "Snapshot.hpp"
-#include "BoundingBox.hpp"
-
-class Trajectory
+class BoundingBox
 {
     public:
-        Trajectory(const std::shared_ptr<Topology> topology);
-        std::shared_ptr<Topology> getTopology();
-        BoundingBoxPtr calculateBoundingBox();
-
-        void addSnapshot(const SnapshotPtr& newSnapshot);
-        SnapshotPtr getSnapshot(int index);
-        int countSnapshots();
+        BoundingBox(const glm::vec3& mimimum, const glm::vec3& maximum);
+        bool intersectsWith(const std::shared_ptr<BoundingBox>& otherBox);
+        BoundingBox& operator+=(const glm::vec3& offset);
+        glm::vec3 getMinimum();
+        glm::vec3 getMaximum();
 
     private:
-        std::shared_ptr<Topology> topology_;
-        std::vector<SnapshotPtr> snapshots_;
+        glm::vec3 minimum_, maximum_;
 };
 
-typedef std::shared_ptr<Trajectory> TrajectoryPtr;
+typedef std::shared_ptr<BoundingBox> BoundingBoxPtr;
 
 #endif

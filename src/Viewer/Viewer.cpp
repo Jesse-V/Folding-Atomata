@@ -127,7 +127,7 @@ void Viewer::addSkybox()
 void Viewer::addSlotViewers()
 {
     typedef glm::vec3 v3;
-    const std::vector<std::vector<v3>> OFFSET_VECTORS{
+    const std::vector<std::vector<v3>> OFFSET_UNIT_VECTORS{
         { v3( 0, 0, 0) },
         { v3( 0, 1, 0), v3( 0, -1, 0) },
         { v3( 1, 0, 0), v3( 0,  1, 0), v3(0,  0,  1) },
@@ -136,9 +136,45 @@ void Viewer::addSlotViewers()
     };
 
     std::vector<TrajectoryPtr> trajectories = getTrajectories();
+
+    //fill this vector with the bounding boxes of each trajectory
+    std::vector<BoundingBoxPtr> boundingBoxes;
+    boundingBoxes.resize(trajectories.size());
+    std::transform(trajectories.begin(), trajectories.end(),
+        boundingBoxes.begin(), [&](const TrajectoryPtr& trajectory)
+        {
+            return trajectory->calculateBoundingBox();
+        }
+    );
+
+    //these vectors will be expanded so that no two bounding boxes overlap
+    std::cout << "Separating bounding boxes... ";
+    auto offsetVectors = OFFSET_UNIT_VECTORS[trajectories.size() - 1];
+    bool boundingBoxesOverlap;
+    do
+    {
+        //determines whether or not any of the bounding boxes overlap
+        boundingBoxesOverlap = false;
+        for (std::size_t j = 0; j < boundingBoxes.size(); j++)
+            for (std::size_t k = j + 1; k < boundingBoxes.size(); k++)
+                if (boundingBoxes[j]->intersectsWith(boundingBoxes[k]))
+                    boundingBoxesOverlap = true;
+
+        //expand vectors if needed
+        if (boundingBoxesOverlap)
+        {
+            for (std::size_t j = 0; j < trajectories.size(); j++)
+            {
+                offsetVectors[j] *= 1.25f;
+                *boundingBoxes[j] += offsetVectors[j]; //todo, right operation?
+            }
+        }
+    } while (boundingBoxesOverlap);
+    std::cout << "done." << std::endl;
+
     for (std::size_t j = 0; j < 5 && j < trajectories.size(); j++)
         slotViewers_.push_back(std::make_shared<SlotViewer>(trajectories[j],
-            OFFSET_VECTORS[trajectories.size() - 1][j] * glm::vec3(30), scene_));
+            offsetVectors[j], scene_));
 }
 
 

@@ -23,33 +23,43 @@
                          jvictors@jessevictors.com
 \******************************************************************************/
 
-#include "ClientSocket.hpp"
-#include "SocketException.hpp"
+#include "BoundingBox.hpp"
 
 
-ClientSocket::ClientSocket(std::string host, int port)
+BoundingBox::BoundingBox(const glm::vec3& minimum, const glm::vec3& maximum) :
+    minimum_(minimum), maximum_(maximum)
+{}
+
+
+
+bool BoundingBox::intersectsWith(const std::shared_ptr<BoundingBox>& other)
 {
-    if (!Socket::create())
-        throw SocketException("Could not create client socket");
-
-    if (!Socket::connect(host, port))
-        throw SocketException("Could not bind to port");
+    if (minimum_.x > other->maximum_.x || other->minimum_.x > maximum_.x)
+        return false;
+    if (minimum_.y > other->maximum_.y || other->minimum_.y > maximum_.y)
+        return false;
+    return minimum_.z <= other->maximum_.z && other->minimum_.z <= maximum_.z;
 }
 
 
 
-const ClientSocket& ClientSocket::operator<<(const std::string& s) const
+BoundingBox& BoundingBox::operator+=(const glm::vec3& offset)
 {
-    if (!Socket::send(s))
-        throw SocketException("Could not write to socket");
+    minimum_ += offset;
+    maximum_ += offset;
     return *this;
 }
 
 
 
-const ClientSocket& ClientSocket::operator>>(std::string& s) const
+glm::vec3 BoundingBox::getMinimum()
 {
-    if (!Socket::recv(s))
-        throw SocketException("Could not read from socket");
-    return *this;
+    return minimum_;
+}
+
+
+
+glm::vec3 BoundingBox::getMaximum()
+{
+    return maximum_;
 }

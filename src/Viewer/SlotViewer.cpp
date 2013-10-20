@@ -213,7 +213,7 @@ std::vector<glm::vec3> SlotViewer::animateAtoms(int b)
         position += offsetVector_;
 
         newPositions.push_back(position);
-        const ElementIndex index = elementIndexes_[j];
+        ElementIndex index = elementIndexes_[j];
         if (atomInstances_.size() > 0)
             atomInstances_[index.elementIndex]->setModelMatrix(
                 index.instanceIndex, generateAtomMatrix(position, atoms[j]));

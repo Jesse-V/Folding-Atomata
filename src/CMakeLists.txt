@@ -103,6 +103,7 @@ add_executable(FoldingAtomata
     Trajectory/Topology.cpp
     Trajectory/Snapshot.cpp
     Trajectory/Atom.cpp
+    Trajectory/BoundingBox.cpp
 
     Sockets/ClientSocket.cpp
     Sockets/Socket.cpp
