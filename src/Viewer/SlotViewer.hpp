@@ -81,7 +81,7 @@ class SlotViewer
 
     public:
         const float ATOM_SCALE = 0.15f; //0.04 is good for getMass
-        const float BOND_SCALE = 0.06f;
+        const float BOND_SCALE = 0.07f;
         const int ANIMATION_SPEED = 2000;
 
         const unsigned int ATOM_STACKS, ATOM_SLICES;

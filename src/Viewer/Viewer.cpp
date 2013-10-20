@@ -70,12 +70,13 @@ void Viewer::reportFPS()
         std::cout << "Note: FPS will be low when the camera is still." << std::endl;
         while (true)
         {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
 
-            float msPerFrame = timeSpentRendering_ / frameCount_;
-            std::cout << frameCount_ << " FPS, spent " <<
-                timeSpentRendering_ << " ms rendering, avg " <<
-                msPerFrame << " ms/frame" << std::endl;
+            glm::vec3 cameraPos = scene_->getCamera()->getPosition();
+            std::cout << frameCount_ / 2 << " FPS, spent " <<
+                timeSpentRendering_ / 2 << " ms rendering. <" << cameraPos.x <<
+                ", " << cameraPos.y << ", " << cameraPos.z << ">" << std::endl;
+
             frameCount_ = 0;
             timeSpentRendering_ = 0;
         }
@@ -88,7 +89,8 @@ void Viewer::reportFPS()
 
 void Viewer::addModels()
 {
-    addSlotViewers();
+    auto boundingBoxes = addSlotViewers();
+    addBoundingBoxOutlines(boundingBoxes);
 
     if (!Options::getInstance().skyboxDisabled())
         addSkybox();
@@ -124,7 +126,7 @@ void Viewer::addSkybox()
 
 
 
-void Viewer::addSlotViewers()
+std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
 {
     typedef glm::vec3 v3;
     const std::vector<std::vector<v3>> OFFSET_UNIT_VECTORS{
@@ -172,29 +174,28 @@ void Viewer::addSlotViewers()
     } while (boundingBoxesOverlap);
     std::cout << "done." << std::endl;
 
-    std::cout << "Adding bounding box outlines..." << std::endl;
-    addBoundingBoxOutlines(boundingBoxes);
-    std::cout << "... done adding bounding box outlines." << std::endl;
-
     for (std::size_t j = 0; j < 5 && j < trajectories.size(); j++)
         slotViewers_.push_back(std::make_shared<SlotViewer>(trajectories[j],
             offsetVectors[j], scene_));
+
+    return boundingBoxes;
 }
 
 
 
 void Viewer::addBoundingBoxOutlines(const std::vector<BoundingBoxPtr>& boxes)
 {
+    std::cout << "Adding bounding box outlines..." << std::endl;
     auto mesh = getBoundingBoxMesh();
     BufferList list = { std::make_shared<ColorBuffer>(glm::vec3(0, 0.1f, 0), 8) };
     for (auto boundingBox : boxes)
     {
-        auto matrix = glm::scale(glm::mat4(), boundingBox->getSizes());
-        matrix = glm::translate(matrix, boundingBox->getMinimum());
-        matrix = glm::scale(glm::mat4(), glm::vec3(20, 20, 20));
+        auto matrix = glm::translate(glm::mat4(), boundingBox->getMinimum());
+        matrix = glm::scale(matrix, boundingBox->getSizes());
         auto model = std::make_shared<InstancedModel>(mesh, matrix, list);
         scene_->addModel(model);
     }
+    std::cout << "... done adding bounding box outlines." << std::endl;
 }
 
 
@@ -290,29 +291,26 @@ std::shared_ptr<Mesh> Viewer::getBoundingBoxMesh()
         return mesh;
 
     const std::vector<glm::vec3> VERTICES = {
-        glm::vec3(-1, -1, -1),
-        glm::vec3(-1, -1,  1),
-        glm::vec3(-1,  1, -1),
-        glm::vec3(-1,  1,  1),
-        glm::vec3( 1, -1, -1),
-        glm::vec3( 1, -1,  1),
-        glm::vec3( 1,  1, -1),
-        glm::vec3( 1,  1,  1)
+        glm::vec3(0, 0, 0),
+        glm::vec3(0, 0, 1),
+        glm::vec3(0, 1, 1),
+        glm::vec3(0, 1, 0),
+        glm::vec3(1, 0, 0),
+        glm::vec3(1, 0, 1),
+        glm::vec3(1, 1, 1),
+        glm::vec3(1, 1, 0)
     };
 
     //visible from the inside only, so faces in
     const std::vector<GLuint> INDICES = {
-        0, 1, 5, 4, //front
-        6, 7, 3, 2, //back
-        2, 0, 4, 6, //top
-        7, 5, 1, 3, //bottom
-        2, 3, 1, 0, //left
-        4, 5, 7, 6  //right
+        0, 1,       1, 2,       2, 3,       3, 0,   //bottom
+        4, 5,       5, 6,       6, 7,       7, 4,   //top
+        0, 4,       1, 5,       2, 6,       3, 7    //connecting the faces
     };
 
     auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
-    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_LINE_STRIP);
-    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_LINE_STRIP);
+    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_LINES);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_LINES);
     return mesh;
 }
 

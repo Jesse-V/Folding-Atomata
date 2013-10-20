@@ -56,7 +56,7 @@ class Viewer
         void reportFPS();
         void addModels();
         void addSkybox();
-        void addSlotViewers();
+        std::vector<BoundingBoxPtr> addSlotViewers();
         void addBoundingBoxOutlines(const std::vector<BoundingBoxPtr>& boxes);
         std::vector<TrajectoryPtr> getTrajectories();
         std::shared_ptr<Mesh> getSkyboxMesh();
