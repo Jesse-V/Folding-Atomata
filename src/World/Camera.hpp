@@ -109,9 +109,9 @@ class Camera
         glm::vec3 lookingAt_, position_, upVector_;
         float fieldOfView_, aspectRatio_, nearFieldClip_, farFieldClip_;
         glm::mat4 projection_, temporaryViewMatrix_, temporaryProjMatrix_;
-        bool projectionUpdated_, viewUpdated_;
 
-    //it'd be cool to have a rotateAround function
+        //these flags are used for sync-on-update and for thread safety
+        bool projectionUpdated_, viewUpdated_, syncProjection_, syncView_;
 };
 
 #endif

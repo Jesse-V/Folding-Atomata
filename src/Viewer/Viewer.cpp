@@ -67,6 +67,7 @@ void Viewer::reportFPS()
 {
     std::thread fpsReporter([&]()
     {
+        std::cout << "Note: FPS will be low when the camera is still." << std::endl;
         while (true)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -202,7 +203,7 @@ std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
     const std::vector<GLuint> INDICES = {
         0, 1, 5, 4, //front
         6, 7, 3, 2, //back
-        2, 0, 4, 6,  //top
+        2, 0, 4, 6, //top
         7, 5, 1, 3, //bottom
         2, 3, 1, 0, //left
         4, 5, 7, 6  //right
@@ -213,6 +214,7 @@ std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
     mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
     return mesh;
 }
+
 
 
 std::shared_ptr<Camera> Viewer::createCamera()

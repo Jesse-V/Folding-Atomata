@@ -58,10 +58,18 @@ void Camera::reset()
 void Camera::startSync()
 {
     if (viewUpdated_)
+    {
         temporaryViewMatrix_ = calculateViewMatrix();
+        syncView_ = true;
+        viewUpdated_ = false;
+    }
 
     if (projectionUpdated_)
+    {
         temporaryProjMatrix_ = getProjectionMatrix();
+        syncProjection_ = true;
+        projectionUpdated_ = false;
+    }
 }
 
 
@@ -72,12 +80,12 @@ void Camera::sync(GLint viewMatrixUniform, GLint projMatrixUniform)
         throw std::runtime_error("Unable to find Camera uniform variables!");
 
     //assemble view matrix and sync if it has updated
-    if (viewUpdated_)
+    if (syncView_)
         glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE,
                                         glm::value_ptr(temporaryViewMatrix_));
 
     //sync projection matrix if it has updated
-    if (projectionUpdated_)
+    if (syncProjection_)
         glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE,
                                         glm::value_ptr(temporaryProjMatrix_));
 }
@@ -86,8 +94,8 @@ void Camera::sync(GLint viewMatrixUniform, GLint projMatrixUniform)
 
 void Camera::endSync()
 {
-    projectionUpdated_ = false;
-    viewUpdated_ = false;
+    syncView_ = viewUpdated_;
+    syncProjection_ = projectionUpdated_;
 }
 
 
