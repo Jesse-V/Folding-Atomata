@@ -52,6 +52,13 @@ BoundingBox& BoundingBox::operator+=(const glm::vec3& offset)
 
 
 
+glm::vec3 BoundingBox::getSizes()
+{
+    return maximum_ - minimum_;
+}
+
+
+
 glm::vec3 BoundingBox::getMinimum()
 {
     return minimum_;

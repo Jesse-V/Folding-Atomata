@@ -57,8 +57,10 @@ class Viewer
         void addModels();
         void addSkybox();
         void addSlotViewers();
+        void addBoundingBoxOutlines(const std::vector<BoundingBoxPtr>& boxes);
         std::vector<TrajectoryPtr> getTrajectories();
         std::shared_ptr<Mesh> getSkyboxMesh();
+        std::shared_ptr<Mesh> getBoundingBoxMesh();
         std::shared_ptr<Camera> createCamera();
 
     private:

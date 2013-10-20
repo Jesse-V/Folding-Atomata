@@ -172,9 +172,29 @@ void Viewer::addSlotViewers()
     } while (boundingBoxesOverlap);
     std::cout << "done." << std::endl;
 
+    std::cout << "Adding bounding box outlines..." << std::endl;
+    addBoundingBoxOutlines(boundingBoxes);
+    std::cout << "... done adding bounding box outlines." << std::endl;
+
     for (std::size_t j = 0; j < 5 && j < trajectories.size(); j++)
         slotViewers_.push_back(std::make_shared<SlotViewer>(trajectories[j],
             offsetVectors[j], scene_));
+}
+
+
+
+void Viewer::addBoundingBoxOutlines(const std::vector<BoundingBoxPtr>& boxes)
+{
+    auto mesh = getBoundingBoxMesh();
+    BufferList list = { std::make_shared<ColorBuffer>(glm::vec3(0, 0.1f, 0), 8) };
+    for (auto boundingBox : boxes)
+    {
+        auto matrix = glm::scale(glm::mat4(), boundingBox->getSizes());
+        matrix = glm::translate(matrix, boundingBox->getMinimum());
+        matrix = glm::scale(glm::mat4(), glm::vec3(20, 20, 20));
+        auto model = std::make_shared<InstancedModel>(mesh, matrix, list);
+        scene_->addModel(model);
+    }
 }
 
 
@@ -257,6 +277,42 @@ std::shared_ptr<Mesh> Viewer::getSkyboxMesh()
     auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
     auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_QUADS);
     mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_QUADS);
+    return mesh;
+}
+
+
+
+std::shared_ptr<Mesh> Viewer::getBoundingBoxMesh()
+{
+    static std::shared_ptr<Mesh> mesh = nullptr;
+
+    if (mesh)
+        return mesh;
+
+    const std::vector<glm::vec3> VERTICES = {
+        glm::vec3(-1, -1, -1),
+        glm::vec3(-1, -1,  1),
+        glm::vec3(-1,  1, -1),
+        glm::vec3(-1,  1,  1),
+        glm::vec3( 1, -1, -1),
+        glm::vec3( 1, -1,  1),
+        glm::vec3( 1,  1, -1),
+        glm::vec3( 1,  1,  1)
+    };
+
+    //visible from the inside only, so faces in
+    const std::vector<GLuint> INDICES = {
+        0, 1, 5, 4, //front
+        6, 7, 3, 2, //back
+        2, 0, 4, 6, //top
+        7, 5, 1, 3, //bottom
+        2, 3, 1, 0, //left
+        4, 5, 7, 6  //right
+    };
+
+    auto vBuffer = std::make_shared<VertexBuffer>(VERTICES);
+    auto iBuffer = std::make_shared<IndexBuffer>(INDICES, GL_LINE_STRIP);
+    mesh = std::make_shared<Mesh>(vBuffer, iBuffer, GL_LINE_STRIP);
     return mesh;
 }
 
