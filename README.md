@@ -3,8 +3,19 @@
 
 View the biological machines that run the body! Folding Atomata is a third-party simulation and protein viewer for [Folding@home](http://folding.stanford.edu/home/), a distributed computing project from Stanford University. Atomata aims to be a drop-in replacement for FAHViewer, the official viewer for F@h.
 
-![Example screenshot of Atomata displaying a colorful ball-and-stick model of an protein.](https://f.cloud.github.com/assets/2314417/1175541/c972bf80-215a-11e3-8e6c-ac802f04afb1.png "Recent example of Atomata rendering a ball-and-stick model of a protein.")
-This screenshot shows a ball-and-stick rendering of a protein from F@h. Atomata animates the protein using available checkpoints, allowing you to see an approximation of how the protein move and morphs within the timeframe of your workunit. Unlike FAHViewer, with Folding Atomata you have ability to fly all around the protein. Back off for the bigger picture, or get in close for a more detailed look.
+Here are some screenshots of it in action. This is an example view of the demo protein:
+![](https://f.cloud.github.com/assets/2314417/1374232/426ebbba-3a6e-11e3-9df8-45e1dfa34cf3.png "FoldingAtomata displaying a colorful ball-and-stick model of an protein. The protein is is bounded by a faint green wire mesh, and there is a faint square point gradient in the skybox in the background.")
+
+Here is a close-up of one section of the protein. Following the [CPK coloring scheme](https://en.wikipedia.org/wiki/CPK_coloring), hydrogen atoms are white, carbons are dark gray, and nitrogen is sky-blue. Not shown here is oxygen (red) and sulfur (yellow). The comprise all the elements that are likely to be found in a protein. All other elements are colored orange.
+![](https://f.cloud.github.com/assets/2314417/1374234/449f620e-3a6e-11e3-9981-a60f157340f4.png "A close-up of some of the atoms.")
+
+This is a neat view of a what appears to be a [imidazole](https://en.wikipedia.org/wiki/Imidazole), an unsaturated [heterocyclic](https://en.wikipedia.org/wiki/Heterocyclic) [carbon ring](https://en.wikipedia.org/wiki/Carbon_ring). This can be found on the side of the demo protein.
+
+![](https://f.cloud.github.com/assets/2314417/1374490/943fbe28-3a71-11e3-8c1b-807d65256b31.png "A close view of an unsaturated heterocyclic carbon ring.")
+
+Atomata animates the protein using available checkpoints, allowing you to see an approximation of how the protein move and morphs within the timeframe of your workunit. Unlike FAHViewer, with Folding Atomata you have ability to fly all around the protein. Back off for the bigger picture, or get in close for a more detailed look.
+
+Since it's common for a computer to work on two different workunits simultaneously, Atomata will illustrate this by rendering the proteins from all available slots from a running client. (Note that this will not include FahCore_17 slots.)
 
 ### System requirements
 
@@ -18,12 +29,12 @@ OpenGL 2.1 was released in 2006 and is supported by the default open-source Nouv
 
 Once you have Folding@home installed and running, you're ready to install Atomata. There are several ways to do this:
 
-* **Installation from PPA. This is the recommended, easiest, and most secure route.** Simply run these commands:
+* **Installation from PPA. This is the recommended, easiest, and most secure route, and applies to Ubuntu and [all derivatives](http://tinyurl.com/ubuntu-derivatives) (including Kubuntu, Xubuntu, and Mint).** Simply run these commands:
 > 1. **sudo add-apt-repository ppa:jvictors/gitstable**
 > 2. **sudo apt-get update**
 > 3. **sudo apt-get install folding-atomata**
 
-    This will add my Personal Package Archive (PPA) to your sources, refresh the list of available packages, and then install Folding Atomata. Digital signatures and hashsums ensure integrity during the entire publishing process and during installation. Once installed, Atomata can then be managed, auto-updated, and uninstalled just like any other Linux package.
+    This will add my Personal Package Archive (PPA) to your sources, refresh the list of available packages, and then install Folding Atomata. Digital signatures and hashsums ensure integrity during the entire publishing process and during installation. Once installed, Atomata can then be managed, auto-updated, and uninstalled just like any other Linux package. This makes it easy to stay updated on the latest releases.
 
 * Installation from .deb file. This is for Debian systems or if you don't want Atomata to automatically update.
 > 1. Visit the [Releases page](https://github.com/Jesse-V/Folding-Atomata/releases).
