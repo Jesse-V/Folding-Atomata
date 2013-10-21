@@ -19,9 +19,10 @@ Since it's common for a computer to work on two different workunits simultaneous
 
 ### System requirements
 
-1. The Folding@home software. Atomata will connect to the software and view the running simulations.
-2. The Linux operating system.
-3. OpenGL 2.1 (GLSL 1.20)
+1. The Linux operating system.
+2. OpenGL 2.1 (GLSL 1.20)
+
+Note that the Folding@home software is not required per se, as Atomata will use a demo protein as a fallback.
 
 OpenGL 2.1 was released in 2006 and is supported by the default open-source Nouveau drivers, but proprietary vendor-specific drivers should also work as well. I provide packages for Mint, Ubuntu, and Debian, so installation and management is easiest for them. For all other Linux distributions, Atomata can be installed from the source through my instructions below. All of these options should be straightforward.
 
