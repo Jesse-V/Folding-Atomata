@@ -93,18 +93,20 @@ void SlotViewer::addAllAtoms()
         if (elementMap.find(element) == elementMap.end()) //not in cache
         {
             std::cout << "Generating model type " << element << "..." << std::endl;
+
             auto model = generateAtomModel(atom, matrix);
-            scene_->addModel(model);
             elementMap[element] = std::make_pair(atomInstances_.size(), model);
-            elementIndexes_.push_back(ElementIndex(atomInstances_.size(), 0));
-            atomInstances_.push_back(model);
+            atomInstances_.push_back(std::make_pair(model, 0));
+            scene_->addModel(model);
+
             std::cout << "... done generating data for " << element << std::endl;
         }
         else //already in cache
         {
-            elementMap[element].second->addInstance(matrix);
-            elementIndexes_.push_back(ElementIndex(elementMap[element].first,
-                elementMap[element].second->getInstanceCount()));
+            auto model = elementMap[element].second;
+            atomInstances_.push_back(std::make_pair(
+                model, model->getInstanceCount()));
+            model->addInstance(matrix);
         }
     }
 
@@ -213,10 +215,12 @@ std::vector<glm::vec3> SlotViewer::animateAtoms(int b)
         position += offsetVector_;
 
         newPositions.push_back(position);
-        ElementIndex index = elementIndexes_[j];
-        if (atomInstances_.size() > 0)
-            atomInstances_[index.elementIndex]->setModelMatrix(
-                index.instanceIndex, generateAtomMatrix(position, atoms[j]));
+        if (!atomInstances_.empty())
+        {
+            auto instance = atomInstances_[j];
+            instance.first->setModelMatrix(
+                instance.second, generateAtomMatrix(position, atoms[j]));
+        }
     }
 
     return newPositions;

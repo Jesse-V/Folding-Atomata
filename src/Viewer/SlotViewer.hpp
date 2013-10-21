@@ -108,22 +108,12 @@ class SlotViewer
         glm::mat4 generateBondMatrix(const glm::vec3& startPosition,
                                      const glm::vec3& endPosition);
 
-        struct ElementIndex
-        {
-            ElementIndex(std::size_t elIndex, std::size_t instIndex) :
-                elementIndex(elIndex), instanceIndex(instIndex)
-            {}
-
-            std::size_t elementIndex, instanceIndex;
-        };
-
     private:
         std::shared_ptr<Scene> scene_;
         TrajectoryPtr trajectory_;
         glm::vec3 offsetVector_;
 
-        std::vector<ElementIndex> elementIndexes_; //references specific instances
-        std::vector<InstancedModelPtr> atomInstances_;
+        std::vector<std::pair<InstancedModelPtr, std::size_t>> atomInstances_;
         InstancedModelPtr bondInstance_;
 
         int transitionTime_; //how much elapsed time between each snapshot

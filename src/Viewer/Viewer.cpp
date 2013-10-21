@@ -168,6 +168,7 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
         {
             for (std::size_t j = 0; j < trajectories.size(); j++)
             {
+                //todo: why does the order of these two instructions matter?
                 *resizedBoxes[j] = *boundingBoxes[j] + offsetVectors[j];
                 offsetVectors[j] *= 2;
             }
