@@ -50,27 +50,49 @@ Once you have Folding@home installed and running, you're ready to install Atomat
     > 1. Once you have download the source, you will need the libglew-dev, freeglut3-dev, libpng-dev, cmake, and build-essential libraries.
     > 2. Navigate into the _src_ directory, and then run the following:
     > 3. **cp -rl ../debian/ debian/ && cd debian/extra_includes/ && gzip --best -c manpage > FoldingAtomata.1.gz && cd ../../**
-    > 4. **cd src/ && cmake . && make -j 4** and then as root run **make install**
+    > 4. **cmake . && make -j 4** and then as root run **make install**
 
     You can also use **./ClangCompileRun.sh** in the _src_ directory to compile with the [Clang compiler](https://en.wikipedia.org/wiki/Clang), or alternatively, use **./compileRun.sh** to compile using GCC. I prefer using Clang for development, but it doesn't matter too much if you're installing it from source.
 
 ### Usage
 
-Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata** and it will run with verbose output. **You need to have FAHClient running on your local machine for Atomata to connect. ([#17](https://github.com/Jesse-V/Folding-Atomata/issues/17))** If you need help, type **man FoldingAtomata** or **FoldingAtomata --help**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](http://foldingforum.org/), or via email.
+Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata**. If you need help, type **man FoldingAtomata** or **FoldingAtomata --help**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](https://foldingforum.org/ucp.php?i=pm&mode=compose&u=18404), or via email.
 
-The camera is controlled via the standard game keybindings: W and S go forward and backward respectively, A and D moves left and right, and Q and E moves up and down. You can look around using the mouse. These are ordinary controls used in many games, including Minecraft. Your motion through space is supposed to be fluid and smooth, so enjoy and don't forget to look around as you're moving!
+The camera is controlled via the standard game WSAD keybindings: W and S go forward and backward respectively, A and D moves left and right, and Q and E moves up and down. You can look around using the mouse. These are ordinary controls used in many games, including Minecraft. Your motion through space is supposed to be fluid and smooth and will slow to a halt over time, so enjoy and don't forget to look around as you're moving! 
 
-The animation moves from one available snapshot to the other, and then starts over when it reaches the end. This is in contrast to FAHViewer, which runs the animation backwards when it reaches the last snapshot. Currently, Atomata is unable to render new snapshots as they come in, but FAHViewer can. I intend to fix this.
+The animation is simple linear interpolate between pairs of snapshots. By default, the animation will start over when it reaches the end, thus making it easy to distinguish the correct direction the protein is moving as you are processing it. This is in contrast to FAHViewer, which runs the animation backwards when it reaches the last snapshot. If you prefer this behavior, see the --cycle-snapshots flag in the list below. Providing it will change the animation to follow FAHViewer. Currently, Atomata is unable to render new snapshots as they come in, but FAHViewer can. I intend to fix this.
+
+### Flags
+
+Like FAHViewer, an easy way to control the program is through command-line flags, and this is a common theme for Linux applications anyway. The most important flags are given by FAHControl, and Atomata can handle many of these. The list of flags are:
+
+    --animationDelay, -ad  Milliseconds to wait between each animation frame.
+    --connect, -c          Address and port to use to connect to FAHClient.
+    --cycle-snapshots      If enabled, the animation runs backwards at end.
+    --help, -h             Show flag options and their usage.
+    --image-a, -ia         Specifies the path to image A for the skybox.
+    --image-b, -ib         Specifies the path to image B for the skybox.
+    --image-c, -ic         Specifies the path to image C for the skybox.
+    --license              Prints license information.
+    --mode, -m             Rendering mode. 3 is stick. Ball-n-stick by default.
+    --no-skybox            Disables the skybox, leaving a black background.
+    --password, -p         Password for accessing the remote FAHClient.
+    --slices, -sl          Slices to use for the atom mesh. Default is 8.
+    --stacks, -st          Stacks to use for the atom mesh. Default is 16.
+    --verbose, -v          Verbose printing to stdout.
+    --version              Print version information.
+    
+For key-value flags, two formats are supported: "--<option> <value>" and "--<option>=<value>". For boolean values or for flags that don't have any values attached (e.g. --version) just provide the flag.
 
 ### Security
 
-Computer and network security is becoming increasingly important, and I take it very seriously. I use the 2048-bit RSA key 0xC20BEC80 to digitally sign my files when pushing to Launchpad. A virtual machine then remotely compiles and builds the package from source within a fresh installation of Ubuntu. For a PPA install, the download is verified using a 1024-bit digital signature from Launchpad. For either a PPA or .deb install, the installation uses hash functions to confirm integrity. The code is also open-source, and you are free to email me if you have any questions or concerns regarding any of its contents.
+Computer and network security is becoming increasingly important, and it is something that interests me. I use the 2048-bit RSA key 0xC20BEC80 to digitally sign my files when pushing to Launchpad. A virtual machine then remotely compiles and builds the package from source within a fresh installation of Ubuntu. For a PPA install, the download is verified using a 1024-bit digital signature from Launchpad. For either a PPA or .deb install, the installation uses hash functions to confirm integrity. The code is also open-source, and you are free to email me if you have any questions or concerns regarding any of its contents.
 
-That being said, Folding Atomata has exactly the same weakness that FAHViewer has: the password for remote clients is transmitted in cleartext. There is little that either of these programs can do about it. There's also no authentication or encryption when connecting to remote clients, so that bit requires a bit of trust and responsibility.
+That being said, Folding Atomata has exactly the same security weakness that FAHViewer has: the password for remote clients is transmitted in cleartext. There is little that either of these programs can do about that. There's also no authentication or encryption when connecting to remote clients, so that bit requires a bit of trust and responsibility.
 
 ### What does "Folding Atomata" mean?
 
-It's a play on words, almost a portmanteau. The root is "automaton", (plural automata) which is a self-operating machine. These can be a full-sized machine or robot, or self-operating process such as a [cellular automaton](http://en.wikipedia.org/wiki/Cellular_automaton). The term "automaton" also refers to [finite-state machines](http://en.wikipedia.org/wiki/Finite-state_machine). These are often used to describe simple computer pgorams or electronic/logical processes. Since "Atomata" has the prefix "atom," the name "Folding Atomata" turns out to be very applicable.
+It's a play on words, a sort of portmanteau. The root is "automaton", (plural automata) which is a self-operating machine. These can be a full-sized machine or robot, or self-operating process such as a [cellular automaton](http://en.wikipedia.org/wiki/Cellular_automaton). The term "automaton" also refers to [finite-state machines](http://en.wikipedia.org/wiki/Finite-state_machine). These are often used to describe simple computer pgorams or electronic/logical processes. Since "Atomata" has the prefix "atom," the name "Folding Atomata" turns out to be very applicable.
 
 All of this makes sense in the context of this program. Proteins are self-operating machines: they are the workhorses in biology, play essential roles in nearly all biological functions and processes, and bind together to create a ribosome and create more of themselves. Yet they must first fold themselves into a functional three-dimensional structure before they can take on any of these roles. As a protein folds, [it transitions](http://en.wikipedia.org/wiki/File:ACBP_MSM_from_Folding@home.tiff) from one intermediate semi-stable fold to another until it finally reaches its stable native state. A protein can spend upwards of 96% of its folding time in these intermediate states, so scientists often model protein folding using an [energy function and Markov State Models](http://folding.stanford.edu/home/faq/faq-simulation/). MSMs can be represented as finite-state machines, except that the transitions are probabilistic/stochastic rather than deterministic. MSMs are a key component to Folding@home: it is because of them that distributing computing is even an option for simulating protein folding. (Each workunit is a piece of this model.) This program animates and explores the atoms of the protein as the computer processes it. So overall, "Folding Atomata" fits with the many aspects within the scope of the program.
 
@@ -88,8 +110,8 @@ Wherever reasonably possible, the programming style strives to follow http://geo
 
 #### Porting to Windows
 
-For time reasons, I only want to support Linux at the moment. However, porting Folding Atomata to Windows should not be difficult. CMake should generate a decent Visual Studio project, and I have a pretty good idea how to get it to look for the relevent libraries. Glew and Glut are very popular, they're easy to install in Windows, there's plenty of documentation out there, and compilation should be straightforward. I'm particularly interested in building a .exe or .msi installer, so if anyone is up for the fun challenge I'd be willing to support them however I can, and they'd get to have their name on it too!
+For time reasons, I'm only supporting Linux at the moment. However, porting Folding Atomata to Windows should not be difficult. I have a pretty good idea how to get it CMake to look for the relevant libraries. Glew and Freeglut are very popular, and they should be easy to install in Windows. There's plenty of documentation out there on that, and compilation should be straightforward. Two elements in the code will have to be changed: the Socket class which currently uses Unix sockets, and main.cpp currently redirects standard output into /dev/null if the verbosity flag isn't provided, and /dev/null doesn't exist in Windows. However, I have provided some URLs in the code that may be of use to anyone wanting to make these changes. I'm particularly interested in building a .exe or .msi installer, so if anyone is up for the fun challenge I'd be willing to support them however I can, and they'd get to have their name all over the port too!
 
 ### Origin
 
-This project inherited the rendering and game engine developed for [iVoxely](https://github.com/Jesse-V/iVoxely), but I made improvements to the engines while developing Atomata.
+This project inherited the rendering and game engine developed for [iVoxely](https://github.com/Jesse-V/iVoxely), but I've made some significant improvements and general changes to the rendering and game engine while developing Atomata.
