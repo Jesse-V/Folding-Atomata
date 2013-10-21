@@ -34,6 +34,8 @@
 #include <stdexcept>
 #include <cerrno>
 #include <cstdlib>
+#include <stdlib.h>
+#include <string.h>
 
 namespace png
 {

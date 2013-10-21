@@ -1,3 +1,23 @@
+folding-atomata (1.4.1.0) quantal; urgency=medium
+
+  * Significant efficiency improvements to rendering engine.
+  * Light on resources when idle.
+  * Increased compatibility with FAHViewer.
+  * Bug fixes and ticket closures:
+    - Added skybox, textured with soft square-point gradient. (#3)
+    - Display proteins from all readable slots. (#9)
+    - Low FPS mode. Render only when necessary. (#27 and #49)
+    - Ability to choose background images for skybox. (#41)
+    - Significant reduction in CPU usage. (#44)
+    - Flag to enable FAHViewer-like bouncing animation. (#51)
+    - Fixed visual echo bug for some models introduced from #27 and #49. (#52)
+    - Fixed discoloration of .png images introduced with #3. (#53)
+    - Fixed camera movement occasionally lagging. (#54)
+    - Fixed missing or orphaned atoms. (#55)
+    - Drew light green wire-mesh bounding box around each protein. (#56)
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Mon, 21 Oct 2013 11:46:00 -0600
+
 folding-atomata (0.6.8.0) quantal; urgency=medium
 
   * Slight reduction in camera control acceleration.

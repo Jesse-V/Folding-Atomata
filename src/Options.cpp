@@ -41,7 +41,7 @@ Options& Options::getInstance()
 
 
 Options::Options() :
-    highVerbosity_(true), cycleSnapshots_(true), skyboxDisabled_(false),
+    highVerbosity_(false), cycleSnapshots_(false), skyboxDisabled_(false),
     connectionPath_("127.0.0.1:36330"),
     imageApath_("/usr/share/FoldingAtomata/images/gradient.png"),
     imageBpath_("/usr/share/FoldingAtomata/images/gradient.png"),
@@ -93,7 +93,7 @@ Examples:
 
         if (options[index] == "--version")
         {
-            std::cout << "0.6.8.0" << std::endl;
+            std::cout << "1.4.1.0" << std::endl;
             return false;
         }
 
