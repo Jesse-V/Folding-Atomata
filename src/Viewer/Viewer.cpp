@@ -168,7 +168,6 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
         {
             for (std::size_t j = 0; j < trajectories.size(); j++)
             {
-                //todo: why does the order of these two instructions matter?
                 *resizedBoxes[j] = *boundingBoxes[j] + offsetVectors[j];
                 offsetVectors[j] *= 2;
             }
@@ -188,15 +187,20 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
 void Viewer::addBoundingBoxOutlines(const std::vector<BoundingBoxPtr>& boxes)
 {
     std::cout << "Adding bounding box outlines..." << std::endl;
+
+    std::vector<glm::mat4> matrices;
+    matrices.resize(boxes.size());
+    std::transform(boxes.begin(), boxes.end(),
+        matrices.begin(), [&](const BoundingBoxPtr& boundingBox)
+        {
+            auto matrix = glm::translate(glm::mat4(), boundingBox->getMinimum());
+            return glm::scale(matrix, boundingBox->getSizes());
+        }
+    );
+
     auto mesh = getBoundingBoxMesh();
-    BufferList list = { std::make_shared<ColorBuffer>(glm::vec3(0, 0.1f, 0), 8) };
-    for (auto boundingBox : boxes)
-    {
-        auto matrix = glm::translate(glm::mat4(), boundingBox->getMinimum());
-        matrix = glm::scale(matrix, boundingBox->getSizes());
-        auto model = std::make_shared<InstancedModel>(mesh, matrix, list);
-        scene_->addModel(model);
-    }
+    BufferList list = {std::make_shared<ColorBuffer>(glm::vec3(0, 0.1f, 0), 8)};
+    scene_->addModel(std::make_shared<InstancedModel>(mesh, matrices, list));
     std::cout << "... done adding bounding box outlines." << std::endl;
 }
 

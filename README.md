@@ -58,7 +58,7 @@ Once you have Folding@home installed and running, you're ready to install Atomat
 
 Folding Atomata aims to be as simple as FAHViewer, but with more capabilities and excitement. Atomata installs into Menu => Education just like FAHViewer, and has it's own [logo](https://en.wikipedia.org/wiki/File:Protein_fold.png). Launching the program is easy: simply launch it from the Menu, or you can open the Terminal and type **FoldingAtomata**. If you need help, type **man FoldingAtomata** or **FoldingAtomata --help**. If you need additional help, send me a message over [Freenode's](http://webchat.freenode.net/) #folding@home IRC channel, over [foldingforum.org](https://foldingforum.org/ucp.php?i=pm&mode=compose&u=18404), or via email.
 
-The camera is controlled via the standard game WSAD keybindings: W and S go forward and backward respectively, A and D moves left and right, and Q and E moves up and down. You can look around using the mouse. These are ordinary controls used in many games, including Minecraft. Your motion through space is supposed to be fluid and smooth and will slow to a halt over time, so enjoy and don't forget to look around as you're moving! 
+The camera is controlled via the standard game WSAD keybindings: W and S go forward and backward respectively, A and D moves left and right, and Q and E moves up and down. You can look around using the mouse. These are ordinary controls used in many games, including Minecraft. Your motion through space is supposed to be fluid and smooth and will slow to a halt over time, so enjoy and don't forget to look around as you're moving!
 
 The animation is simple linear interpolate between pairs of snapshots. By default, the animation will start over when it reaches the end, thus making it easy to distinguish the correct direction the protein is moving as you are processing it. This is in contrast to FAHViewer, which runs the animation backwards when it reaches the last snapshot. If you prefer this behavior, see the --cycle-snapshots flag in the list below. Providing it will change the animation to follow FAHViewer. Currently, Atomata is unable to render new snapshots as they come in, but FAHViewer can. I intend to fix this.
 
@@ -81,7 +81,7 @@ Like FAHViewer, an easy way to control the program is through command-line flags
     --stacks, -st          Stacks to use for the atom mesh. Default is 16.
     --verbose, -v          Verbose printing to stdout.
     --version              Print version information.
-    
+
 For key-value flags, two formats are supported: "--<option> <value>" and "--<option>=<value>". For boolean values or for flags that don't have any values attached (e.g. --version) just provide the flag.
 
 ### Security
@@ -108,9 +108,13 @@ When developing, the **clean.sh** script in the _src_ directory is useful for cl
 
 Wherever reasonably possible, the programming style strives to follow http://geosoft.no/development/cppstyle.html with the exception of #85.
 
-#### Porting to Windows
+#### Porting to Windows/OS-X
 
-For time reasons, I'm only supporting Linux at the moment. However, porting Folding Atomata to Windows should not be difficult. I have a pretty good idea how to get it CMake to look for the relevant libraries. Glew and Freeglut are very popular, and they should be easy to install in Windows. There's plenty of documentation out there on that, and compilation should be straightforward. Two elements in the code will have to be changed: the Socket class which currently uses Unix sockets, and main.cpp currently redirects standard output into /dev/null if the verbosity flag isn't provided, and /dev/null doesn't exist in Windows. However, I have provided some URLs in the code that may be of use to anyone wanting to make these changes. I'm particularly interested in building a .exe or .msi installer, so if anyone is up for the fun challenge I'd be willing to support them however I can, and they'd get to have their name all over the port too!
+I don't currently offer a release of Folding Atomata for Windows. However, porting it would not be difficult, as Glew, Freeglut, and PNG are very popular and should not be difficult to install. After upgrading Visual Studio's compiler so that it can handle modern C++11 elements like initializer lists, two elements in the code will have to be changed: the Socket class which currently uses Unix sockets, and main.cpp currently redirects standard output into /dev/null if the verbosity flag isn't provided, and /dev/null doesn't exist in Windows. I have provided some URLs in the code that may be of use to anyone wanting to make these changes. A release for Windows would also require a .exe or .msi installer, which I have no experience with. First one to offer a port gets their name on it!
+
+A port to OS X is unlikely to happen. I don't have a Mac that I can use for testing. However, I will support anyone who wants to port the code.
+
+If anyone is interested in porting, feel free to just fork the repository and code away. :)
 
 ### Origin
 
