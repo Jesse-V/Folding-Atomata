@@ -452,7 +452,7 @@ inline void CmdLine::parse(std::vector<std::string>& args)
 
 		int requiredCount = 0;
 
-		for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++) 
+		for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++)
 		{
 			bool matched = false;
 			for (ArgListIterator it = _argList.begin();
@@ -467,13 +467,13 @@ inline void CmdLine::parse(std::vector<std::string>& args)
 
 			// checks to see if the argument is an empty combined
 			// switch and if so, then we've actually matched it
-			if ( !matched && _emptyCombined( args[i] ) )
+			if ( !matched && _emptyCombined( args[(std::size_t)i] ) )
 				matched = true;
 
 			if ( !matched && !Arg::ignoreRest() )
 				throw(CmdLineParseException("Couldn't find match "
 				                            "for argument",
-				                            args[i]));
+				                            args[(std::size_t)i]));
 		}
 
 		if ( requiredCount < _numRequired )
@@ -513,7 +513,7 @@ inline bool CmdLine::_emptyCombined(const std::string& s)
 	if ( s.length() > 0 && s[0] != Arg::flagStartChar() )
 		return false;
 
-	for ( int i = 1; static_cast<unsigned int>(i) < s.length(); i++ )
+	for ( std::size_t i = 1; i < s.length(); i++ )
 		if ( s[i] != Arg::blankChar() )
 			return false;
 
@@ -619,7 +619,7 @@ inline void CmdLine::reset()
 {
 	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ )
 		(*it)->reset();
-	
+
 	_progName.clear();
 }
 
