@@ -137,7 +137,7 @@ class CmdLine : public CmdLineInterface
 		/**
 		 * Throws an exception listing the missing args.
 		 */
-		void missingArgsException();
+		void missingArgsException() __attribute__ ((__noreturn__));
 
 		/**
 		 * Checks whether a name/flag string matches entirely matches
@@ -524,29 +524,29 @@ inline bool CmdLine::_emptyCombined(const std::string& s)
 
 inline void CmdLine::missingArgsException()
 {
-		int count = 0;
+	int count = 0;
 
-		std::string missingArgList;
-		for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++)
+	std::string missingArgList;
+	for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++)
+	{
+		if ( (*it)->isRequired() && !(*it)->isSet() )
 		{
-			if ( (*it)->isRequired() && !(*it)->isSet() )
-			{
-				missingArgList += (*it)->getName();
-				missingArgList += ", ";
-				count++;
-			}
+			missingArgList += (*it)->getName();
+			missingArgList += ", ";
+			count++;
 		}
-		missingArgList = missingArgList.substr(0,missingArgList.length()-2);
+	}
+	missingArgList = missingArgList.substr(0,missingArgList.length()-2);
 
-		std::string msg;
-		if ( count > 1 )
-			msg = "Required arguments missing: ";
-		else
-			msg = "Required argument missing: ";
+	std::string msg;
+	if ( count > 1 )
+		msg = "Required arguments missing: ";
+	else
+		msg = "Required argument missing: ";
 
-		msg += missingArgList;
+	msg += missingArgList;
 
-		throw(CmdLineParseException(msg));
+	throw(CmdLineParseException(msg));
 }
 
 inline void CmdLine::deleteOnExit(Arg* ptr)

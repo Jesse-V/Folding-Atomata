@@ -65,8 +65,7 @@ class Options
 
         bool highVerbosity_, cycleSnapshots_, skyboxDisabled_, oneSlot_;
         std::string connectionPath_, authPassword_, imagePath_;
-        unsigned int atomStacks_, atomSlices_;
-        int animationDelay_;
+        unsigned int atomStacks_, atomSlices_, animationDelay_;
         RenderMode renderMode_ = RenderMode::BALL_N_STICK;
 };
 

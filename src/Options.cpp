@@ -206,7 +206,7 @@ unsigned int Options::getAtomSlices()
 
 int Options::getAnimationDelay()
 {
-    return animationDelay_;
+    return (int)animationDelay_;
 }
 
 

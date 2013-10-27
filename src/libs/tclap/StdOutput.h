@@ -164,7 +164,7 @@ StdOutput::_shortUsage( CmdLineInterface& _cmd,
 	std::string s = progName + " ";
 
 	// first the xor
-	for ( int i = 0; static_cast<unsigned int>(i) < xorList.size(); i++ )
+	for ( std::size_t i = 0; i < xorList.size(); i++ )
 		{
 			s += " {";
 			for ( ArgVectorIterator it = xorList[i].begin();
@@ -197,7 +197,7 @@ StdOutput::_longUsage( CmdLineInterface& _cmd,
 	std::vector< std::vector<Arg*> > xorList = xorHandler.getXorList();
 
 	// first the xor
-	for ( int i = 0; static_cast<unsigned int>(i) < xorList.size(); i++ )
+	for ( std::size_t i = 0; i < xorList.size(); i++ )
 		{
 			for ( ArgVectorIterator it = xorList[i].begin();
 				  it != xorList[i].end();
@@ -235,63 +235,63 @@ inline void StdOutput::spacePrint( std::ostream& os,
 	int len = static_cast<int>(s.length());
 
 	if ( (len + indentSpaces > maxWidth) && maxWidth > 0 )
+	{
+		int allowedLen = maxWidth - indentSpaces;
+		int start = 0;
+		while ( start < len )
 		{
-			int allowedLen = maxWidth - indentSpaces;
-			int start = 0;
-			while ( start < len )
-				{
-					// find the substring length
-					// int stringLen = std::min<int>( len - start, allowedLen );
-					// doing it this way to support a VisualC++ 2005 bug
-					using namespace std;
-					int stringLen = min<int>( len - start, allowedLen );
+			// find the substring length
+			// int stringLen = std::min<int>( len - start, allowedLen );
+			// doing it this way to support a VisualC++ 2005 bug
+			using namespace std;
+			int stringLen = min<int>( len - start, allowedLen );
 
-					// trim the length so it doesn't end in middle of a word
-					if ( stringLen == allowedLen )
-						while ( stringLen >= 0 &&
-								s[stringLen+start] != ' ' &&
-								s[stringLen+start] != ',' &&
-								s[stringLen+start] != '|' )
-							stringLen--;
+			// trim the length so it doesn't end in middle of a word
+			if ( stringLen == allowedLen )
+				while ( stringLen >= 0 &&
+						s[(std::size_t)(stringLen+start)] != ' ' &&
+						s[(std::size_t)(stringLen+start)] != ',' &&
+						s[(std::size_t)(stringLen+start)] != '|' )
+					stringLen--;
 
-					// ok, the word is longer than the line, so just split
-					// wherever the line ends
-					if ( stringLen <= 0 )
-						stringLen = allowedLen;
+			// ok, the word is longer than the line, so just split
+			// wherever the line ends
+			if ( stringLen <= 0 )
+				stringLen = allowedLen;
 
-					// check for newlines
-					for ( int i = 0; i < stringLen; i++ )
-						if ( s[start+i] == '\n' )
-							stringLen = i+1;
+			// check for newlines
+			for ( int i = 0; i < stringLen; i++ )
+				if ( s[(std::size_t)(start+i)] == '\n' )
+					stringLen = i+1;
 
-					// print the indent
-					for ( int i = 0; i < indentSpaces; i++ )
-						os << " ";
-
-					if ( start == 0 )
-						{
-							// handle second line offsets
-							indentSpaces += secondLineOffset;
-
-							// adjust allowed len
-							allowedLen -= secondLineOffset;
-						}
-
-					os << s.substr(start,stringLen) << std::endl;
-
-					// so we don't start a line with a space
-					while ( s[stringLen+start] == ' ' && start < len )
-						start++;
-
-					start += stringLen;
-				}
-		}
-	else
-		{
+			// print the indent
 			for ( int i = 0; i < indentSpaces; i++ )
 				os << " ";
-			os << s << std::endl;
+
+			if ( start == 0 )
+				{
+					// handle second line offsets
+					indentSpaces += secondLineOffset;
+
+					// adjust allowed len
+					allowedLen -= secondLineOffset;
+				}
+
+			os << s.substr((std::size_t)start, (std::size_t)stringLen) << std::endl;
+
+			// so we don't start a line with a space
+			while ( s[(std::size_t)(stringLen+start)] == ' ' && start < len )
+				start++;
+
+			start += stringLen;
 		}
+	}
+	else
+	{
+		for ( int i = 0; i < indentSpaces; i++ )
+			os << " ";
+		os << s << std::endl;
+	}
 }
 
 } //namespace TCLAP

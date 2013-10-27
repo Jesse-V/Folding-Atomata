@@ -360,7 +360,7 @@ bool ValueArg<T>::processArg(int *i, std::vector<std::string>& args)
         {
             (*i)++;
             if ( static_cast<unsigned int>(*i) < args.size() )
-				_extractValue( args[*i] );
+				_extractValue( args[(std::size_t)*i] );
             else
 				throw( ArgParseException("Missing a value for this argument!",
                                                     toString() ) );
