@@ -69,23 +69,23 @@ The animation is simple linear interpolate between pairs of snapshots. By defaul
 
 Like FAHViewer, an easy way to control the program is through command-line flags, and this is a common theme for Linux applications anyway. The most important flags are given by FAHControl, and Atomata can handle many of these. The list of flags are:
 
-    --animationDelay, -ad  Milliseconds to wait between each animation frame.
-    --connect, -c          Address and port to use to connect to FAHClient.
-    --cycle-snapshots      If enabled, the animation runs backwards at end.
-    --help, -h             Show flag options and their usage.
-    --image-a, -ia         Specifies the path to image A for the skybox.
-    --image-b, -ib         Specifies the path to image B for the skybox.
-    --image-c, -ic         Specifies the path to image C for the skybox.
-    --license              Prints license information.
-    --mode, -m             Rendering mode. 3 is stick. Ball-n-stick by default.
-    --no-skybox            Disables the skybox, leaving a black background.
-    --password, -p         Password for accessing the remote FAHClient.
-    --slices, -sl          Slices to use for the atom mesh. Default is 8.
-    --stacks, -st          Stacks to use for the atom mesh. Default is 16.
-    --verbose, -v          Verbose printing to stdout.
-    --version              Print version information.
+    --animation-delay, -a    Milliseconds to wait between each animation frame.
+    --connect, -c            Address and port to use to connect to FAHClient.
+    --cycle-snapshots, -C    If enabled, the animation runs backwards at end.
+    --help, -h               Show flag options and their usage.
+    --ignore_rest, --        Ignore all flags that follow this flag.
+    --image, -i              Specifies the path to the image that textures the skybox.
+    --license                Prints license information and exits.
+    --mode, -m               Rendering mode. 3 is stick. Ball-n-stick by default.
+    --no-skybox              Disables the skybox, leaving a black background.
+    --one-slot, -o           Only render the first non-core-17 slot, instead of all slots.
+    --password, -p           Password for accessing the remote FAHClient.
+    --slices, -s             Slices to use for creating the atom mesh. Default is 8.
+    --stacks, -S             Stacks to use for creating the atom mesh. Default is 16.
+    --verbose, -v            Verbose printing to stdout.
+    --version                Print version information.
 
-For key-value flags, two formats are supported: "--<option> <value>" and "--<option>=<value>". For boolean values or for flags that don't have any values attached (e.g. --version) just provide the flag.
+For key-value flags, the following format is supported: "--<option>=<value>". For boolean values or for flags that don't have any values attached (e.g. --version) just provide the flag.
 
 ### Security
 
