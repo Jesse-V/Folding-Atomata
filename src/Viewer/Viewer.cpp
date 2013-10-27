@@ -102,21 +102,11 @@ void Viewer::addSkybox()
 {
     std::cout << "Creating skybox..." << std::endl;
 
-    auto positiveX = std::make_shared<Image>(
-        Options::getInstance().getPathToImageA(), false, true);
-    auto negativeX = std::make_shared<Image>(
-        Options::getInstance().getPathToImageA(), true, false);
-    auto positiveY = std::make_shared<Image>(
-        Options::getInstance().getPathToImageB(), false, true);
-    auto negativeY = std::make_shared<Image>(
-        Options::getInstance().getPathToImageB(), true, false);
-    auto positiveZ = std::make_shared<Image>(
-        Options::getInstance().getPathToImageC(), false, true);
-    auto negativeZ = std::make_shared<Image>(
-        Options::getInstance().getPathToImageC(), true, false);
+    auto image = std::make_shared<Image>(
+        Options::getInstance().getSkyboxPath());
 
-    BufferList list = { std::make_shared<TexturedCube>(positiveX, negativeX,
-        positiveY, negativeY, positiveZ, negativeZ) };
+    BufferList list = { std::make_shared<TexturedCube>(image, image,
+        image, image, image, image) };
     auto matrix = glm::scale(glm::mat4(), glm::vec3(4096));
     auto model = std::make_shared<InstancedModel>(getSkyboxMesh(), matrix, list);
     scene_->addModel(model); //add to Scene and save
@@ -138,6 +128,12 @@ std::vector<BoundingBoxPtr> Viewer::addSlotViewers()
     };
 
     std::vector<TrajectoryPtr> trajectories = getTrajectories();
+    if (Options::getInstance().showOneSlot())
+    {
+        slotViewers_.push_back(std::make_shared<SlotViewer>(trajectories[0],
+            OFFSET_UNIT_VECTORS[0][0], scene_));
+        return { trajectories[0]->calculateBoundingBox() };
+    }
 
     //fill this vector with the bounding boxes of each trajectory
     std::vector<BoundingBoxPtr> boundingBoxes;

@@ -43,7 +43,6 @@ class Options
             BALL_N_STICK, STICK
         };
 
-        Options();
         std::string getHost();
         int getPort();
         bool usesPassword();
@@ -55,9 +54,8 @@ class Options
         bool cycleSnapshots();
         bool highVerbosity();
         bool skyboxDisabled();
-        std::string getPathToImageA();
-        std::string getPathToImageB();
-        std::string getPathToImageC();
+        std::string getSkyboxPath();
+        bool showOneSlot();
 
     private:
         bool handleFlagsInternal(int argc, char** argv);
@@ -65,9 +63,8 @@ class Options
     private:
         static Options* singleton_;
 
-        bool highVerbosity_, cycleSnapshots_, skyboxDisabled_;
-        std::string connectionPath_, authPassword_, imageApath_, imageBpath_,
-            imageCpath_;
+        bool highVerbosity_, cycleSnapshots_, skyboxDisabled_, oneSlot_;
+        std::string connectionPath_, authPassword_, imagePath_;
         unsigned int atomStacks_, atomSlices_;
         int animationDelay_;
         RenderMode renderMode_ = RenderMode::BALL_N_STICK;

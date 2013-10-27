@@ -39,22 +39,11 @@ Options& Options::getInstance()
 
 
 
-Options::Options() :
-    highVerbosity_(false), cycleSnapshots_(false), skyboxDisabled_(false),
-    connectionPath_("127.0.0.1:36330"),
-    imageApath_("/usr/share/FoldingAtomata/images/gradient.png"),
-    imageBpath_("/usr/share/FoldingAtomata/images/gradient.png"),
-    imageCpath_("/usr/share/FoldingAtomata/images/gradient.png"),
-    atomStacks_(8), atomSlices_(16), animationDelay_(40)
-{}
-
-
-
 bool Options::handleFlags(int argc, char** argv)
 {
     static bool called = false;
     if (called)
-        throw std::runtime_error("HandleFlags should not be repeatedly called!");
+        throw std::runtime_error("HandleFlags called multiple times!");
 
     called = true;
     return Options::getInstance().handleFlagsInternal(argc, argv);
@@ -66,18 +55,18 @@ bool Options::handleFlagsInternal(int argc, char** argv)
 {
     TCLAP::ValueArg<unsigned int> animationDelayFlag("a", "animation-delay",
         "Milliseconds to wait between each animation frame.", false,
-        0, "long");
+        40, "long");
 
     TCLAP::ValueArg<std::string> connectFlag("c", "connect",
         "Address and port to use to connect to FAHClient.", false,
-        "DERP", "IP:port");
+        "127.0.0.1:36330", "IP:port");
 
     TCLAP::SwitchArg cycleSnapshotsFlag("C", "cycle-snapshots",
         "If enabled, the animation runs backwards at end.", false);
 
     TCLAP::ValueArg<std::string> skyboxImageFlag("i", "image",
         "Specifies the path to image for the skybox.", false,
-        "DERP", "path");
+        "/usr/share/FoldingAtomata/images/gradient.png", "path");
 
     TCLAP::SwitchArg licenseFlag("l", "license",
         "Prints license information and exits.", false);
@@ -89,17 +78,20 @@ bool Options::handleFlagsInternal(int argc, char** argv)
     TCLAP::SwitchArg noSkyboxFlag("n", "no-skybox",
         "Disables the skybox, leaving a black background.", false);
 
+    TCLAP::SwitchArg oneSlotFlag("o", "one-slot",
+        "Only shows one slot, instead of all available slots.", false);
+
     TCLAP::ValueArg<std::string> passwordFlag("p", "password",
         "Password for accessing the remote FAHClient.", false,
-        "DERP", "string");
+        "", "string");
 
     TCLAP::ValueArg<unsigned int> slicesFlag("s", "slices",
         "Slices to use for the atom mesh. Default is 8.", false,
-        0, "unsigned int");
+        8, "unsigned int");
 
     TCLAP::ValueArg<unsigned int> stacksFlag("S", "stacks",
         "Stacks to use for the atom mesh. Default is 16.", false,
-        0, "unsigned int");
+        16, "unsigned int");
 
     TCLAP::SwitchArg verboseFlag("v", "verbose", //this could be a MultiSwitch
         "Verbose printing to stdout.", false);
@@ -115,6 +107,7 @@ bool Options::handleFlagsInternal(int argc, char** argv)
     cmd.add(licenseFlag);
     cmd.add(modeFlag);
     cmd.add(noSkyboxFlag);
+    cmd.add(oneSlotFlag);
     cmd.add(passwordFlag);
     cmd.add(slicesFlag);
     cmd.add(stacksFlag);
@@ -122,16 +115,10 @@ bool Options::handleFlagsInternal(int argc, char** argv)
 
     cmd.parse(argc, argv);
 
-    if (animationDelayFlag.isSet())
-        animationDelay_ = animationDelayFlag.getValue();
-
-    if (connectFlag.isSet())
-        connectionPath_ = connectFlag.getValue();
-
+    animationDelay_ = animationDelayFlag.getValue();
+    connectionPath_ = connectFlag.getValue();
     cycleSnapshots_ = cycleSnapshotsFlag.isSet();
-
-    if (skyboxImageFlag.isSet())
-        imageApath_ = skyboxImageFlag.getValue();
+    imagePath_ = skyboxImageFlag.getValue();
 
     if (licenseFlag.isSet())
     {
@@ -155,17 +142,11 @@ bool Options::handleFlagsInternal(int argc, char** argv)
     }
 
     skyboxDisabled_ = noSkyboxFlag.isSet();
-
-    if (passwordFlag.isSet())
-        authPassword_ = passwordFlag.getValue();
-
-    if (slicesFlag.isSet())
-        atomSlices_ = slicesFlag.getValue();
-
-    if (stacksFlag.isSet())
-        atomStacks_ = stacksFlag.getValue();
-
-    highVerbosity_ = verboseFlag.isSet();
+    oneSlot_        = oneSlotFlag.isSet();
+    authPassword_   = passwordFlag.getValue();
+    atomSlices_     = slicesFlag.getValue();
+    atomStacks_     = stacksFlag.getValue();
+    highVerbosity_  = verboseFlag.isSet();
 
     return true;
 }
@@ -251,23 +232,16 @@ bool Options::skyboxDisabled()
 
 
 
-std::string Options::getPathToImageA()
+std::string Options::getSkyboxPath()
 {
-    return imageApath_;
+    return imagePath_;
 }
 
 
 
-std::string Options::getPathToImageB()
+bool Options::showOneSlot()
 {
-    return imageBpath_;
-}
-
-
-
-std::string Options::getPathToImageC()
-{
-    return imageCpath_;
+    return oneSlot_;
 }
 
 

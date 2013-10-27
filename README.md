@@ -6,7 +6,9 @@ View the biological machines that run the body! Folding Atomata is a third-party
 Here are some screenshots of it in action. This is an example view of the demo protein:
 ![](https://f.cloud.github.com/assets/2314417/1374232/426ebbba-3a6e-11e3-9df8-45e1dfa34cf3.png "FoldingAtomata displaying a colorful ball-and-stick model of an protein. The protein is is bounded by a faint green wire mesh, and there is a faint square point gradient in the skybox in the background.")
 
-Here is a close-up of one section of the protein. Following the [CPK coloring scheme](https://en.wikipedia.org/wiki/CPK_coloring), hydrogen atoms are white, carbons are dark gray, and nitrogen is sky-blue. Not shown here is oxygen (red) and sulfur (yellow). The comprise all the elements that are likely to be found in a protein. All other elements are colored orange.
+Here is a close-up of one section of the protein. Following the [CPK coloring scheme](https://en.wikipedia.org/wiki/CPK_coloring), hydrogen atoms are white, carbons are dark gray, nitrogens are blue, oxygen is red, and sulfurs are yellow. These comprise all the elements that are likely to be found in a protein. All other elements are colored pink.
+
+The size of the atoms here are determined by the electron shell count. Thus, since hydrogen is in the first row of periodic table, it's drawn at size 1. Likewise, carbon, nitrogen, and oxygen all have a radius of 2. Sulfur atoms and all other elements have a radius of 3.
 ![](https://f.cloud.github.com/assets/2314417/1374234/449f620e-3a6e-11e3-9981-a60f157340f4.png "A close-up of some of the atoms.")
 
 This is a neat view of a what appears to be a [imidazole](https://en.wikipedia.org/wiki/Imidazole), an unsaturated [heterocyclic](https://en.wikipedia.org/wiki/Heterocyclic) [carbon ring](https://en.wikipedia.org/wiki/Carbon_ring). This can be found on the side of the demo protein.
