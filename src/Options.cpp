@@ -98,8 +98,8 @@ bool Options::handleFlagsInternal(int argc, char** argv)
 
     TCLAP::CmdLine cmd(R".(Examples:
         FoldingAtomata
-        FoldingAtomata --connect=203.0.113.0:36330 --password=example       ).",
-        '=', "1.4.1.0");
+        FoldingAtomata --connect=203.0.113.0:36330 --password=example
+        ).", '=', "1.4.1.0");
     cmd.add(animationDelayFlag);
     cmd.add(connectFlag);
     cmd.add(cycleSnapshotsFlag);

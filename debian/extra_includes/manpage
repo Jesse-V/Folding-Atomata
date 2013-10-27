@@ -6,23 +6,21 @@
 FoldingAtomata \- third-party 3D simulation viewer for Folding@home
 
 .SH SYNOPSIS
-    \fBFoldingAtomata\fR [\fB--help\fR|\fB--license\fR|\fB--version\fR] [\fB-h|-l\fR] [\fB-c\fR \fIhost\fR:\fIport\fR] [\fB-p\fR \fImyPassword\fR]
-    \fBFoldingAtomata\fR [\fB--connect\fR \fIhost:\fIport\fR] [\fB--password\fR \fImyPassword\fR]
+    \fBFoldingAtomata\fR [\fB--help\fR|\fB--license\fR|\fB--version\fR] [\fB-h|-l\fR] [\fB-c\fR=\fIhost\fR:\fIport\fR] [\fB-p\fR=\fImyPassword\fR]
     \fBFoldingAtomata\fR [\fB--connect=\fR\fIhost:\fIport\fR] [\fB--password=\fR\fImyPassword\fR]
 
+Values must be attached to flags via an equal sign, not a space.
 A shortcut is available under Menu => Education.
 
 .SH DESCRIPTION
 Folding@home is a distributed computing project that uses the spare resources of volunteered computers for disease research.
 
-This package contains Folding Atomata, a 3D simulation viewer. It connects to the local FAHClient instance to visualize the running simulations.
+This package contains Folding Atomata, a 3D simulation viewer. It connects to the local FAHClient instance to visualize the running simulations. If FAHClient is not available, it displays a sample protein. Users have six degrees of freedom over the camera.
 
 .SH OPTIONS
 Folding Atomata supports many of FAHViewer's flags and command-line arguments. This allows it to be a near drop-in replacement for FAHViewer. Most notably, Atomata can connect to remote FAHClient instances and view their proteins.
 
 The following options can be specified on the command line using the following syntax:
-    --<option> <value>
-  or:
     --<option>=<value>
   or when marking boolean values true:
     --<option>
