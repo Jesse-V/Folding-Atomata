@@ -36,7 +36,7 @@ class Options
 {
     public:
         static Options& getInstance();
-        static bool handleFlags(int argc, char** argv); //should only call once!
+        static bool handleFlags(int argc, char** argv);
 
         enum class RenderMode : short
         {
@@ -60,22 +60,7 @@ class Options
         std::string getPathToImageC();
 
     private:
-        std::size_t handle(const StringList& options, std::size_t index);
-        bool parseBool(StrRef flag, StrRef target, bool& param);
-        bool parseBool(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                                bool& param);
-        bool parseStr(StrRef flag, StrRef target, std::string& param);
-        bool parseStr(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                        std::string& param);
-        bool parseUInt(StrRef flag, StrRef target, unsigned int& param);
-        bool parseUInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                        unsigned int& param);
-        bool parseInt(StrRef flag, StrRef target, int& param);
-        bool parseInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                                    int& param);
-        bool renderMode1(const std::string& flag);
-        bool renderMode2(const std::string& flag, const std::string& arg);
-        bool confirm(bool condition, const std::string& flag);
+        bool handleFlagsInternal(int argc, char** argv);
 
     private:
         static Options* singleton_;

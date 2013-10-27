@@ -25,9 +25,8 @@
 
 #include "Options.hpp"
 #include "PyON/StringManip.hpp"
-#include <algorithm>
-#include <sstream>
-#include <iostream>
+#include <tclap/CmdLine.h>
+#include <stdexcept>
 
 
 Options* Options::singleton_ = 0;
@@ -53,222 +52,120 @@ Options::Options() :
 
 bool Options::handleFlags(int argc, char** argv)
 {
-    std::vector<std::string> options;
-    for (int j = 0; j < argc; j++)
-        options.push_back(std::string(argv[j]));
+    static bool called = false;
+    if (called)
+        throw std::runtime_error("HandleFlags should not be repeatedly called!");
 
-    std::size_t index = 1; //skips the name-of-program argument
-    while (index < (std::size_t)argc)
-    {
-        if (options[index] == "--help" || options[index] == "-h")
-        {
-            std::cout <<
-                R".(
-Usage:
-    FAHViewer [OPTION...]
-
-Commands:
-    --animationDelay, -ad  Milliseconds to wait between each animation frame.
-    --connect, -c          Address and port to use to connect to FAHClient.
-    --cycle-snapshots      If enabled, the animation runs backwards at end.
-    --help, -h             Show flag options and their usage.
-    --image-a, -ia         Specifies the path to image A for the skybox.
-    --image-b, -ib         Specifies the path to image B for the skybox.
-    --image-c, -ic         Specifies the path to image C for the skybox.
-    --license              Prints license information.
-    --mode, -m             Rendering mode. 3 is stick. Ball-n-stick by default.
-    --no-skybox            Disables the skybox, leaving a black background.
-    --password, -p         Password for accessing the remote FAHClient.
-    --slices, -sl          Slices to use for the atom mesh. Default is 8.
-    --stacks, -st          Stacks to use for the atom mesh. Default is 16.
-    --verbose, -v          Verbose printing to stdout.
-    --version              Print version information.
-
-Examples:
-    FoldingAtomata
-    FoldingAtomata --connect=203.0.113.0:36330 --password=example
-).";
-            return false;
-        }
-
-        if (options[index] == "--version")
-        {
-            std::cout << "1.4.1.0" << std::endl;
-            return false;
-        }
-
-        if (options[index] == "--license")
-        {
-            std::cout << "GPLv3+" << std::endl;
-            return false;
-        }
-
-        index += getInstance().handle(options, index);
-    }
-
-    return true;
+    called = true;
+    return Options::getInstance().handleFlagsInternal(argc, argv);
 }
 
 
 
-std::size_t Options::handle(const StringList& options, std::size_t index)
+bool Options::handleFlagsInternal(int argc, char** argv)
 {
-    std::string flag = options[index];
+    TCLAP::ValueArg<unsigned int> animationDelayFlag("a", "animation-delay",
+        "Milliseconds to wait between each animation frame.", false,
+        0, "long");
 
-    //check for 1-piece flags
-    if (parseBool(flag, "--verbosity", highVerbosity_) ||
-        parseBool(flag, "1", "--verbosity", "-v", highVerbosity_) ||
-        parseBool(flag, "--cycle-snapshots", cycleSnapshots_) ||
-        parseBool(flag, "1", "--cycle-snapshots", "", cycleSnapshots_) ||
-        parseBool(flag, "--no-skybox", skyboxDisabled_) ||
-        parseBool(flag, "1", "--no-skybox", "", skyboxDisabled_) ||
-        parseStr(flag, "--connect", connectionPath_) ||
-        parseStr(flag, "--password", authPassword_) ||
-        parseStr(flag, "--image-a", imageApath_) ||
-        parseStr(flag, "--image-b", imageBpath_) ||
-        parseStr(flag, "--image-c", imageCpath_) ||
-        parseUInt(flag, "--stacks", atomStacks_) ||
-        parseUInt(flag, "--slices", atomSlices_) ||
-        parseInt(flag, "--animation-delay", animationDelay_) ||
-        renderMode1(flag))
-        return 1;
+    TCLAP::ValueArg<std::string> connectFlag("c", "connect",
+        "Address and port to use to connect to FAHClient.", false,
+        "DERP", "IP:port");
 
-    //check to see if we can grab next flag
-    if (index + 1 >= options.size())
+    TCLAP::SwitchArg cycleSnapshotsFlag("C", "cycle-snapshots",
+        "If enabled, the animation runs backwards at end.", false);
+
+    TCLAP::ValueArg<std::string> skyboxImageFlag("i", "image",
+        "Specifies the path to image for the skybox.", false,
+        "DERP", "path");
+
+    TCLAP::SwitchArg licenseFlag("l", "license",
+        "Prints license information and exits.", false);
+
+    TCLAP::ValueArg<unsigned int> modeFlag("m", "mode",
+        "Rendering mode. 3 is stick. Ball-n-stick by default.", false,
+        0, "milliseconds");
+
+    TCLAP::SwitchArg noSkyboxFlag("n", "no-skybox",
+        "Disables the skybox, leaving a black background.", false);
+
+    TCLAP::ValueArg<std::string> passwordFlag("p", "password",
+        "Password for accessing the remote FAHClient.", false,
+        "DERP", "string");
+
+    TCLAP::ValueArg<unsigned int> slicesFlag("s", "slices",
+        "Slices to use for the atom mesh. Default is 8.", false,
+        0, "unsigned int");
+
+    TCLAP::ValueArg<unsigned int> stacksFlag("S", "stacks",
+        "Stacks to use for the atom mesh. Default is 16.", false,
+        0, "unsigned int");
+
+    TCLAP::SwitchArg verboseFlag("v", "verbose", //this could be a MultiSwitch
+        "Verbose printing to stdout.", false);
+
+    TCLAP::CmdLine cmd(R".(Examples:
+        FoldingAtomata
+        FoldingAtomata --connect=203.0.113.0:36330 --password=example       ).",
+        '=', "1.4.1.0");
+    cmd.add(animationDelayFlag);
+    cmd.add(connectFlag);
+    cmd.add(cycleSnapshotsFlag);
+    cmd.add(skyboxImageFlag);
+    cmd.add(licenseFlag);
+    cmd.add(modeFlag);
+    cmd.add(noSkyboxFlag);
+    cmd.add(passwordFlag);
+    cmd.add(slicesFlag);
+    cmd.add(stacksFlag);
+    cmd.add(verboseFlag);
+
+    cmd.parse(argc, argv);
+
+    if (animationDelayFlag.isSet())
+        animationDelay_ = animationDelayFlag.getValue();
+
+    if (connectFlag.isSet())
+        connectionPath_ = connectFlag.getValue();
+
+    cycleSnapshots_ = cycleSnapshotsFlag.isSet();
+
+    if (skyboxImageFlag.isSet())
+        imageApath_ = skyboxImageFlag.getValue();
+
+    if (licenseFlag.isSet())
     {
-        std::cerr << "Unrecognized flag or unavailable argument for " <<
-            flag << ". Ignoring." << std::endl;
-        return 2;
-    }
-
-    //check for two-piece flags
-    std::string arg(options[index + 1]);
-    if (parseBool(flag, arg, "--verbosity", "-v", highVerbosity_) ||
-        parseBool(flag, arg, "--cycle-snapshots", "", cycleSnapshots_) ||
-        parseBool(flag, arg, "--no-skybox", "", skyboxDisabled_) ||
-        parseStr(flag, arg, "--connect", "-c", connectionPath_) ||
-        parseStr(flag, arg, "--password", "-p", authPassword_) ||
-        parseStr(flag, arg, "--image-a", "-ia", imageApath_) ||
-        parseStr(flag, arg, "--image-b", "-ib", imageBpath_) ||
-        parseStr(flag, arg, "--image-c", "-ic", imageCpath_) ||
-        parseUInt(flag, arg, "--stacks", "-st", atomStacks_) ||
-        parseUInt(flag, arg, "--slices", "-sl", atomSlices_) ||
-        parseInt(flag, arg, "--animation-delay", "-ad", animationDelay_) ||
-        renderMode2(flag, arg))
-        return 2;
-
-    std::cerr << "Unrecognized flag " << options[index] << ". Ignoring." << std::endl;
-    return 1;
-}
-
-
-#define PARSE_SINGLE_FLAG                               \
-    if (StringManip::startsWith(flag, target))          \
-    {                                                   \
-        auto parts = StringManip::explode(flag, '=');   \
-        if (!confirm(parts.size() == 2, flag))          \
-            return false;                               \
-                                                        \
-        std::istringstream(parts[1]) >> param;          \
-        return true;                                    \
-    }                                                   \
-    return false;
-
-
-#define PARSE_DOUBLE_FLAG                               \
-    if (flag == target1 || flag == target2)             \
-    {                                                   \
-        std::istringstream(arg) >> param;               \
-        return true;                                    \
-    }                                                   \
-    return false;
-
-bool Options::parseBool(StrRef flag, StrRef target, bool& param)
-{ PARSE_SINGLE_FLAG }
-
-
-bool Options::parseBool(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                        bool& param)
-{ PARSE_DOUBLE_FLAG }
-
-
-bool Options::parseStr(StrRef flag, StrRef target, std::string& param)
-{ PARSE_SINGLE_FLAG }
-
-
-bool Options::parseStr(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                std::string& param)
-{ PARSE_DOUBLE_FLAG }
-
-
-bool Options::parseUInt(StrRef flag, StrRef target, unsigned int& param)
-{ PARSE_SINGLE_FLAG }
-
-
-bool Options::parseUInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                unsigned int& param)
-{ PARSE_DOUBLE_FLAG }
-
-
-bool Options::parseInt(StrRef flag, StrRef target, int& param)
-{ PARSE_SINGLE_FLAG }
-
-
-bool Options::parseInt(StrRef flag, StrRef arg, StrRef target1, StrRef target2,
-                                                            int& param)
-{ PARSE_DOUBLE_FLAG }
-
-
-
-bool Options::renderMode1(const std::string& flag)
-{
-    if (StringManip::startsWith(flag, "--mode="))
-    {
-        auto parts = StringManip::explode(flag, '=');
-        if (!confirm(parts.size() == 2, flag))
-            return false;
-
-        if (parts[1] == "4")
-            renderMode_ = RenderMode::BALL_N_STICK;
-        else if (parts[1] == "3")
-            renderMode_ = RenderMode::STICK;
-        else
-            renderMode_ = RenderMode::BALL_N_STICK;
-
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::renderMode2(const std::string& flag, const std::string& arg)
-{
-    if (flag == "--mode" || flag == "-m")
-    {
-        if (arg == "4")
-            renderMode_ = RenderMode::BALL_N_STICK;
-        else if (arg == "3")
-            renderMode_ = RenderMode::STICK;
-        else
-            renderMode_ = RenderMode::BALL_N_STICK;
-
-        return true;
-    }
-
-    return false;
-}
-
-
-
-bool Options::confirm(bool condition, const std::string& flag)
-{
-    if (!condition)
-    {
-        std::cerr << "Invalid parameters for " << flag << std::endl;
+        std::cout << "GPLv3+" << std::endl;
         return false;
     }
+
+    if (modeFlag.isSet())
+    {
+        switch (modeFlag.getValue())
+        {
+            case 4:
+                renderMode_ = RenderMode::BALL_N_STICK;
+                break;
+            case 3:
+                renderMode_ = RenderMode::STICK;
+                break;
+            default:
+                renderMode_ = RenderMode::BALL_N_STICK;
+        }
+    }
+
+    skyboxDisabled_ = noSkyboxFlag.isSet();
+
+    if (passwordFlag.isSet())
+        authPassword_ = passwordFlag.getValue();
+
+    if (slicesFlag.isSet())
+        atomSlices_ = slicesFlag.getValue();
+
+    if (stacksFlag.isSet())
+        atomStacks_ = stacksFlag.getValue();
+
+    highVerbosity_ = verboseFlag.isSet();
 
     return true;
 }
