@@ -1,3 +1,12 @@
+folding-atomata (1.5.3.0) quantal; urgency=medium
+
+  * Use the tclap library (included) for flag parsing.
+  * Added --one-slot flag, will show first slot instead of all slots.
+  * Fixed bug with --cycle-snapshots (#57)
+  * CLI flags now more closely follow POSIX standards.
+
+ -- Jesse Victors <jvictors@jessevictors.com>  Mon, 26 Oct 2013 20:21:00 -0600
+
 folding-atomata (1.4.1.0) quantal; urgency=medium
 
   * Significant efficiency improvements to rendering engine.
