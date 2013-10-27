@@ -471,9 +471,11 @@ inline void CmdLine::parse(std::vector<std::string>& args)
 				matched = true;
 
 			if ( !matched && !Arg::ignoreRest() )
-				throw(CmdLineParseException("Couldn't find match "
+				std::cerr << "Unknown flag " << args[(std::size_t)i]
+					<< ", no known match. Ignoring." << std::endl;
+			/*	throw(CmdLineParseException("Couldn't find match "
 				                            "for argument",
-				                            args[(std::size_t)i]));
+				                            args[(std::size_t)i]));*/
 		}
 
 		if ( requiredCount < _numRequired )

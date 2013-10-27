@@ -27,57 +27,57 @@ The following options can be specified on the command line using the following s
   or when marking boolean values true:
     --<option>
 
-\fB --animation-delay \fR or \fB -ad \fR
+\fB -a \fR or \fB --animation-delay \fR
         Specifies the number of milliseconds to wait between each animation frame. Increasing this number improves the smoothness of the animation, but also increases the resource load. When the camera is not moving, the scene is rendered every time animation happens, so the FPS is 1000/ms. Thus a delay of 100 results in 10 FPS. This is 40 by default, for 25 FPS. Set this to 2000 to just display every snapshot.
 
-\fB --connect \fR or \fB -c \fR
+\fB -c \fR or \fB --connect \fR
         An address/host and port to connect to. By default Atomata connects to 127.0.0.1:36330.
         Examples: --connect=127.0.0.1:36330 or -c 127.0.0.1:36330
         Note that this flag is compatible with FAHControl, as this is one of
         the flags that it sends to FAHViewer.
 
-\fB --cycle-snapshots \fR
+\fB -C \fR or \fB --cycle-snapshots \fR
         Tells the animation to run backwards when it reaches the last snapshot, similar to how FAHViewer operates. Without this option, the animation jumps to snapshot 0 when it reaches the last one, (0, 1, 2, 3, ..., N-1, N, 0, 1, ...) but with the --bounce snapshot it would progress as (N-1, N, N-1, N-2, ..., 2, 1, 0, 1, 2, ...), thus duplicating the animation behavior of FAHViewer.
 
-\fB --help \fR or \fB -h \fR
+\fB -h \fR or \fB --help \fR
         Prints usage format and available flags, and then quits.
 
-\fB --image-a \fR or \fB -ia \fR
-        The skybox is textured using three images. Each image is specified in opposite sides, and are only visible when the camera is inside the skybox. This flag specifies a custom path for image A, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
+\fB -- \fR or \fB --ignore_rest \fR
+        Ignore all flags that follow this flag.
 
-\fB --image-b \fR or \fB -ib \fR
-        This flag specifies a custom path for image B of the skybox, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
+\fB -i \fR or \fB --image \fR
+        The skybox is textured a rotationally-symmetric image. The image is only visible when the camera is inside the skybox. This flag specifies a custom path for the image, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
 
-\fB --image-c \fR or \fB -ic \fR
-        This flag specifies a custom path for image C for the skybox, overridding the default of /usr/share/FoldingAtomata/images/gradient.png. The image MUST be square.
-
-\fB --license \fR
+\fB -l \fR or \fB --license \fR
         Prints license information and quit.
 
-\fB --mode or \fR or \fB -m \fR
+\fB -m or \fR or \fB --mode \fR
         Selects the rending mode. 3 is stick, everything is ball-and-stick.
         Note that this flag is compatible with FAHControl, as this is one of
         the flags that it sends to FAHViewer.
 
-\fB --no-skybox \fR
+\fB -n or \fR or \fB --no-skybox \fR
         Disables the skybox, leaving a plain black background.
 
-\fB --password \fR or \fB -p \fR
+\fB -o \fR or \fB --one-slot \fR
+        Instead of rendering all available slots from a FAHClient instance, only render the first slot non-core-17 slot. Once FAHClient can read FahCore_17 slots, I will add a --slot flag, which will be used in conjunction with this flag to show that particular slot.
+
+\fB -p \fR or \fB --password \fR
         A password for accessing the remote client. Note that this is sent in plaintext.
         Examples: --password=myPassword or -p myPassword
         Note that this flag is compatible with FAHControl, as this is one of
         the flags that it sends to FAHViewer.
 
-\fB --slices \fR or \fB -sl \fR
+\fB -s \fR or \fB --slices \fR
         Number of slices to use for generating the atom mesh. Default is 8.
         Increasing this number results in higher rendering demand, but increases the approximation to a sphere and improves its overall appearance.
 
-\fB --stacks \fR or \fB -st \fR
+\fB -S \fR or \fB --slices \fR
         Number of stacks to use for generating the atom mesh. Default is 16.
         Increasing this number results in higher rendering demand, but increases the approximation to a sphere and improves its overall appearance.
 
-\fB --verbose \fR or \fB -v \fR
-        Verbose printing to stdout.
+\fB -v \fR or \fB --verbose \fR
+        Verbose printing to stdout. Useful when debugging.
 
 \fB --version \fR
         Print version and quit.
